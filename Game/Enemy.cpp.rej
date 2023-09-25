@@ -1,0 +1,9 @@
+diff a/Game/Enemy.cpp b/Game/Enemy.cpp	(rejected hunks)
+@@ -221,6 +221,7 @@
+ 			}
+ 			// ����ōĐ��ł���
+ <<<<<<< HEAD
++=======
+ 			
+ 		}
+ 		else
