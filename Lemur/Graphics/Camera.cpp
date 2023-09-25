@@ -1,0 +1,111 @@
+#include "Camera.h"
+#include"..\Input/Input.h"
+
+void Camera::SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)
+{
+    //視点、注視点、上方向からビュー行列を作成
+    Eye = DirectX::XMLoadFloat3(&eye);
+    Focus = DirectX::XMLoadFloat3(&focus);
+    Up = DirectX::XMLoadFloat3(&up);
+    DirectX::XMMATRIX View = DirectX::XMMatrixLookAtLH(Eye, Focus, Up);
+
+    // ビュー行列を逆行列化し、ワールド行列に戻す
+    DirectX::XMMATRIX World = DirectX::XMMatrixInverse(nullptr, View);
+    DirectX::XMFLOAT4X4 world;
+    DirectX::XMStoreFloat4x4(&world, World);
+
+    // カメラ方向を取り出す
+    this->right.x = world._11;
+    this->right.y = world._12;
+    this->right.z = world._13;
+
+    this->up.x = world._21;
+    this->up.y = world._22;
+    this->up.z = world._23;
+
+    this->front.x = world._31;
+    this->front.y = world._32;
+    this->front.z = world._33;
+
+}
+
+void Camera::SetPerspectiveFov(Microsoft::WRL::ComPtr<ID3D11DeviceContext> dc)
+{
+    D3D11_VIEWPORT viewport{};
+    UINT num_viewports{ 1 };
+    dc->RSGetViewports(&num_viewports, &viewport);
+
+    float aspect_ratio{ viewport.Width / viewport.Height };
+    // 射影行列を生成
+    P = { DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(30), aspect_ratio, 0.1f, 100.0f) };
+
+    // 視線行列を生成
+    //DirectX::XMVECTOR eye{ DirectX::XMLoadFloat4(&camera_position) };
+    V = { DirectX::XMMatrixLookAtLH(Eye, Focus, Up) };
+}
+
+void Camera::Update(float elapsedTime)
+{
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    float ax = gamePad.GetAxisRX();
+    float ay = gamePad.GetAxisRY();
+
+    float lx = gamePad.GetAxisLX();
+    float ly = gamePad.GetAxisLY();
+
+    // カメラの回転速度
+    float speed = rollSpeed * elapsedTime;
+
+    // スティックの入力値に合わせてX軸とY軸を回転
+    angle.x -= ay * speed;
+    angle.y += ax * speed;
+
+    target.x -= lx * speed;
+    target.y -= ly * speed;
+
+    // カメラの回転値を回転行列に変換
+    DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+
+    // 回転行列から前方向にベクトルを出す
+    DirectX::XMVECTOR Front = Transform.r[2];
+    DirectX::XMFLOAT3 front;
+    DirectX::XMStoreFloat3(&front, Front);
+
+    DirectX::XMFLOAT3 eye = {};
+    eye.x = target.x - front.x * range;// front=方向、長さを掛け算することで長さがわかる
+    eye.y = target.y - front.y * range;// 目標地点からカメラの距離を引くことでカメラの位置が出る
+    eye.z = target.z - front.z * range;// 解説８ページ
+    // X軸のカメラ回転を制限
+    angle.x = min(angle.x, maxAngleX);
+    angle.x = max(angle.x, minAngleX);
+    //模範解答↓
+    if (angle.x < minAngleX)
+    {
+        angle.x = minAngleX;
+    }
+    if (angle.x > maxAngleX)
+    {
+        angle.x = maxAngleX;
+    }
+
+    // Y軸の回転値を-3.14~3.14に収まるようにする
+    if (angle.y < -DirectX::XM_PI)
+    {
+        angle.y += DirectX::XM_2PI;
+    }
+    if (angle.y > -DirectX::XM_PI)
+    {
+        angle.y -= DirectX::XM_2PI;
+    }
+
+    //カメラの視点と注視点を設定
+    SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
+}
+
+void Camera::DrawDebug()
+{
+}
+
+void Camera::UpdateDebug()
+{
+}
