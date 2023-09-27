@@ -43,6 +43,14 @@ namespace Lemur::Scene
         Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizer_states[4];
 
         void SetState();
+
+        void SetUpRendering(bool shadow = false);
+
+    protected:
+        // Zelda_Shader
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> zelda_ps;
+
+
     private:
         bool ready = false;
     };

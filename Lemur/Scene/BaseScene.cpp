@@ -1,4 +1,5 @@
 #include "BaseScene.h"
+#include "../Graphics/Camera.h"
 
 void Lemur::Scene::BaseScene::SetState()
 {
@@ -188,5 +189,39 @@ void Lemur::Scene::BaseScene::SetState()
 		hr = graphics.GetDevice()->CreateSamplerState(&sampler_desc, sampler_states[static_cast<size_t>(SAMPLER_STATE::COMPARISON_LINEAR_BORDER_WHITE)].GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 	}
+
+}
+
+void Lemur::Scene::BaseScene::SetUpRendering(bool shadow)
+{
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
+	ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
+	ID3D11RenderTargetView* render_target_view = graphics.GetRenderTargetView();
+	ID3D11DepthStencilView* depth_stencil_view = graphics.GetDepthStencilView();
+
+	ID3D11RenderTargetView* null_render_target_views[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT]{};
+	immediate_context->OMSetRenderTargets(_countof(null_render_target_views), null_render_target_views, 0);
+	ID3D11ShaderResourceView* null_shader_resource_views[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT]{};
+	immediate_context->VSSetShaderResources(0, _countof(null_shader_resource_views), null_shader_resource_views);
+	immediate_context->PSSetShaderResources(0, _countof(null_shader_resource_views), null_shader_resource_views);
+
+	// レンダーターゲット等の設定とクリア
+	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
+	// キャンバス全体を指定した色に塗りつぶす
+	immediate_context->ClearRenderTargetView(render_target_view, color);
+	// キャンバス全体の奥行き情報をリセットする
+	immediate_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	// これから描くキャンバスを指定する
+	immediate_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
+
+	immediate_context->PSSetSamplers(0, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::POINT)].GetAddressOf());
+	immediate_context->PSSetSamplers(1, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR)].GetAddressOf());
+	immediate_context->PSSetSamplers(2, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
+	immediate_context->PSSetSamplers(3, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_BLACK)].GetAddressOf());
+	immediate_context->PSSetSamplers(4, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_WHITE)].GetAddressOf());
+	// SHADOW
+	immediate_context->PSSetSamplers(5, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::COMPARISON_LINEAR_BORDER_WHITE)].GetAddressOf());
+
 
 }

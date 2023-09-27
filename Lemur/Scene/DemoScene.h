@@ -34,6 +34,7 @@ public:
     // 描画処理
     void Render(float elapsedTime)override;
 
+    //HACK ユニークポインタ
     DemoPlayer* CreatePlayer()
     {
         return new DemoPlayer(
@@ -55,18 +56,25 @@ private:
 
     std::unique_ptr<framebuffer> framebuffers[8];
 
-    // Zelda_Shader
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> zelda_ps;
-
     // SKYMAP
-    std::unique_ptr<fullscreen_quad> bit_block_transfer_sky;
+    //std::unique_ptr<fullscreen_quad> bit_block_transfer_sky;
+    //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> skymap;
+
+    //Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shaders[8];
+    // BLOOM
+    //std::unique_ptr<fullscreen_quad> bit_block_transfer;
+    //std::unique_ptr<bloom> bloomer;
+
+        // bloom
+    std::unique_ptr<fullscreen_quad> bitBlockTransfer;
+    std::unique_ptr<bloom> bloomer;
+
+    // skyMap
+    std::unique_ptr<fullscreen_quad> bitBlockTransfer_sky;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> skymap;
 
 
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shaders[8];
-    // BLOOM
-    std::unique_ptr<fullscreen_quad> bit_block_transfer;
-    std::unique_ptr<bloom> bloomer;
 
     // MASK
     struct dissolve_constants {
@@ -91,6 +99,8 @@ private:
     float light_view_size{ 12.0f };
     float light_view_near_z{ 2.0f };
     float light_view_far_z{ 18.0f };
+
+    bool enableShadow = false;
 
     // Audio
     Microsoft::WRL::ComPtr<IXAudio2> xaudio2;

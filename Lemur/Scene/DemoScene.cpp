@@ -46,25 +46,25 @@ void DemoScene::Initialize()
 		enemyManager.Register(slime);
 	}
 
-	//framebuffers[0] = std::make_unique<framebuffer>(graphics.GetDevice(), 1280, 720);
-	//bit_block_transfer = std::make_unique<fullscreen_quad>(graphics.GetDevice());
+	framebuffers[0] = std::make_unique<framebuffer>(graphics.GetDevice(), 1920, 1080);
+	bitBlockTransfer = std::make_unique<fullscreen_quad>(graphics.GetDevice());
 
-	// BLOOM
-	//bloomer = std::make_unique<bloom>(graphics.GetDevice(), 1280, 720);
-	//create_ps_from_cso(graphics.GetDevice(), "./Shader/final_pass_ps.cso", pixel_shaders[0].ReleaseAndGetAddressOf());
+	//BLOOM
+	bloomer = std::make_unique<bloom>(graphics.GetDevice(), 1920, 1080);
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/final_pass_ps.cso", pixel_shaders[0].ReleaseAndGetAddressOf());
 	
 	// SKYMAP
-	//bit_block_transfer_sky = std::make_unique<fullscreen_quad>(graphics.GetDevice());
-	//create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[1].GetAddressOf());
-	//load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
+	bitBlockTransfer_sky = std::make_unique<fullscreen_quad>(graphics.GetDevice());
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[1].GetAddressOf());
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
 
 	create_ps_from_cso(graphics.GetDevice(), "./Shader/zelda_ps.cso", zelda_ps.GetAddressOf());
 
 	// シェーダーの決定
 	//player->pixelShader = zelda_ps.Get();
 
+	skinned_meshes[1] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx");
 	// SHADOW
-	//skinned_meshes[1] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\grid.fbx");
 	double_speed_z = std::make_unique<shadow_map>(graphics.GetDevice(), shadowmap_width, shadowmap_height);
 
 	//// MASK
@@ -117,7 +117,11 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
-
+	ImGui::SliderFloat("light_view_distance", &light_view_distance, 1.0f, +100.0f);
+	ImGui::SliderFloat("light_view_size", &light_view_size, 1.0f, +100.0f);
+	ImGui::SliderFloat("light_view_near_z", &light_view_near_z, 1.0f, light_view_far_z - 1.0f);
+	ImGui::SliderFloat("light_view_far_z", &light_view_far_z, light_view_near_z + 1.0f, +100.0f);
+	ImGui::Image(reinterpret_cast<void*>(double_speed_z->shader_resource_view.Get()), ImVec2(shadowmap_width / 5.0f, shadowmap_height / 5.0f));
 	ImGui::End();
 }
 
@@ -126,32 +130,31 @@ void DemoScene::Render(float elapsedTime)
 	Camera& camera = Camera::Instance();
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 
+	SetUpRendering();
+
 	ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* render_target_view = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* depth_stencil_view = graphics.GetDepthStencilView();
+	camera.SetPerspectiveFov(immediate_context);
 
-	ID3D11RenderTargetView* null_render_target_views[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT]{};
-	immediate_context->OMSetRenderTargets(_countof(null_render_target_views), null_render_target_views, 0);
-	ID3D11ShaderResourceView* null_shader_resource_views[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT]{};
-	immediate_context->VSSetShaderResources(0, _countof(null_shader_resource_views), null_shader_resource_views);
-	immediate_context->PSSetShaderResources(0, _countof(null_shader_resource_views), null_shader_resource_views);
+	// 定数バッファの更新
+	scene_constants data{};
+	data.light_direction = light_direction;
+	DirectX::XMStoreFloat4(&data.camera_position, camera.GetEye());
+	DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix() * camera.GetProjectionMatrix());
 
-	// レンダーターゲット等の設定とクリア
-	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
-	// キャンバス全体を指定した色に塗りつぶす
-	immediate_context->ClearRenderTargetView(render_target_view, color);
-	// キャンバス全体の奥行き情報をリセットする
-	immediate_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	// これから描くキャンバスを指定する
-	immediate_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
+	// SKYMAP
+	D3D11_VIEWPORT viewport;
+	UINT num_viewports{ 1 };
+	immediate_context->RSGetViewports(&num_viewports, &viewport);
+	DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix() * camera.GetProjectionMatrix());
 
-	immediate_context->PSSetSamplers(0, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::POINT)].GetAddressOf());
-	immediate_context->PSSetSamplers(1, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR)].GetAddressOf());
-	immediate_context->PSSetSamplers(2, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
-	immediate_context->PSSetSamplers(3, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_BLACK)].GetAddressOf());
-	immediate_context->PSSetSamplers(4, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_WHITE)].GetAddressOf());
-	// SHADOW
-	immediate_context->PSSetSamplers(5, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::COMPARISON_LINEAR_BORDER_WHITE)].GetAddressOf());
+	DirectX::XMStoreFloat4x4(&data.inv_view_projection, DirectX::XMMatrixInverse(NULL, camera.GetViewMatrix() * camera.GetProjectionMatrix()));
+
+	// SKYMAP
+	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
+	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+	bitBlockTransfer_sky->blit(immediate_context, skymap.GetAddressOf(), 0, 1, pixel_shaders[0].Get());
 
 	// ブレンドステートの設定
 	immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
@@ -159,12 +162,7 @@ void DemoScene::Render(float elapsedTime)
 	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::SOLID)].Get());
 
-	camera.SetPerspectiveFov(immediate_context);
 
-	// 定数バッファの更新
-	scene_constants data{};
-	data.light_direction = light_direction;
-	DirectX::XMStoreFloat4(&data.camera_position, camera.GetEye());
 
 #if 0
 
@@ -211,32 +209,33 @@ void DemoScene::Render(float elapsedTime)
 #endif
 
 	// SHADOW : make shadow map
+	if(enableShadow)
 	{
 		using namespace DirectX;
+
 		const float aspect_ratio = double_speed_z->viewport.Width / double_speed_z->viewport.Height;
 		XMVECTOR F{ XMLoadFloat4(&light_view_focus) };
 		XMVECTOR E{ F - XMVector3Normalize(XMLoadFloat4(&light_direction)) * light_view_distance };
 		XMVECTOR U{ XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) };
 		XMMATRIX V{ XMMatrixLookAtLH(E, F, U) };
 		XMMATRIX P{ XMMatrixOrthographicLH(light_view_size * aspect_ratio, light_view_size, light_view_near_z, light_view_far_z) };
+		
 		DirectX::XMStoreFloat4x4(&data.view_projection, V * P);
 		data.light_view_projection = data.view_projection;
 		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
 		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+		
 		double_speed_z->clear(immediate_context, 1.0f);
 		double_speed_z->activate(immediate_context);
+		
 		ID3D11PixelShader* null_pixel_shader{ NULL };
-		player->ShadowRender(elapsedTime);
-		//DemoEnemyManager::Instance().Render(elapsedTime);
+		player->Render(elapsedTime);
+		DemoEnemyManager::Instance().Render(elapsedTime);
+		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, nullptr);
+
 		double_speed_z->deactivate(immediate_context);
 	}
-
 	// Render scene
-	D3D11_VIEWPORT viewport;
-	UINT num_viewports{ 1 };
-	immediate_context->RSGetViewports(&num_viewports, &viewport);
-	DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix()* camera.GetProjectionMatrix());
-
 	immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
 	immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
 	immediate_context->PSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
@@ -245,7 +244,8 @@ void DemoScene::Render(float elapsedTime)
 	immediate_context->PSSetShaderResources(8, 1, double_speed_z->shader_resource_view.GetAddressOf());
 	player->Render(elapsedTime);
 	DemoEnemyManager::Instance().Render(elapsedTime);
-	//skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, nullptr);
+	skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, nullptr);
+
 
 #if 0
 	// sprite描画
