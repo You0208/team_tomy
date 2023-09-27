@@ -1,5 +1,6 @@
 #include "GameObject.h"
 
+
 bool GameObject::ApplyDamage(int damage, float invincibleTime)
 {
     // ダメージが０の場合は健康状態を変更する必要がない

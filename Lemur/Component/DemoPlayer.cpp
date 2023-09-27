@@ -11,10 +11,7 @@ void DemoPlayerGraphicsComponent::Initialize(GameObject* gameobj)
 
 void DemoPlayerGraphicsComponent::Update(GameObject* gameobj)
 {
-	ImGui::Begin("Player");
-	//ImGui::DragFloat("EnemyPosition", &DemoEnemyManager::Instance().GetEnemy(0)->position.x);
 
-	ImGui::End();
 }
 
 void DemoPlayerGraphicsComponent::Render(GameObject* gameobj,float elapsedTime,ID3D11PixelShader* replaced_pixel_shader)
@@ -38,4 +35,19 @@ void DemoPlayerPhysicsComponent::Initialize(GameObject* gameobj)
 {
 	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
 	demoPlayer->SetScale({ 0.8f,0.8f,0.8f });
+}
+
+void DemoPlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
+{
+	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
+	//TODO IMGUI
+	demoPlayer->DebugImgui();
+}
+
+void DemoPlayer::DebugImgui()
+{
+	ImGui::Begin("Player");
+	ImGui::DragFloat("PlayerPosition", &position.x);
+
+	ImGui::End();
 }

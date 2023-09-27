@@ -13,6 +13,8 @@ public:
     DemoPlayer(InputComponent* input_,
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
+
+    void DebugImgui()override;
 };
 
 class DemoPlayerInputComponent :public InputComponent
@@ -24,7 +26,7 @@ class DemoPlayerInputComponent :public InputComponent
 class DemoPlayerPhysicsComponent :public PhysicsComponent
 {
     void Initialize(GameObject* gameobj) override;
-    void Update(GameObject* gameobj, float elapsedTime) override {}
+    void Update(GameObject* gameobj, float elapsedTime) override;
 };
 
 class DemoPlayerGraphicsComponent:public GraphicsComponent

@@ -64,6 +64,7 @@ public:
         delete graphics;
     }
 
+    virtual void DebugImgui(){};
 public:
     // ˆÊ’uŽæ“¾
     const DirectX::XMFLOAT3& GetPosition() const { return position; }
