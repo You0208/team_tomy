@@ -41,6 +41,7 @@ void DemoEnemyManager::Clear()
 {
     for (DemoEnemy* enemy : enemies)
     {
+        enemy->Delete();
         delete enemy;
     }
     enemies.clear();

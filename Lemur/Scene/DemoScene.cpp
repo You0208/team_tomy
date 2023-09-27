@@ -32,7 +32,6 @@ void DemoScene::Initialize()
 		}
 	}
 
-
 	player = CreatePlayer();
 	player->Initialize();
 
@@ -99,6 +98,8 @@ void DemoScene::Initialize()
 
 void DemoScene::Finalize()
 {
+	player->Delete();
+	delete player;
 	//エネミー終了
 	DemoEnemyManager::Instance().Clear();
 }
