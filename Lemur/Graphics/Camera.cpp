@@ -37,7 +37,7 @@ void Camera::SetPerspectiveFov(Microsoft::WRL::ComPtr<ID3D11DeviceContext> dc)
 
     float aspect_ratio{ viewport.Width / viewport.Height };
     // Ë‰es—ñ‚ğ¶¬
-    P = { DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(30), aspect_ratio, 0.1f, 100.0f) };
+    P = { DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(30), aspect_ratio, 0.1f, 1000.0f) };
 
     // ‹üs—ñ‚ğ¶¬
     //DirectX::XMVECTOR eye{ DirectX::XMLoadFloat4(&camera_position) };

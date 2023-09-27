@@ -51,7 +51,7 @@ void DemoScene::Initialize()
 
 	//BLOOM
 	bloomer = std::make_unique<bloom>(graphics.GetDevice(), 1920, 1080);
-	create_ps_from_cso(graphics.GetDevice(), "./Shader/final_pass_ps.cso", pixel_shaders[0].ReleaseAndGetAddressOf());
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/final_pass_ps.cso", pixel_shaders[2].ReleaseAndGetAddressOf());
 	
 	// SKYMAP
 	bitBlockTransfer_sky = std::make_unique<fullscreen_quad>(graphics.GetDevice());
@@ -117,11 +117,21 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
+
+	ImGui::Checkbox("enableShadow", &enableShadow);
+	ImGui::Checkbox("enableSkyMap", &enableSkyMap);
+	ImGui::Checkbox("enableBloom", &enableBloom);
+
 	ImGui::SliderFloat("light_view_distance", &light_view_distance, 1.0f, +100.0f);
 	ImGui::SliderFloat("light_view_size", &light_view_size, 1.0f, +100.0f);
 	ImGui::SliderFloat("light_view_near_z", &light_view_near_z, 1.0f, light_view_far_z - 1.0f);
 	ImGui::SliderFloat("light_view_far_z", &light_view_far_z, light_view_near_z + 1.0f, +100.0f);
 	ImGui::Image(reinterpret_cast<void*>(double_speed_z->shader_resource_view.Get()), ImVec2(shadowmap_width / 5.0f, shadowmap_height / 5.0f));
+	
+	// BLOOM
+	ImGui::SliderFloat("bloom_extraction_threshold", &bloomer->bloom_extraction_threshold, +0.0f, +5.0f);
+	ImGui::SliderFloat("bloom_intensity", &bloomer->bloom_intensity, +0.0f, +5.0f);
+
 	ImGui::End();
 }
 
@@ -129,32 +139,12 @@ void DemoScene::Render(float elapsedTime)
 {
 	Camera& camera = Camera::Instance();
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-
-	SetUpRendering();
-
 	ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* render_target_view = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* depth_stencil_view = graphics.GetDepthStencilView();
-	camera.SetPerspectiveFov(immediate_context);
-
-	// 定数バッファの更新
 	scene_constants data{};
-	data.light_direction = light_direction;
-	DirectX::XMStoreFloat4(&data.camera_position, camera.GetEye());
-	DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix() * camera.GetProjectionMatrix());
 
-	// SKYMAP
-	D3D11_VIEWPORT viewport;
-	UINT num_viewports{ 1 };
-	immediate_context->RSGetViewports(&num_viewports, &viewport);
-	DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix() * camera.GetProjectionMatrix());
-
-	DirectX::XMStoreFloat4x4(&data.inv_view_projection, DirectX::XMMatrixInverse(NULL, camera.GetViewMatrix() * camera.GetProjectionMatrix()));
-
-	// SKYMAP
-	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
-	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
-	bitBlockTransfer_sky->blit(immediate_context, skymap.GetAddressOf(), 0, 1, pixel_shaders[0].Get());
+	SetUpRendering();
 
 	// ブレンドステートの設定
 	immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
@@ -162,51 +152,8 @@ void DemoScene::Render(float elapsedTime)
 	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::SOLID)].Get());
 
-
-
-#if 0
-
-	D3D11_VIEWPORT viewport;
-	UINT num_viewports{ 1 };
-	immediate_context->RSGetViewports(&num_viewports, &viewport);
-
-	float aspect_ratio{ viewport.Width / viewport.Height };
-
-	// SKYMAP
-	DirectX::XMStoreFloat4x4(&data.inv_view_projection, DirectX::XMMatrixInverse(NULL, camera.GetViewMatrix() * camera.GetProjectionMatrix()));
-
-	immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
-	immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
-	immediate_context->PSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
-
-	 //3D描画
-	{
-		framebuffers[0]->clear(immediate_context);
-		framebuffers[0]->activate(immediate_context);
-		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
-		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::SOLID)].Get());
-		player->Render(elapsedTime);
-		framebuffers[0]->deactivate(immediate_context);
-		// BLOOM
-		bloomer->make(immediate_context, framebuffers[0]->shader_resource_views[0].Get());
-
-		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
-		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
-		immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
-
-		ID3D11ShaderResourceView* shader_resource_views[] =
-		{
-			framebuffers[0]->shader_resource_views[0].Get(),
-			bloomer->shader_resource_view(),
-		};
-		bit_block_transfer->blit(immediate_context, shader_resource_views, 0, 2, pixel_shaders[0].Get());
-	}
-	// SKYMAP
-	//immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
-	//immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
-	//bit_block_transfer_sky->blit(immediate_context, skymap.GetAddressOf(), 0, 1, pixel_shaders[1].Get());
-	//
-#endif
+	camera.SetPerspectiveFov(immediate_context);
+	
 
 	// SHADOW : make shadow map
 	if(enableShadow)
@@ -219,33 +166,80 @@ void DemoScene::Render(float elapsedTime)
 		XMVECTOR U{ XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) };
 		XMMATRIX V{ XMMatrixLookAtLH(E, F, U) };
 		XMMATRIX P{ XMMatrixOrthographicLH(light_view_size * aspect_ratio, light_view_size, light_view_near_z, light_view_far_z) };
-		
+
 		DirectX::XMStoreFloat4x4(&data.view_projection, V * P);
 		data.light_view_projection = data.view_projection;
 		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
 		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
-		
+
 		double_speed_z->clear(immediate_context, 1.0f);
 		double_speed_z->activate(immediate_context);
-		
+
 		ID3D11PixelShader* null_pixel_shader{ NULL };
 		player->Render(elapsedTime);
-		DemoEnemyManager::Instance().Render(elapsedTime);
-		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, nullptr);
+		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
 
 		double_speed_z->deactivate(immediate_context);
 	}
-	// Render scene
-	immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
-	immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
-	immediate_context->PSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+	// 定数バッファの更新
+	{
+		DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix() * camera.GetProjectionMatrix());
+		data.light_direction = light_direction;
 
-	//// SHADOW : bind shadow map at slot 8
+		D3D11_VIEWPORT viewport;
+		UINT num_viewports{ 1 };
+		immediate_context->RSGetViewports(&num_viewports, &viewport);
+
+		float aspect_ratio{ viewport.Width / viewport.Height };
+
+		// SKYMAP
+		if (enableSkyMap)
+		{
+			DirectX::XMStoreFloat4x4(&data.inv_view_projection, DirectX::XMMatrixInverse(NULL, camera.GetViewMatrix() * camera.GetProjectionMatrix()));
+		}
+		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
+		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+		immediate_context->PSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+	}
+
+	// ↓Skinned_mesh オブジェクトと sprite_batch オブジェクトのレンダリング関数の呼び出し
+
+
+	if (enableBloom)
+	{
+		framebuffers[0]->clear(immediate_context);
+		framebuffers[0]->activate(immediate_context);
+	}
+	if (enableSkyMap)
+	{
+		// SKYMAP
+		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
+		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+		bitBlockTransfer_sky->blit(immediate_context, skymap.GetAddressOf(), 0, 1, pixel_shaders[1].Get());
+	}
 	immediate_context->PSSetShaderResources(8, 1, double_speed_z->shader_resource_view.GetAddressOf());
+	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
+	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::SOLID)].Get());
 	player->Render(elapsedTime);
-	DemoEnemyManager::Instance().Render(elapsedTime);
 	skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, nullptr);
 
+	if (enableBloom) 
+	{
+		framebuffers[0]->deactivate(immediate_context);
+		// BLOOM
+		bloomer->make(immediate_context, framebuffers[0]->shader_resource_views[0].Get());
+
+		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
+		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+		immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
+		ID3D11ShaderResourceView* shader_resource_views[] =
+		{
+			framebuffers[0]->shader_resource_views[0].Get(),
+			bloomer->shader_resource_view(),
+		};
+		bitBlockTransfer->blit(immediate_context, shader_resource_views, 0, 2, pixel_shaders[2].Get());
+
+	}
 
 #if 0
 	// sprite描画
