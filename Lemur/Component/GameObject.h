@@ -110,10 +110,12 @@ public:
 
     // •`‰æİ’è
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
-protected:
 
     // ˆÚ“®ˆ—
     void Move(float vx, float vz, float speed);
+
+protected:
+
 
     // ƒWƒƒƒ“ƒvˆ—
     void Jump(float speed);

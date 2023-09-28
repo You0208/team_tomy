@@ -3,6 +3,7 @@
 #include "texture.h"
 #include "Graphics.h"
 #include "..\Scene\SceneManager.h"
+#include "./Game/Scene/SceneGame.h"
 
 // Effect
 #include "../Effekseer/EffekseerManager.h"
@@ -22,7 +23,7 @@ bool framework::initialize()
 	EffectManager::Instance().Initialize();
 
 	// シーン初期化
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new DemoScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 
 	return true;
 }
