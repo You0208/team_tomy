@@ -14,6 +14,8 @@
 #include "framebuffer.h"
 #include "fullscreen_quad.h"
 
+#include "../Font/Font.h"
+
 // BLOOM
 #include "bloom.h"
 
@@ -32,8 +34,6 @@
 #ifdef ENABLE_DIRECT2D
 #include <d2d1_1.h>
 #include <dwrite.h>
-#pragma comment(lib,"d2d1.lib")
-#pragma comment(lib,"dwrite.lib")
 #endif
 
 #include <mutex>
@@ -105,7 +105,7 @@ namespace Lemur::Graphics
         Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;// キャンバスに描いた画を額(ウインドウ)に入れるやつ
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view;// 色を書き込むキャンバス
         Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_stencil_view;// 奥行き情報を書き込むキャンバス
-       
+
 
         enum class SAMPLER_STATE { POINT, LINEAR, ANISOTROPIC };
         Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_states[3]; //どのようにテクスチャの色をサンプルする(取り出す) かの設定。
@@ -147,6 +147,15 @@ namespace Lemur::Graphics
         float factors[4]{ 0.0f, 121.438332f };
 
         std::unique_ptr<geometric_primitive> geometric_primitives[8];
+
+    public:
+        //TODO Font
+        ID2D1Factory* g_pD2DFactory = nullptr;
+        IDXGISurface* g_pBackBuffer = nullptr;
+        IDWriteFactory* g_pDWriteFactory = nullptr;
+        IDWriteTextFormat* g_pTextFormat = nullptr;
+        ID2D1RenderTarget* g_pRT = nullptr;
+        ID2D1SolidColorBrush* g_pSolidBrush = nullptr;
 
     private:
         static Graphics* instance;

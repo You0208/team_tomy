@@ -60,10 +60,6 @@ public:
         );
     }
 private:
-    //TODO FONT
-    FontData* fdata;
-    DirectWrite* Write;
-
     std::unique_ptr<framebuffer> framebuffers[8];
 
     // SKYMAP

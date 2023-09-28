@@ -77,6 +77,43 @@ namespace Lemur::Graphics
 #ifdef ENABLE_DIRECT2D
 		create_direct2d_objects();
 #endif
+		//--------------------------★追加↓--------------------------
+		// Direct2D,DirectWriteの初期化
+		hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_pD2DFactory);
+
+		hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&g_pBackBuffer));
+
+		FLOAT dpiX = SCREEN_WIDTH;
+		FLOAT dpiY = SCREEN_HEIGHT;
+
+		D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED), dpiX, dpiY);
+
+		hr = g_pD2DFactory->CreateDxgiSurfaceRenderTarget(g_pBackBuffer, &props, &g_pRT);
+
+		hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&g_pDWriteFactory));
+
+		//関数CreateTextFormat()
+		//第1引数：フォント名（L"メイリオ", L"Arial", L"Meiryo UI"等）
+		//第2引数：フォントコレクション（nullptr）
+		//第3引数：フォントの太さ（DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_WEIGHT_BOLD等）
+		//第4引数：フォントスタイル（DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STYLE_OBLIQUE, DWRITE_FONT_STYLE_ITALIC）
+		//第5引数：フォントの幅（DWRITE_FONT_STRETCH_NORMAL,DWRITE_FONT_STRETCH_EXTRA_EXPANDED等）
+		//第6引数：フォントサイズ（20, 30等）
+		//第7引数：ロケール名（L""）
+		//第8引数：テキストフォーマット（&g_pTextFormat）
+		hr = g_pDWriteFactory->CreateTextFormat(L"メイリオ", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20, L"", &g_pTextFormat);
+
+		//関数SetTextAlignment()
+		//第1引数：テキストの配置（DWRITE_TEXT_ALIGNMENT_LEADING：前, DWRITE_TEXT_ALIGNMENT_TRAILING：後, DWRITE_TEXT_ALIGNMENT_CENTER：中央,
+		//                         DWRITE_TEXT_ALIGNMENT_JUSTIFIED：行いっぱい）
+		hr = g_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+
+		//関数CreateSolidColorBrush()
+		//第1引数：フォント色（D2D1::ColorF(D2D1::ColorF::Black)：黒, D2D1::ColorF(D2D1::ColorF(0.0f, 0.2f, 0.9f, 1.0f))：RGBA指定）
+		hr = g_pRT->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &g_pSolidBrush);
+
+		//--------------------------★追加↑--------------------------
+
 	}
 
 	void Graphics::create_swap_chain(IDXGIFactory6* dxgi_factory6)
