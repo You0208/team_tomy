@@ -282,6 +282,6 @@ void DemoScene::Render(float elapsedTime)
 		EffectManager::Instance().Render(view, projection);
 	}
 	//Font
-	Lemur::Graphics::Font& font = Lemur::Graphics::Font::Instance();
-	font.render();
+	//Lemur::Graphics::Font& font = Lemur::Graphics::Font::Instance();
+	//font.render();
 }
