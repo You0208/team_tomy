@@ -147,7 +147,6 @@ namespace Lemur::Graphics
 
         std::unique_ptr<geometric_primitive> geometric_primitives[8];
 
-
     private:
         static Graphics* instance;
 

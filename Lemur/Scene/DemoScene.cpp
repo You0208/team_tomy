@@ -118,6 +118,7 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
+	ImGui::SliderFloat("second", &second, 1.0f, +100.0f);
 
 	ImGui::Checkbox("enableShadow", &enableShadow);
 	ImGui::Checkbox("enableSkyMap", &enableSkyMap);

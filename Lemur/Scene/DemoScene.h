@@ -114,7 +114,7 @@ private:
     DemoPlayer* player = nullptr;
     DemoEnemy* enemy = nullptr;
 
-
+    float second;
 
     // skkind
     std::shared_ptr<skinned_mesh> skinned_meshes[8];

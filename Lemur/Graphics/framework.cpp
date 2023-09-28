@@ -37,6 +37,7 @@ void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 
 	// シーン更新処理
 	Lemur::Scene::SceneManager::Instance().Update(hwnd,elapsed_time);
+
 	// 時間経過更新
 	timer += elapsed_time;
 }
