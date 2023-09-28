@@ -93,6 +93,16 @@ void DemoScene::Initialize()
 		}
 	}
 
+	// Font
+	fdata = new FontData;
+
+	// フォントデータを改変
+	fdata->fontSize = 60;
+	fdata->fontWeight = DWRITE_FONT_WEIGHT_BOLD;
+
+	// DirectWrite用コンポーネントを作成
+	Write = new DirectWrite(fdata);
+	Write->Init();
 
 }
 
@@ -282,5 +292,5 @@ void DemoScene::Render(float elapsedTime)
 		EffectManager::Instance().Render(view, projection);
 	}
 
-
+	Write->DrawString("ここに文字が書けます", { 490,90 }, D2D1_DRAW_TEXT_OPTIONS_NONE);
 }

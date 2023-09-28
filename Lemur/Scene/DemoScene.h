@@ -16,6 +16,13 @@
 
 #include "../Effekseer/Effect.h"
 
+// Font
+#include"../Font/Font.h"
+#include <dwrite.h>                
+#pragma comment(lib,"d2d1.lib")    
+#pragma comment(lib,"dwrite.lib")
+
+
 class DemoScene :public Lemur::Scene::BaseScene
 {
 public:
@@ -53,6 +60,9 @@ public:
         );
     }
 private:
+    //TODO FONT
+    FontData* fdata;
+    DirectWrite* Write;
 
     std::unique_ptr<framebuffer> framebuffers[8];
 

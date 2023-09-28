@@ -90,6 +90,7 @@ namespace Lemur::Graphics
         ID3D11RenderTargetView* GetRenderTargetView() const { return render_target_view.Get(); }
         ID3D11DepthStencilView* GetDepthStencilView() const { return depth_stencil_view.Get(); }
         D3D11_TEXTURE2D_DESC* GetTexture2D() { return &texture2d_desc; }
+        IDXGISwapChain1* GetSwap() const { return swap_chain.Get(); }
 
         // デバッグレンダラ取得
         DebugRenderer* GetDebugRenderer() const { return debugRenderer.get(); }

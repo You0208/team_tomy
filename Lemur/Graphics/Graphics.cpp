@@ -69,7 +69,6 @@ namespace Lemur::Graphics
 #ifdef ENABLE_DIRECT2D
 		create_device_flags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #endif
-
 		D3D_FEATURE_LEVEL feature_levels{ D3D_FEATURE_LEVEL_11_1 };
 		hr = D3D11CreateDevice(adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, 0, create_device_flags, &feature_levels, 1, D3D11_SDK_VERSION, &device, NULL, &immediate_context);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
@@ -78,7 +77,6 @@ namespace Lemur::Graphics
 #ifdef ENABLE_DIRECT2D
 		create_direct2d_objects();
 #endif
-
 	}
 
 	void Graphics::create_swap_chain(IDXGIFactory6* dxgi_factory6)
