@@ -5,6 +5,7 @@
 
 // Effect
 #include "../Effekseer/EffekseerManager.h"
+#include "Game/Manager/CharacterManager.h"
 
 void DemoScene::Initialize()
 {
@@ -32,13 +33,17 @@ void DemoScene::Initialize()
 		}
 	}
 
+	// プレイヤーの生成
+	player = CreateNewPlayer();
 
-	player = CreatePlayer();
+	// プレイヤーをキャラクターマネージャにセット
+	CharacterManager::Instance().SetPlayer(player);
+
 	player->Initialize();
 
 	// エネミー初期化
 	DemoEnemyManager& enemyManager = DemoEnemyManager::Instance();
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		DemoEnemy* slime = CreateEnemy();
 		slime->Initialize();
@@ -137,7 +142,7 @@ void DemoScene::Render(float elapsedTime)
 	immediate_context->PSSetShaderResources(0, _countof(null_shader_resource_views), null_shader_resource_views);
 
 	// レンダーターゲット等の設定とクリア
-	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
+	FLOAT color[]{ 1.0f, 0.2f, 0.2f, 1.0f };
 	// キャンバス全体を指定した色に塗りつぶす
 	immediate_context->ClearRenderTargetView(render_target_view, color);
 	// キャンバス全体の奥行き情報をリセットする

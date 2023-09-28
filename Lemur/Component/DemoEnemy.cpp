@@ -4,7 +4,7 @@ void DemoEnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
 	DemoEnemy* demoEnemy = dynamic_cast<DemoEnemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-	demoEnemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx"));
+	demoEnemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Stage\\floor_60.fbx"));
 }
 
 void DemoEnemyInputComponent::Update(GameObject* gameobj, float elapsedTime)

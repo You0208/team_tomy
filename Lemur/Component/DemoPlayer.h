@@ -6,6 +6,7 @@
 #include "../Resource/ResourceManager.h"
 #include"../Input/Input.h"
 
+// 実体で生成されるのがこいつ
 class DemoPlayer :public GameObject
 {
 public:
@@ -13,12 +14,20 @@ public:
     DemoPlayer(InputComponent* input_,
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
+
+
+
 };
+
+//こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。
 
 class DemoPlayerInputComponent :public InputComponent
 {
     void Initialize(GameObject* gameobj) override {}
     void Update(GameObject* gameobj, float elapsedTime) override;
+
+    DirectX::XMFLOAT3 GetMoveVec(float input_x,float input_y);
+
 };
 
 class DemoPlayerPhysicsComponent :public PhysicsComponent

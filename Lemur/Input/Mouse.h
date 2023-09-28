@@ -1,3 +1,4 @@
+// ReSharper disable All
 #pragma once
 
 #include <Windows.h>
@@ -57,6 +58,21 @@ public:
 
     // スクリーン高さ取得
     int GetScreenHeight() const { return screenHeight; }
+
+    // マウスカーソルX座標設定
+    void SetPositionX(int posX)
+    {
+        positionX[0] = posX;
+        positionX[1] = posX;
+    }
+
+    // マウスカーソルY座標設定
+    void SetPositionY(int posY)
+    {
+        positionY[0] = posY;
+        positionY[1] = posY;
+    }
+
 
 private:
     MouseButton		buttonState[2] = { 0 };

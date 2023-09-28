@@ -6,7 +6,7 @@
 
 // Effect
 #include "../Effekseer/EffekseerManager.h"
-
+#include "Game/Scene/SceneGame.h"
 
 
 framework::framework(HWND hwnd) 
@@ -22,7 +22,7 @@ bool framework::initialize()
 	EffectManager::Instance().Initialize();
 
 	// シーン初期化
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new DemoScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);// todo ここで最初のシーン切り替えれる。
 
 	return true;
 }

@@ -1,21 +1,27 @@
-#include "DemoPlayer.h"
-#include "DemoEnemyManager.h"
-#include "../Graphics/framework.h"
-#include "Lemur/Graphics/Camera.h"
+#include "Enemy.h"
 
-void DemoPlayerGraphicsComponent::Initialize(GameObject* gameobj)
+#include <directxmath.h>
+
+#include "imgui.h"
+#include "Game/AI/ActionDerived.h"
+#include "Lemur/Graphics/Camera.h"
+#include "Lemur/Input/GamePad.h"
+#include "Lemur/Input/Input.h"
+
+
+void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
-	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
+    Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-	demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx"));
+    demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\arakBarrak_v025.fbx"));
 }
 
-void DemoPlayerGraphicsComponent::Update(GameObject* gameobj)
+void EnemyGraphicsComponent::Update(GameObject* gameobj)
 {
-    DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
+    Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
 
-	ImGui::Begin("Player");
-    if(ImGui::TreeNode("Transform"))
+    ImGui::Begin("Player");
+    if (ImGui::TreeNode("Transform"))
     {
         DirectX::XMFLOAT3 pos = demoPlayer->GetPosition();
         ImGui::DragFloat3("position", &pos.x);
@@ -23,33 +29,42 @@ void DemoPlayerGraphicsComponent::Update(GameObject* gameobj)
 
         ImGui::TreePop();
     }
-	ImGui::End();
+    ImGui::End();
 }
 
-void DemoPlayerGraphicsComponent::Render(GameObject* gameobj,float elapsedTime,ID3D11PixelShader* replaced_pixel_shader)
+void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
 {
-	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
-	demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+    Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
+    demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+}
+
+void Enemy::BehaviorTreeInitialize()
+{
+    ai_tree = new BehaviorTree(this);
+
+    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+    {
+        // 徘徊
+        ai_tree->AddNode("Root", "Wander", 1, BehaviorTree::SelectRule::Non, nullptr, new WanderAction(this));
+        // todo 三日ったら追跡する谷津作
+    }
+
+
 }
 
 // 入力処理
-void DemoPlayerInputComponent::Update(GameObject* gameobj, float elapsedTime)
+void EnemyInputComponent::Update(GameObject* gameobj, float elapsedTime)
 {
-	GamePad& gamePad = Input::Instance().GetGamePad();
-	float ax = gamePad.GetAxisRX();
-	float ay = gamePad.GetAxisRY();
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    float ax = gamePad.GetAxisRX();
+    float ay = gamePad.GetAxisRY();
 
-	float lx = gamePad.GetAxisLX();
-	float ly = gamePad.GetAxisLY();
+    float lx = gamePad.GetAxisLX();
+    float ly = gamePad.GetAxisLY();
 
-
-    DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
-    DirectX::XMFLOAT3 vec= GetMoveVec(lx, ly);
-    float walk_speed = 10.0f;
-    demoPlayer->Move(vec.x, vec.z, walk_speed);
 }
 
-DirectX::XMFLOAT3 DemoPlayerInputComponent::GetMoveVec(float input_x, float input_y)
+DirectX::XMFLOAT3 EnemyInputComponent::GetMoveVec(float input_x, float input_y)
 {
 
     // カメラ方向とステイックの入力値によって進行方向を計算する。
@@ -103,12 +118,15 @@ DirectX::XMFLOAT3 DemoPlayerInputComponent::GetMoveVec(float input_x, float inpu
     //y軸方向には移動しない
     vec.y = 0.0f;
 
-    
+
     return vec;
 
 }
 
-void DemoPlayerPhysicsComponent::Initialize(GameObject* gameobj)
+void EnemyPhysicsComponent::Initialize(GameObject* gameobj)
 {
-	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
+    Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
+
+    enemy->
+
 }

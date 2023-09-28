@@ -1,27 +1,18 @@
 #pragma once
-#include "BaseScene.h"
-#include "../Component/GameObject.h"
-#include "../Component/DemoPlayer.h"
-#include "../Component/DemoEnemy.h"
-#include "../Graphics/shader.h"
-#include "../Graphics/texture.h"
-#include "../Graphics/framework.h"
+#include <xaudio2.h>
 
-// BLOOM
-#include "../Graphics/bloom.h"
-
-// Audio
-#include <wrl.h>
-#include "../Audio/audio.h"
-
-#include "../Effekseer/Effect.h"
+#include "Game/Enemy/Enemy.h"
 #include "Game/Player/Player.h"
+#include "Lemur/Audio/audio.h"
+#include "Lemur/Component/DemoEnemy.h"
+#include "Lemur/Component/DemoPlayer.h"
+#include "Lemur/Scene/BaseScene.h"
 
-class DemoScene :public Lemur::Scene::BaseScene
+class GameScene :public Lemur::Scene::BaseScene
 {
 public:
-    DemoScene() {}
-    ~DemoScene() override {}
+    GameScene() {}
+    ~GameScene() override {}
 
     // 初期化
     void Initialize()override;
@@ -35,16 +26,8 @@ public:
     // 描画処理
     void Render(float elapsedTime)override;
 
-    DemoPlayer* CreatePlayer()
-    {
-        return new DemoPlayer(
-            new DemoPlayerInputComponent(),
-            new DemoPlayerPhysicsComponent(),
-            new DemoPlayerGraphicsComponent()
-        );
-    }
 
-    Player* CreateNewPlayer()
+    Player* CreatePlayer()
     {
         return new Player(
             new PlayerInputComponent(),
@@ -53,13 +36,12 @@ public:
         );
     }
 
-
-    DemoEnemy* CreateEnemy()
+    Enemy* CreateEnemy()
     {
-        return new DemoEnemy(
-            new DemoEnemyInputComponent(),
-            new DemoEnemyPhysicsComponent(),
-            new DemoEnemyGraphicsComponent()
+        return new Enemy(
+            new EnemyInputComponent(),
+            new EnemyPhysicsComponent(),
+            new EnemyGraphicsComponent()
         );
     }
 private:
@@ -129,7 +111,7 @@ private:
         DirectX::XMFLOAT4X4 view_projection; // ビュー・プロジェクション変換行列 
         DirectX::XMFLOAT4 light_direction; // ライトの向き
         DirectX::XMFLOAT4 camera_position; // ライトの向き
-		// SKYMAP
+        // SKYMAP
         DirectX::XMFLOAT4X4 inv_view_projection;
         // SHADOW
         DirectX::XMFLOAT4X4 light_view_projection;
