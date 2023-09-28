@@ -44,8 +44,16 @@ void Enemy::BehaviorTreeInitialize()
 
     ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
     {
-        // œpœj
-        ai_tree->AddNode("Root", "Wander", 1, BehaviorTree::SelectRule::Non, nullptr, new WanderAction(this));
+        // ”ñí“¬
+        ai_tree->AddNode("Root", "NonBattle", 1, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        {
+            // œpœj
+            ai_tree->AddNode("NonBattle", "Wander", 1, BehaviorTree::SelectRule::Non, nullptr, new WanderAction(this));
+            //todo ‘Ò‹@
+
+        }
+        // í“¬
+        ai_tree->AddNode("Root","Battle",0,BehaviorTree::SelectRule::Priority,,nullptr)
         // todo O“ú‚Á‚½‚ç’ÇÕ‚·‚é’J’Ãì
     }
 

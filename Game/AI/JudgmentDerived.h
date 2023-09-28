@@ -10,6 +10,14 @@ public:
 	bool Judgment();
 };
 
+class BattleJudgment:public JudgmentBase
+{
+public:
+	BattleJudgment(Enemy* enemy):JudgmentBase(enemy){}
+	// ”»’è
+	bool Judgment() override;
+};
+
 class ClawAttackJudgment : public JudgmentBase
 {
 public:
