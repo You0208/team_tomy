@@ -2,9 +2,10 @@
 #include<vector>
 #include<set>
 #include "../Enemy/Enemy.h"
+#include "../Manager/CharacterManager.h"
 
 // エネミーマネージャー
-class EnemyManager
+class EnemyManager:public CharacterManager
 {
 private:
     EnemyManager() {}
@@ -45,6 +46,5 @@ public:
     void Remove(Enemy* enemy);
 
 private:
-    std::vector<Enemy*> enemies;
     std::set<Enemy*>    removes;
 };
