@@ -1,5 +1,7 @@
 #include "JudgmentDerived.h"
 #include "Windows.h"
+#include "Game/Enemy/Enemy.h"
+#include "Game/Manager/CharacterManager.h"
 
 
 bool WanderJudgment::Judgment()
@@ -13,6 +15,8 @@ bool WanderJudgment::Judgment()
 
 bool BattleJudgment::Judgment()
 {
+    DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+    DirectX::XMFLOAT3 enemy_pos = owner->GetPosition();
     return false;
 }
 
