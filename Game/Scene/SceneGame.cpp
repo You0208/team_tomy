@@ -103,6 +103,8 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
+	player->Delete();
+	delete player;
 	//エネミー終了
 	EnemyManager::Instance().Clear();
 }
