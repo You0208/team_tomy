@@ -45,8 +45,22 @@ public:
         );
     }
 private:
+    float timer;
+
+    //DemoPlayer
+    Player* player = nullptr;
+    DemoEnemy* enemy = nullptr;
 
     std::unique_ptr<framebuffer> framebuffers[8];
+
+    // Audio
+    Microsoft::WRL::ComPtr<IXAudio2> xaudio2;
+    IXAudio2MasteringVoice* master_voice = nullptr;
+    std::unique_ptr<Lemur::Audio::audio> bgm[8];
+    std::unique_ptr<Lemur::Audio::audio> se[8];
+
+    // skkind
+    std::shared_ptr<skinned_mesh> skinned_meshes[8];
 
     // Zelda_Shader
     Microsoft::WRL::ComPtr<ID3D11PixelShader> zelda_ps;
@@ -84,21 +98,6 @@ private:
     float light_view_size{ 12.0f };
     float light_view_near_z{ 2.0f };
     float light_view_far_z{ 18.0f };
-
-    // Audio
-    Microsoft::WRL::ComPtr<IXAudio2> xaudio2;
-    IXAudio2MasteringVoice* master_voice = nullptr;
-    std::unique_ptr<Lemur::Audio::audio> bgm[8];
-    std::unique_ptr<Lemur::Audio::audio> se[8];
-
-    //DemoPlayer
-    Player* player = nullptr;
-    DemoEnemy* enemy = nullptr;
-
-
-
-    // skkind
-    std::shared_ptr<skinned_mesh> skinned_meshes[8];
 
     // バッファー＝データを一時的に保持するメモリストレージ領域
     // ・プログラム側で定数バッファに値を格納することで

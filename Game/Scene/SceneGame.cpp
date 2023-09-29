@@ -109,6 +109,8 @@ void GameScene::Finalize()
 
 void GameScene::Update(HWND hwnd, float elapsedTime)
 {
+	timer += elapsedTime;
+
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
