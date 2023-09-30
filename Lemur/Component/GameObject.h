@@ -52,11 +52,6 @@ public:
         graphics->Render(this,elapsedTime, pixelShader);
     }
 
-    void  ShadowRender(float elapsedTime)
-    {
-        graphics->ShadowRender(this, elapsedTime);
-    }
-
     void Delete()
     {
         delete input;

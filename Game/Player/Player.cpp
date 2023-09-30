@@ -4,6 +4,7 @@
 
 #include "imgui.h"
 #include "Lemur/Graphics/Camera.h"
+#include "Lemur/Graphics/framework.h"
 #include "Lemur/Input/GamePad.h"
 #include "Lemur/Input/Input.h"
 
@@ -25,7 +26,6 @@ void PlayerGraphicsComponent::Update(GameObject* gameobj)
         DirectX::XMFLOAT3 pos = demoPlayer->GetPosition();
         ImGui::DragFloat3("position", &pos.x);
         demoPlayer->SetPosition(pos);
-
         ImGui::TreePop();
     }
     ImGui::End();
@@ -52,6 +52,7 @@ void PlayerInputComponent::Update(GameObject* gameobj, float elapsedTime)
     DirectX::XMFLOAT3 vec = GetMoveVec(lx, ly);
     float walk_speed = 10.0f;
     demoPlayer->Move(vec.x, vec.z, walk_speed);
+
 }
 
 DirectX::XMFLOAT3 PlayerInputComponent::GetMoveVec(float input_x, float input_y)

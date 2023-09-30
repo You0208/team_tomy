@@ -21,6 +21,12 @@ public:
 	high_resolution_timer(high_resolution_timer&&) noexcept = delete;
 	high_resolution_timer& operator=(high_resolution_timer&&) noexcept = delete;
 
+	static high_resolution_timer& Instance()
+	{
+		static high_resolution_timer instance;
+		return instance;
+	}
+
 	// Returns the total time elapsed since Reset() was called, NOT counting any
 	// time when the clock is stopped.
 	float time_stamp() const  // in seconds

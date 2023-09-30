@@ -20,7 +20,6 @@ public:
     void SetPlayer(Player* player_) { player = player_; }
     void AddEnemy(Enemy* enemy) { enemies.emplace_back(enemy); }
 
-
 protected:
     Player* player;
     std::vector<Enemy*>enemies;
