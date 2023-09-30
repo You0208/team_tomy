@@ -2,21 +2,6 @@
 #include "Game/AI/BehaviorTree.h"
 #include "Lemur/Component/GameObject.h"
 
-class Enemy:public GameObject
-{
-public:
-    Enemy() {}
-    Enemy(InputComponent* input_,
-        PhysicsComponent* physics_,
-        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
-
-    // ビヘイビアツリーの初期化
-    void BehaviorTreeInitialize();
-private:
-
-    BehaviorTree* ai_tree;
-};
-
 
 //こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。
 
@@ -41,5 +26,58 @@ class EnemyGraphicsComponent :public GraphicsComponent
     void Update(GameObject* gameobj) override;
     void Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader) override;
 private:
-    std::shared_ptr<skinned_mesh> EnemyModel;
+
 };
+
+class Enemy :public GameObject
+{
+public:
+    Enemy() {}
+    Enemy(InputComponent* input_,
+        PhysicsComponent* physics_,
+        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
+
+    // ビヘイビアツリーの初期化
+    void BehaviorTreeInitialize();
+
+    // 方向転換
+    void Turn(float vx, float vz, float speed);
+
+
+    // プレイヤー索敵(found_rangeは見つかる範囲、内積で比較)
+    // 距離判定と角度判定別々にするより一緒にしたほうがいい？
+    //一つだけ判定したいときはもう一つの判定を無視するような引数を設定しよう
+    //距離だけ判定：found_range = -1.1f;
+    //内積だけ判定：found_distance = FLT_MAX;
+    bool SearchPlayer(float found_distance, float found_range = 0.0f);
+
+    // 目標地点へ進む
+    void Move_to_Target(float elapsedTime, float move_speed_rate = 1.0f, float turn_speed_rate = 1.0f);
+
+
+    DirectX::XMFLOAT3 GetTargetPosition()const { return target_position; }
+    float GetWalkSpeed()const { return walk_speed; }
+    float GetAttackRange()const { return attack_range; }
+
+    // ターゲット位置をランダム設定
+    void SetRandomTargetPosition();
+
+private:
+
+    // todo ここら辺の変数と値は企画が決まってないから仮です
+
+    // 目標地点
+    DirectX::XMFLOAT3 target_position = { 0.0f,0.0f,0.0f };
+
+    // 視野範囲(索敵用)
+    float vision_length = 10.0f;
+
+    // 攻撃可能範囲
+    float attack_range = 3.0f;
+
+    // 歩きの速さ
+    float walk_speed = 3.0f;
+
+    BehaviorTree* ai_tree;
+};
+

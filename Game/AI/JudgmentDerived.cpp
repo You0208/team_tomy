@@ -17,6 +17,7 @@ bool BattleJudgment::Judgment()
 {
     DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
     DirectX::XMFLOAT3 enemy_pos = owner->GetPosition();
+
     return false;
 }
 

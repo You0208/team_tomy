@@ -4,6 +4,8 @@
 
 #include "imgui.h"
 #include "Game/AI/ActionDerived.h"
+#include "Game/Manager/CharacterManager.h"
+#include "Game/Scene/SceneGame.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Lemur/Input/GamePad.h"
 #include "Lemur/Input/Input.h"
@@ -34,8 +36,9 @@ void EnemyGraphicsComponent::Update(GameObject* gameobj)
 
 void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
 {
-    Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
-    demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+    Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
+    
+    enemy->Render(elapsedTime, replaced_pixel_shader);
 }
 
 void Enemy::BehaviorTreeInitialize()
@@ -57,6 +60,121 @@ void Enemy::BehaviorTreeInitialize()
         // todo 三日ったら追跡する谷津作
     }
 
+
+}
+
+void Enemy::Turn(float vx, float vz, float speed)
+{
+    //// todo 時間取ってこれるようにSceneManagerに入れる。
+    //speed *= GameScene::timer;
+
+    //// ベクトルの大きさを取得
+    //float Length = sqrtf(vx * vx + vz * vz);
+
+    //// ベクトルの大きさが0なら(ゼロベクトルなら)
+    //if (Length <= 0.01)
+    //{
+    //    return;
+    //}
+
+    //// 進行ベクトルの正規化
+    //vx = vx / Length;
+    //vz = vz / Length;
+
+    //// 自身の回転値から前方向を求める。
+    //float frontX = sinf(angle.y);
+    //float frontZ = cosf(angle.y);
+
+    //// 回転角を求めるために、2つの単位ベクトルの内積を計算する
+    //float dot = (vx * frontX) + (vz * frontZ);
+
+    //// dot は -1.0f ～ 1.0f になる。なので rot は 0.0f ～ 2.0f になる。
+    //float rot = 1.0f - dot;
+
+    //// 内積が小さくなったら
+    //if (rot < speed) speed = rot; // その分向きを変える角度も小さくする
+
+    //// 左右判定を行うために2つの単位ベクトルの外積を計算する
+    //float cross = (vx * frontZ) - (vz * frontX);
+
+    //// 2Dの外積値が正の場合か負の場合によって左右反転が行える
+    //// 左右判定を行うことによって左右回転を選択する
+    //if (cross < 0.0f)
+    //{
+    //    angle.y -= speed;
+    //}
+    //else
+    //{
+    //    angle.y += speed;
+    //}
+
+
+}
+
+bool Enemy::SearchPlayer(float found_distance, float found_range)
+{
+    // プレイヤーの位置
+    DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+
+    // x軸距離
+    float vec_x = player_pos.x - position.x;
+    // z軸距離
+    float vec_z = player_pos.z - position.z;
+    // 合計距離(二乗)
+    float length_sq = (vec_x * vec_x) + (vec_z * vec_z);
+
+    // 距離が範囲以内なら
+    if (length_sq < found_distance * found_distance)
+    {
+        //次は正面判定
+
+        // 前方向Xベクトル
+        float front_x = sinf(rotation.y);
+        // 前方向Zベクトル
+        float front_z = cosf(rotation.y);
+
+        // 二乗を外す
+        float length = sqrtf(length_sq);
+        // 正規化
+        vec_x /= length;
+        vec_z /= length;
+
+        // 内積
+        float dot = (front_x * vec_x) + (front_z * vec_z);
+        // 正面に居たら
+        if (dot > found_range)
+        {
+            return true;
+        }
+    }
+    return false;
+
+}
+
+void Enemy::Move_to_Target(float elapsedTime, float move_speed_rate, float turn_speed_rate)
+{
+    //float vx = target_position.x - position.x;
+    //float vz = target_position.z - position.z;
+    //float dist = sqrtf((vx * vx) + (vz * vz));
+
+    //// 正規化
+    //vx /= dist;
+    //vz /= dist;
+
+    //Move(vx, vz, base_move_speed * move_speed_rate);
+    //Turn(vx, vz, turnSpeed * turn_speed_rate);
+
+}
+
+void Enemy::SetRandomTargetPosition()
+{
+    //// territory_rangeの大きさの円でランダムな値をとる。
+    //float theta = Argent::Random::Generate(-DirectX::XM_PI, DirectX::XM_PI);
+    //float range = Argent::Random::Generate(0.0f, territory_range);
+
+    //target_position.x = territory_origin.x + sinf(theta) * range;
+    //target_position.y = territory_origin.y;
+    //target_position.z = territory_origin.z + cosf(theta) * range;
 
 }
 

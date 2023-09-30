@@ -61,9 +61,6 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_sha
 
     if (Model->animation_clips.size() > 0)
     {
-        // アニメーション用
-        int clip_index = 0;
-        int frame_index = 0;
 #if 1
         animation& animation{ Model->animation_clips.at(clip_index) };
         frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
