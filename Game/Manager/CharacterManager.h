@@ -10,7 +10,6 @@
 class CharacterManager
 {
 public:
-
     static CharacterManager& Instance()
     {
         static CharacterManager character_manager;
@@ -20,7 +19,8 @@ public:
 
     void SetPlayer(Player* player_) { player = player_; }
     void AddEnemy(Enemy* enemy) { enemies.emplace_back(enemy); }
-private:
+
+protected:
     Player* player;
     std::vector<Enemy*>enemies;
 };

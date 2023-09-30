@@ -11,6 +11,9 @@
 class GameScene :public Lemur::Scene::BaseScene
 {
 public:
+    float x;
+    float xp;
+
     GameScene() {}
     ~GameScene() override {}
 

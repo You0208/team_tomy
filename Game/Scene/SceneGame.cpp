@@ -34,11 +34,9 @@ void GameScene::Initialize()
 
 	// プレイヤーの生成
 	player = CreatePlayer();
-
+	player->Initialize();
 	// プレイヤーをキャラクターマネージャにセット
 	CharacterManager::Instance().SetPlayer(player);
-
-	player->Initialize();
 
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
@@ -103,6 +101,8 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
+	player->Delete();
+	delete player;
 	//エネミー終了
 	EnemyManager::Instance().Clear();
 }
@@ -123,7 +123,6 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
-
 	ImGui::End();
 }
 
@@ -232,7 +231,6 @@ void GameScene::Render(float elapsedTime)
 		double_speed_z->clear(immediate_context, 1.0f);
 		double_speed_z->activate(immediate_context);
 		ID3D11PixelShader* null_pixel_shader{ NULL };
-		player->ShadowRender(elapsedTime);
 		//DemoEnemyManager::Instance().Render(elapsedTime);
 		double_speed_z->deactivate(immediate_context);
 	}

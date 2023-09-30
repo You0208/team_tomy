@@ -37,6 +37,8 @@ private:
 public:
 	CONST HWND hwnd;
 
+
+
 	float timer{ 0.0f };
 	framework(HWND hwnd);
 	~framework();
@@ -67,10 +69,10 @@ public:
 			}
 			else
 			{
-				tictoc.tick();
+				high_resolution_timer::Instance().tick();
 				calculate_frame_stats();
-				update(tictoc.time_interval());
-				render(tictoc.time_interval());
+				update(high_resolution_timer::Instance().time_interval());
+				render(high_resolution_timer::Instance().time_interval());
 			}
 		}
 
@@ -118,10 +120,10 @@ public:
 			}
 			break;
 		case WM_ENTERSIZEMOVE:
-			tictoc.stop();
+			high_resolution_timer::Instance().stop();
 			break;
 		case WM_EXITSIZEMOVE:
-			tictoc.start();
+			high_resolution_timer::Instance().start();
 			break;
 		default:
 			return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -136,14 +138,12 @@ private:
 	bool uninitialize();
 
 private:
-
-
-	high_resolution_timer tictoc;
+	//high_resolution_timer tictoc;
 	uint32_t frames{ 0 };
 	float elapsed_time{ 0.0f };
 	void calculate_frame_stats()
 	{
-		if (++frames, (tictoc.time_stamp() - elapsed_time) >= 1.0f)
+		if (++frames, (high_resolution_timer::Instance().time_stamp() - elapsed_time) >= 1.0f)
 		{
 			float fps = static_cast<float>(frames);
 			std::wostringstream outs;

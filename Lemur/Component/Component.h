@@ -35,7 +35,6 @@ public:
     virtual void Initialize(GameObject* gameobj) = 0;
     virtual void Update(GameObject* gameobj) = 0;
     virtual void Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader) = 0;
-    virtual void ShadowRender(GameObject* gameobj, float elapsedTime) {};
 };
 
 // •¨——pŠî’êƒNƒ‰ƒX

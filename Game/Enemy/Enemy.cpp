@@ -56,7 +56,7 @@ void Enemy::BehaviorTreeInitialize()
 
         }
         // í“¬
-        ai_tree->AddNode("Root","Battle",0,BehaviorTree::SelectRule::Priority,,nullptr)
+        //ai_tree->AddNode("Root","Battle",0,BehaviorTree::SelectRule::Priority,,nullptr)
         // todo O“ú‚Á‚½‚ç’ÇÕ‚·‚é’J’Ãì
     }
 
