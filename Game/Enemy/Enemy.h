@@ -17,7 +17,7 @@ class EnemyInputComponent :public InputComponent
 class EnemyPhysicsComponent :public PhysicsComponent
 {
     void Initialize(GameObject* gameobj) override;
-    void Update(GameObject* gameobj, float elapsedTime) override {}
+    void Update(GameObject* gameobj, float elapsedTime) override;
 };
 
 class EnemyGraphicsComponent :public GraphicsComponent
@@ -39,10 +39,14 @@ public:
 
     // ビヘイビアツリーの初期化
     void BehaviorTreeInitialize();
+    // ビヘイビアツリーの更新処理
+    void BehaviorTreeUpdate();
 
     // 方向転換
     void Turn(float vx, float vz, float speed);
 
+    // ターゲットに到達したか判定する(第三引数には到達したって判定する半径)
+    bool ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range);
 
     // プレイヤー索敵(found_rangeは見つかる範囲、内積で比較)
     // 距離判定と角度判定別々にするより一緒にしたほうがいい？
@@ -56,8 +60,10 @@ public:
 
 
     DirectX::XMFLOAT3 GetTargetPosition()const { return target_position; }
-    float GetWalkSpeed()const { return walk_speed; }
+    DirectX::XMFLOAT3 GetTerritoryOrigin()const { return territory_origin; }
+    float GetTerritoryRange()const { return territory_range; }
     float GetAttackRange()const { return attack_range; }
+    float GetWalkSpeed()const { return walk_speed; }
 
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
@@ -69,6 +75,10 @@ private:
     // 目標地点
     DirectX::XMFLOAT3 target_position = { 0.0f,0.0f,0.0f };
 
+    // 縄張り原点
+    DirectX::XMFLOAT3 territory_origin{};
+    // 縄張りの半径
+    float territory_range = 30;
     // 視野範囲(索敵用)
     float vision_length = 10.0f;
 
@@ -79,5 +89,7 @@ private:
     float walk_speed = 3.0f;
 
     BehaviorTree* ai_tree;
+    NodeBase* activeNode = nullptr;
+    BehaviorData* behaviorData = nullptr;
 };
 

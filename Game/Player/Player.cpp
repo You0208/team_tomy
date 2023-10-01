@@ -116,5 +116,12 @@ DirectX::XMFLOAT3 PlayerInputComponent::GetMoveVec(float input_x, float input_y)
 
 void PlayerPhysicsComponent::Initialize(GameObject* gameobj)
 {
-    Player* demoPlayer = dynamic_cast<Player*> (gameobj);
+    Player* player = dynamic_cast<Player*> (gameobj);
+}
+
+void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
+{
+    Player* player = dynamic_cast<Player*> (gameobj);
+
+    player->UpdateVelocity(elapsedTime);
 }

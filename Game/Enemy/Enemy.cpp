@@ -9,7 +9,8 @@
 #include "Lemur/Graphics/Camera.h"
 #include "Lemur/Input/GamePad.h"
 #include "Lemur/Input/Input.h"
-
+#include "Game/MathHelper.h"
+#include "Game/AI/JudgmentDerived.h"
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -43,6 +44,7 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
 
 void Enemy::BehaviorTreeInitialize()
 {
+    behaviorData = new BehaviorData();
     ai_tree = new BehaviorTree(this);
 
     ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
@@ -51,64 +53,97 @@ void Enemy::BehaviorTreeInitialize()
         ai_tree->AddNode("Root", "NonBattle", 1, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
         {
             // 徘徊
-            ai_tree->AddNode("NonBattle", "Wander", 1, BehaviorTree::SelectRule::Non, nullptr, new WanderAction(this));
-            //todo 待機
-
+            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+            // 待機
+            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
         }
         // 戦闘
-        //ai_tree->AddNode("Root","Battle",0,BehaviorTree::SelectRule::Priority,,nullptr)
+        //ai_tree->AddNode("Root", "Battle", 0, BehaviorTree::SelectRule::Priority, , nullptr);
         // todo 三日ったら追跡する谷津作
     }
 
 
 }
 
+void Enemy::BehaviorTreeUpdate()
+{
+    // 現在実行されているノードが無ければ
+    if (activeNode == nullptr)
+    {
+        // 次に実行するノードを推論する。
+        activeNode = ai_tree->ActiveNodeInference(behaviorData);
+    }
+    // 現在実行するノードがあれば
+    if (activeNode != nullptr)
+    {
+        // ビヘイビアツリーからノードを実行。
+        activeNode = ai_tree->Run(activeNode, behaviorData, high_resolution_timer::Instance().time_interval());
+    }
+
+}
+
 void Enemy::Turn(float vx, float vz, float speed)
 {
-    //// todo 時間取ってこれるようにSceneManagerに入れる。
-    //speed *= GameScene::timer;
+    speed *= high_resolution_timer::Instance().time_interval();
 
-    //// ベクトルの大きさを取得
-    //float Length = sqrtf(vx * vx + vz * vz);
+    // ベクトルの大きさを取得
+    float Length = sqrtf(vx * vx + vz * vz);
 
-    //// ベクトルの大きさが0なら(ゼロベクトルなら)
-    //if (Length <= 0.01)
-    //{
-    //    return;
-    //}
+    // ベクトルの大きさが0なら(ゼロベクトルなら)
+    if (Length <= 0.01)
+    {
+        return;
+    }
 
-    //// 進行ベクトルの正規化
-    //vx = vx / Length;
-    //vz = vz / Length;
+    // 進行ベクトルの正規化
+    vx = vx / Length;
+    vz = vz / Length;
 
-    //// 自身の回転値から前方向を求める。
-    //float frontX = sinf(angle.y);
-    //float frontZ = cosf(angle.y);
+    // 自身の回転値から前方向を求める。
+    float frontX = sinf(rotation.y);
+    float frontZ = cosf(rotation.y);
 
-    //// 回転角を求めるために、2つの単位ベクトルの内積を計算する
-    //float dot = (vx * frontX) + (vz * frontZ);
+    // 回転角を求めるために、2つの単位ベクトルの内積を計算する
+    float dot = (vx * frontX) + (vz * frontZ);
 
-    //// dot は -1.0f ～ 1.0f になる。なので rot は 0.0f ～ 2.0f になる。
-    //float rot = 1.0f - dot;
+    // dot は -1.0f ～ 1.0f になる。なので rot は 0.0f ～ 2.0f になる。
+    float rot = 1.0f - dot;
 
-    //// 内積が小さくなったら
-    //if (rot < speed) speed = rot; // その分向きを変える角度も小さくする
+    // 内積が小さくなったら
+    if (rot < speed) speed = rot; // その分向きを変える角度も小さくする
 
-    //// 左右判定を行うために2つの単位ベクトルの外積を計算する
-    //float cross = (vx * frontZ) - (vz * frontX);
+    // 左右判定を行うために2つの単位ベクトルの外積を計算する
+    float cross = (vx * frontZ) - (vz * frontX);
 
-    //// 2Dの外積値が正の場合か負の場合によって左右反転が行える
-    //// 左右判定を行うことによって左右回転を選択する
-    //if (cross < 0.0f)
-    //{
-    //    angle.y -= speed;
-    //}
-    //else
-    //{
-    //    angle.y += speed;
-    //}
+    // 2Dの外積値が正の場合か負の場合によって左右反転が行える
+    // 左右判定を行うことによって左右回転を選択する
+    if (cross < 0.0f)
+    {
+        rotation.y -= speed;
+    }
+    else
+    {
+        rotation.y += speed;
+    }
 
 
+}
+
+bool Enemy::ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range)
+{
+    float vx = target_position.x - position.x;
+    float vz = target_position.z - position.z;
+
+    // ターゲット位置までの距離(二乗)
+    float dist_sq = ((vx * vx) + (vz * vz));
+    judge_range *= 2.0f;
+
+    if (dist_sq < judge_range)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 bool Enemy::SearchPlayer(float found_distance, float found_range)
@@ -153,28 +188,29 @@ bool Enemy::SearchPlayer(float found_distance, float found_range)
 
 void Enemy::Move_to_Target(float elapsedTime, float move_speed_rate, float turn_speed_rate)
 {
-    //float vx = target_position.x - position.x;
-    //float vz = target_position.z - position.z;
-    //float dist = sqrtf((vx * vx) + (vz * vz));
+    float vx = target_position.x - position.x;
+    float vz = target_position.z - position.z;
+    float dist = sqrtf((vx * vx) + (vz * vz));
 
-    //// 正規化
-    //vx /= dist;
-    //vz /= dist;
+    // 正規化
+    vx /= dist;
+    vz /= dist;
 
-    //Move(vx, vz, base_move_speed * move_speed_rate);
-    //Turn(vx, vz, turnSpeed * turn_speed_rate);
+    // todo ここら辺も今はテキトー
+    Move(vx, vz, GetWalkSpeed());
+    Turn(vx, vz, 3.0f);
 
 }
 
 void Enemy::SetRandomTargetPosition()
 {
-    //// territory_rangeの大きさの円でランダムな値をとる。
-    //float theta = Argent::Random::Generate(-DirectX::XM_PI, DirectX::XM_PI);
-    //float range = Argent::Random::Generate(0.0f, territory_range);
+    // territory_rangeの大きさの円でランダムな値をとる。
+    float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
+    float range = Mathf::RandomRange(0.0f, territory_range);
 
-    //target_position.x = territory_origin.x + sinf(theta) * range;
-    //target_position.y = territory_origin.y;
-    //target_position.z = territory_origin.z + cosf(theta) * range;
+    target_position.x = territory_origin.x + sinf(theta) * range;
+    target_position.y = territory_origin.y;
+    target_position.z = territory_origin.z + cosf(theta) * range;
 
 }
 
@@ -253,6 +289,17 @@ void EnemyPhysicsComponent::Initialize(GameObject* gameobj)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
 
-    //enemy->
+    // todo ここでテリトリーを設定(とりあえず今は原点)
+    
+    enemy->BehaviorTreeInitialize();
 
+}
+
+void EnemyPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
+{
+    Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
+
+    enemy->BehaviorTreeUpdate();
+
+    enemy->UpdateVelocity(elapsedTime);
 }

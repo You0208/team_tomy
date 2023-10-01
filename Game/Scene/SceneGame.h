@@ -48,7 +48,7 @@ public:
         );
     }
 private:
-    static float timer;
+    float timer;
 
     //DemoPlayer
     Player* player = nullptr;

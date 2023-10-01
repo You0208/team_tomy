@@ -108,7 +108,7 @@ void GameObject::Jump(float speed)
     velocity.y = speed;
 }
 
-void GameObject::UpdateInvincibleTimer(float elapsedTime)
+void GameObject::UpdateVelocity(float elapsedTime)
 {
     // Œo‰ßƒtƒŒ[ƒ€
     float elapsedFrame = 60.0f * elapsedTime;

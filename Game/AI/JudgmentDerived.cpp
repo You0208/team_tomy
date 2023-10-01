@@ -3,13 +3,14 @@
 #include "Game/Enemy/Enemy.h"
 #include "Game/Manager/CharacterManager.h"
 
-
 bool WanderJudgment::Judgment()
 {
-    if(GetAsyncKeyState(VK_SHIFT)&0x8000)
+    // œpœj‚µ‚És‚­ˆÊ’u‚É“’B‚µ‚Ä‚È‚©‚Á‚½‚çœpœj‚µ‚És‚­
+    if (!owner->ReachTargetJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
     {
         return true;
     }
+
     else return false;
 }
 

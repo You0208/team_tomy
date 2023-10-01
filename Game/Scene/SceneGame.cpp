@@ -42,10 +42,10 @@ void GameScene::Initialize()
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	for (int i = 0; i < 1; ++i)
 	{
-		Enemy* slime = CreateEnemy();
-		slime->Initialize();
-		slime->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
-		enemyManager.Register(slime);
+		Enemy* enemy = CreateEnemy();
+		enemy->Initialize();
+		enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
+		enemyManager.Register(enemy);
 	}
 
 	//framebuffers[0] = std::make_unique<framebuffer>(graphics.GetDevice(), 1280, 720);

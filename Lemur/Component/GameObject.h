@@ -112,14 +112,16 @@ public:
     // 移動処理
     void Move(float vx, float vz, float speed);
 
+    // 速力更新
+    void UpdateVelocity(float elapsedTime);
+
+
 protected:
 
 
     // ジャンプ処理
     void Jump(float speed);
 
-    // 無敵時間更新
-    void UpdateInvincibleTimer(float elapsedTime);
 
     // 着地した時に呼ばれる
     virtual void OnLanding() {};
