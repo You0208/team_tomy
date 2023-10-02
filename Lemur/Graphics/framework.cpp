@@ -23,7 +23,7 @@ bool framework::initialize()
 	EffectManager::Instance().Initialize();
 
 	// シーン初期化
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new DemoScene);
 
 	return true;
 }

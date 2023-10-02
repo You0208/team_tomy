@@ -42,6 +42,7 @@ public:
 
     void Update(float elapsedTime)
     {
+        UpdateScale();
         input->Update(this, elapsedTime);
         physics->Update(this, elapsedTime);
         graphics->Update(this);
@@ -79,6 +80,12 @@ public:
     // スケール更新
     void SetScale(const DirectX::XMFLOAT3& scale) { this->scale = scale; }
 
+    // スケールファクター取得
+    const float& GetScaleFactor() const{ return scaleFactor; }
+
+    // スケールファクター更新
+    void SetScaleFactor(const float scaleFactor) { this->scaleFactor = scaleFactor; }
+
     // 半径取得
     float GetRadius() const { return radius; }
 
@@ -112,9 +119,10 @@ public:
     // 移動処理
     void Move(float vx, float vz, float speed);
 
+    void SetPixelShader(ID3D11PixelShader* ps) { pixelShader = ps; }
+
     // 速力更新
     void UpdateVelocity(float elapsedTime);
-
 
 protected:
 
@@ -133,6 +141,9 @@ protected:
     virtual void OnDead() {}
 
 private:
+    void UpdateScale() {
+        scale.x = scale.y = scale.z = scaleFactor;
+    }
 
     // 垂直速力更新処理
     void UpdataVerticalVelocity(float elapsedFrame);
@@ -168,13 +179,14 @@ protected:
     float   radius                      = 1.0f; // 半径
     float   height                      = 0.0f; // 高さ 
 
+    float   scaleFactor                 = 1.0f;
+
     float	airControl                  = 0.3f; // 空気抵抗
 
     bool    isGround                    = false; // 着地フラグ
     int     health                      = 5; // 健康状態
     int     maxHealth                   = 5; // 最大健康状態
 
-    ID3D11PixelShader* pixelShader      = nullptr; // シェーダー
 
     float animation_tick                = 0; // アニメーション
     std::shared_ptr<skinned_mesh> Model = nullptr;
@@ -184,6 +196,8 @@ protected:
 
 
     Mouse* mouse;
+
+    ID3D11PixelShader* pixelShader      = nullptr; // シェーダー
 private:
     InputComponent* input;
     PhysicsComponent* physics;

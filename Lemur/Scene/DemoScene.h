@@ -143,6 +143,30 @@ private:
     };
     Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffers[8];
 
+    /// <summary>
+    /// ライト構造体
+    /// </summary>
+    struct light_constants
+    {
+        // ディレクションライト用のメンバ
+        DirectX::XMFLOAT4 dirDirection;   // ライトの方向
+        DirectX::XMFLOAT4 dirColor;       // ライトのカラー
+
+        // step-1 ライト構造体にポイントライト用のメンバ変数を追加する
+        DirectX::XMFLOAT4 ptPosition;
+        DirectX::XMFLOAT4 ptColor;
+        DirectX::XMFLOAT4 ptRange;
+
+        DirectX::XMFLOAT4 eyePos;         // 視点の位置
+        DirectX::XMFLOAT4 ambientLight;   // アンビエントライト
+    };
+    Microsoft::WRL::ComPtr<ID3D11Buffer> light_constant_buffer;
+    // ライトのデータを作成する
+    light_constants light;
+
+    std::shared_ptr<skinned_mesh> cube;
+
+
     DirectX::XMFLOAT4 camera_position{ 0.0f, 0.0f, -10.0f, 1.0f };
     DirectX::XMFLOAT4 light_direction{ -0.113f, -0.556f, 1.0f, 0.0f };
 
