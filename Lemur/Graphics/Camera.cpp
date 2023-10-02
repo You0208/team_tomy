@@ -63,7 +63,7 @@ void Camera::Update(float elapsedTime)
     angle.x -= ay * speed;
     angle.y += ax * speed;
 
-#if 1
+#if 0
     /*------------- ƒ}ƒEƒXˆ— -------------*/
     Mouse& mouse = Input::Instance().GetMouse();
 
