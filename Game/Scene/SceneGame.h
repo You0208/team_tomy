@@ -117,10 +117,13 @@ private:
         DirectX::XMFLOAT4X4 inv_view_projection;
         // SHADOW
         DirectX::XMFLOAT4X4 light_view_projection;
+
     };
     Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffers[8];
 
+    DirectX::XMFLOAT3 cobe_position{ 0.0f, 0.0f, 0.0f };
     DirectX::XMFLOAT4 camera_position{ 0.0f, 0.0f, -10.0f, 1.0f };
+
     DirectX::XMFLOAT4 light_direction{ -0.113f, -0.556f, 1.0f, 0.0f };
 
     DirectX::XMFLOAT3 translation{ 0, 0, 0 };

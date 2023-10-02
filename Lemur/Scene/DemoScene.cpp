@@ -30,6 +30,11 @@ void DemoScene::Initialize()
 			hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, dissolve_constant_buffer.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
+		{
+			buffer_desc.ByteWidth = sizeof(light_constants);
+			hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, light_constant_buffer.GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
 	}
 
 	player = CreatePlayer();
@@ -57,12 +62,14 @@ void DemoScene::Initialize()
 	create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[1].GetAddressOf());
 	load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
 
-	create_ps_from_cso(graphics.GetDevice(), "./Shader/zelda_ps.cso", zelda_ps.GetAddressOf());
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/try_ps.cso", zelda_ps.GetAddressOf());
 
 	// シェーダーの決定
-	//player->pixelShader = zelda_ps.Get();
+	player->SetPixelShader(zelda_ps.Get());
 
 	skinned_meshes[1] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx");
+	cube = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\latha.fbx");
+	
 	// SHADOW
 	double_speed_z = std::make_unique<shadow_map>(graphics.GetDevice(), shadowmap_width, shadowmap_height);
 
@@ -92,8 +99,48 @@ void DemoScene::Initialize()
 				sprite_pixel_shader.GetAddressOf());
 		}
 	}
+	Camera& camera = Camera::Instance();
+	// ディレクションライトのデータを設定する
+	// ライトは右側から当たっている
+	light.dirDirection.x = 1.0f;
+	light.dirDirection.y = -1.0f;
+	light.dirDirection.z = -1.0f;
+	DirectX::XMFLOAT3 normalizedDirection{};
+	DirectX::XMVECTOR directionVector = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(normalizedDirection.x, normalizedDirection.y, normalizedDirection.z));
+	directionVector = DirectX::XMVector3Normalize(directionVector);
+	DirectX::XMStoreFloat3(&normalizedDirection, directionVector);
 
+	light.dirDirection = { normalizedDirection.x,normalizedDirection.y,normalizedDirection.z,0.0f };
 
+	// ライトのカラーは白
+	light.dirColor.x = 0.5f;
+	light.dirColor.y = 0.5f;
+	light.dirColor.z = 0.5f;
+
+	// 視点の位置を設定する
+	DirectX::XMFLOAT3 eyePos;
+	DirectX::XMStoreFloat3(&eyePos, camera.GetEye());
+	light.eyePos.x = eyePos.x;
+	light.eyePos.y = eyePos.y;
+	light.eyePos.z = eyePos.z;
+
+	// 環境光
+	light.ambientLight.x = 0.3f;
+	light.ambientLight.y = 0.3f;
+	light.ambientLight.z = 0.3f;
+
+	// step-2 ポイントライトの初期座標を設定する
+	light.ptPosition.x = player->GetPosition().x;
+	light.ptPosition.y = player->GetPosition().y;
+	light.ptPosition.z = player->GetPosition().z;
+
+	// step-3 ポイントライトの初期カラーを設定する
+	light.ptColor.x = 1.0f;
+	light.ptColor.y = 1.0f;
+	light.ptColor.z = 1.0f;
+
+	// step-4 ポイントライトの影響範囲を設定する
+	light.ptRange.x = 50.0f;
 }
 
 void DemoScene::Finalize()
@@ -118,6 +165,9 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
+	ImGui::SliderFloat3("ptPosition", &light.ptPosition.x, 0.0f, +100.0f);
+	ImGui::SliderFloat3("ptRange", &light.ptRange.x, 1.0f, +100.0f);
+
 	ImGui::SliderFloat("second", &second, 1.0f, +100.0f);
 
 	ImGui::Checkbox("enableShadow", &enableShadow);
@@ -187,6 +237,7 @@ void DemoScene::Render(float elapsedTime)
 	{
 		DirectX::XMStoreFloat4x4(&data.view_projection, camera.GetViewMatrix() * camera.GetProjectionMatrix());
 		data.light_direction = light_direction;
+		DirectX::XMStoreFloat4(&data.camera_position, camera.GetEye());
 
 		D3D11_VIEWPORT viewport;
 		UINT num_viewports{ 1 };
@@ -202,11 +253,13 @@ void DemoScene::Render(float elapsedTime)
 		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &data, 0, 0);
 		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
 		immediate_context->PSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+
+		immediate_context->UpdateSubresource(light_constant_buffer.Get(), 0, 0, &light, 0, 0);
+		immediate_context->VSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
+		immediate_context->PSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
 	}
 
 	// ↓Skinned_mesh オブジェクトと sprite_batch オブジェクトのレンダリング関数の呼び出し
-
-
 	if (enableBloom)
 	{
 		framebuffers[0]->clear(immediate_context);
@@ -226,7 +279,17 @@ void DemoScene::Render(float elapsedTime)
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::SOLID)].Get());
 		player->Render(elapsedTime);
-		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, nullptr);
+		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, zelda_ps.Get());
+		
+		
+		DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(0.01f, 0.01f, 0.01f) };
+		DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f) };
+		DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(light.ptPosition.x, light.ptPosition.y, light.ptPosition.z) };
+		// ワールド変換行列を作成
+		DirectX::XMFLOAT4X4 world;
+		DirectX::XMStoreFloat4x4(&world, S* R* T);
+
+		cube->render(immediate_context, world, material_color, nullptr, nullptr);
 	}
 	if (enableBloom) 
 	{
