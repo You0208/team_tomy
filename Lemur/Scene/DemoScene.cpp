@@ -62,10 +62,10 @@ void DemoScene::Initialize()
 	create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[1].GetAddressOf());
 	load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
 
-	create_ps_from_cso(graphics.GetDevice(), "./Shader/try_ps.cso", zelda_ps.GetAddressOf());
+	//create_ps_from_cso(graphics.GetDevice(), "./Shader/try_ps.cso", zelda_ps.GetAddressOf());
 
 	// シェーダーの決定
-	player->SetPixelShader(zelda_ps.Get());
+	//player->SetPixelShader(zelda_ps.Get());
 
 	skinned_meshes[1] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx");
 	cube = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\latha.fbx");
