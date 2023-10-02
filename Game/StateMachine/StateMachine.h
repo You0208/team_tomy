@@ -2,7 +2,9 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "StateBase.h"
+#include "Game/Player/Player.h"
+#include "Game/StateMachine/StateBase.h"
+
 
 namespace Nero::Component::AI
 {

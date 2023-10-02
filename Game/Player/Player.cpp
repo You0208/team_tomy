@@ -8,12 +8,13 @@
 #include "Lemur/Input/GamePad.h"
 #include "Lemur/Input/Input.h"
 #include "Game/StateMachine/StateDerived.h"
+#include "Game/StateMachine/StateMachine.h"
 
 void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
-    Player* demoPlayer = dynamic_cast<Player*> (gameobj);
+    Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\test_v001.fbx"));
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -25,8 +26,8 @@ void PlayerGraphicsComponent::Update(GameObject* gameobj)
 
 void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
 {
-    Player* demoPlayer = dynamic_cast<Player*> (gameobj);
-    demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+    Player* player = dynamic_cast<Player*> (gameobj);
+    player->Render(elapsedTime, replaced_pixel_shader);
 }
 
 void Player::DebugImgui()
@@ -35,7 +36,13 @@ void Player::DebugImgui()
     if(ImGui::TreeNode("Transform"))
     {
         ImGui::DragFloat3("position", &position.x);
-        //ImGui::DragFloat("scale_factor",scale)
+        ImGui::DragFloat("scale_factor", &scaleFactor);
+        ImGui::TreePop();
+    }
+    if(ImGui::TreeNode("speed"))
+    {
+        ImGui::DragFloat("walk_speed", &walk_speed);
+        ImGui::DragFloat("turn_speed", &turn_speed);
         ImGui::TreePop();
     }
 
@@ -44,13 +51,33 @@ void Player::DebugImgui()
 
 void Player::StateMachineInitialize()
 {
-    state_machine->SetUpState<Nero::Component::AI::IdleState>(this);
+    state_machine = new Nero::Component::AI::StateMachine;
+    state_machine->SetUpState<Nero::Component::AI::IdleState>(this, true);
     state_machine->SetUpState<Nero::Component::AI::WalkState>(this);
+    state_machine->SetUpState<Nero::Component::AI::AvoidState>(this);
 }
 
 void Player::StateMachineUpdate()
 {
     state_machine->Update();
+}
+
+bool Player::InputMove()
+{
+    GamePad& game_pad = Input::Instance().GetGamePad();
+    float lx = game_pad.GetAxisLX();
+    float ly = game_pad.GetAxisLY();
+
+    DirectX::XMFLOAT3 vec = GetMoveVec(lx, ly);
+
+    // 進行ベクトルがゼロベクトルならは入力されてない
+    if (vec.x == 0.0f || vec.z == 0.0f)
+        return false;
+
+    Move(vec.x, vec.z, walk_speed);
+    Turn(vec.x, vec.z, turn_speed);
+
+    return true;
 }
 
 // 入力処理
@@ -64,14 +91,11 @@ void PlayerInputComponent::Update(GameObject* gameobj, float elapsedTime)
     float ly = gamePad.GetAxisLY();
 
 
-    Player* demoPlayer = dynamic_cast<Player*> (gameobj);
-    DirectX::XMFLOAT3 vec = GetMoveVec(lx, ly);
-    float walk_speed = 10.0f;
-    demoPlayer->Move(vec.x, vec.z, walk_speed);
+
 
 }
 
-DirectX::XMFLOAT3 PlayerInputComponent::GetMoveVec(float input_x, float input_y)
+DirectX::XMFLOAT3 Player::GetMoveVec(float input_x, float input_y)
 {
 
     // カメラ方向とステイックの入力値によって進行方向を計算する。
@@ -133,11 +157,12 @@ DirectX::XMFLOAT3 PlayerInputComponent::GetMoveVec(float input_x, float input_y)
 void PlayerPhysicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
+    player->StateMachineInitialize();
 }
 
 void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
-
+    player->StateMachineUpdate();
     player->UpdateVelocity(elapsedTime);
 }

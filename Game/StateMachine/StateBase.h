@@ -3,6 +3,7 @@
 #include <string>
 
 class Player;
+
 namespace Nero::Component::AI
 {
     /* ステートマシンで使う動作を作るための基底クラス
@@ -26,6 +27,10 @@ namespace Nero::Component::AI
 
         // ステート名
         std::string state_name;
+
+        //回避ステートに移行する判定関数(めんどいから関数化した)
+        // これをここに書くのだいぶきもいけど.。
+        void ChangeJudgeAvoidState();
 
     protected:
         // todo テンプレート化

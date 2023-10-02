@@ -3,11 +3,13 @@
 #include "Lemur/Input/Input.h"
 
 #include "Game/Player/Player.h"
+#include "Game/StateMachine/StateMachine.h"
 namespace Nero::Component::AI
 {
     void IdleState::Begin()
     {
         // todo アニメーション
+        owner->SetAnimationIndex(owner->Idle_Anim);
     }
 
     void IdleState::Update()
@@ -15,11 +17,13 @@ namespace Nero::Component::AI
         GamePad game_pad = Input::Instance().GetGamePad();
         float elapsed_time = high_resolution_timer::Instance().time_interval();
 
+        // 入力があれば回避ステートに移行する
+        ChangeJudgeAvoidState();
 
-        //if(owner->InputMove(elapsed_time))
-        //{
-        //    owner->GetStateMachine()->SetNextState(owner->WalkAction);
-        //}
+        if(owner->InputMove())
+        {
+            owner->GetStateMachine()->SetNextState(owner->Walk_State);
+        }
     }
 
     void IdleState::End()
@@ -31,22 +35,41 @@ namespace Nero::Component::AI
     void WalkState::Begin()
     {
         // todo アニメーション
-        //owner->anim_operator->SetAnimationIndex(owner->Walk);
+        owner->SetAnimationIndex(owner->Run_Anim);
     }
 
     void WalkState::Update()
     {
         GamePad game_pad = Input::Instance().GetGamePad();
-        float elapsed_time = high_resolution_timer::Instance().time_interval();
 
-        //if (!owner->InputMove(elapsed_time))
-        //{
-        //    owner->GetStateMachine()->SetNextState(owner->IdleAction);
-        //}
+        // 入力があれば回避ステートに移行する
+        ChangeJudgeAvoidState();
+
+        if (!owner->InputMove())
+        {
+            owner->GetStateMachine()->SetNextState(owner->Idle_State);
+        }
 
     }
 
     void WalkState::End()
+    {
+    }
+
+    void AvoidState::Begin()
+    {
+        owner->SetAnimationIndex(owner->Avoid_Anim);
+    }
+
+    void AvoidState::Update()
+    {
+        if(owner->GetEndAnimation())
+        {
+            owner->GetStateMachine()->SetNextState(owner->Idle_State);
+        }
+    }
+
+    void AvoidState::End()
     {
     }
 }

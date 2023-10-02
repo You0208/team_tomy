@@ -62,15 +62,17 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_sha
     if (Model->animation_clips.size() > 0)
     {
 #if 1
-        animation& animation{ Model->animation_clips.at(clip_index) };
+        animation& animation{ Model->animation_clips.at(animation_index) };
         frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
         if (frame_index > animation.sequence.size() - 1)
         {
             frame_index = 0;
             animation_tick = 0;
+            end_animation = true;
         }
         else
         {
+            end_animation = false;
             animation_tick += elapsedTime;
         }
         animation::keyframe& keyframe{ animation.sequence.at(frame_index) };
@@ -100,6 +102,52 @@ void GameObject::Move(float vx, float vz, float speed)
 
     // 最大速度設定
     maxMoveSpeed = speed;
+}
+
+void GameObject::Turn(float vx, float vz, float speed)
+{
+    speed *= high_resolution_timer::Instance().time_interval();
+
+    // ベクトルの大きさを取得
+    float Length = sqrtf(vx * vx + vz * vz);
+
+    // ベクトルの大きさが0なら(ゼロベクトルなら)
+    if (Length <= 0.01)
+    {
+        return;
+    }
+
+    // 進行ベクトルの正規化
+    vx = vx / Length;
+    vz = vz / Length;
+
+    // 自身の回転値から前方向を求める。
+    float frontX = sinf(rotation.y);
+    float frontZ = cosf(rotation.y);
+
+    // 回転角を求めるために、2つの単位ベクトルの内積を計算する
+    float dot = (vx * frontX) + (vz * frontZ);
+
+    // dot は -1.0f ～ 1.0f になる。なので rot は 0.0f ～ 2.0f になる。
+    float rot = 1.0f - dot;
+
+    // 内積が小さくなったら
+    if (rot < speed) speed = rot; // その分向きを変える角度も小さくする
+
+    // 左右判定を行うために2つの単位ベクトルの外積を計算する
+    float cross = (vx * frontZ) - (vz * frontX);
+
+    // 2Dの外積値が正の場合か負の場合によって左右反転が行える
+    // 左右判定を行うことによって左右回転を選択する
+    if (cross < 0.0f)
+    {
+        rotation.y -= speed;
+    }
+    else
+    {
+        rotation.y += speed;
+    }
+
 }
 
 void GameObject::Jump(float speed)

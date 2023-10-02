@@ -37,6 +37,9 @@ namespace Nero::Component::AI
         if (states.size() < 2)
             _ASSERT_EXPR(false, L"ステート配列が一個しかないです。入れ替えられん。");
 
+        if (next_state_ > states.size() - 1)
+            _ASSERT_EXPR(false, L"ステート配列をオーバーした。入れ替えられん。");
+
         next_state = states.at(next_state_).get();
     }
 }

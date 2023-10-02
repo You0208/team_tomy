@@ -1,9 +1,30 @@
 #pragma once
-#include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Component/GameObject.h"
-
+//#include "Game/StateMachine/StateMachine.h"
+namespace Nero::Component::AI
+{
+    class StateMachine;
+}
 class Player:public GameObject
 {
+public:
+    enum AnimIndex
+    {
+        Run_Anim,
+        Idle_Anim,
+        Avoid_Anim,
+
+        Max_Anim
+    };
+
+    enum StateIndex
+    {
+        Idle_State,
+        Walk_State,
+        Avoid_State,
+
+        Max_State,
+    };
 public:
     Player() {}
     Player(InputComponent* input_,
@@ -14,8 +35,22 @@ public:
 
     void StateMachineInitialize();
     void StateMachineUpdate();
+    Nero::Component::AI::StateMachine* GetStateMachine()const { return state_machine; }
+
+    bool InputMove();
 private:
+    DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
+
+
+private:
+    // 歩きの速さ
+    float walk_speed = 3.0f;
+
+    // 旋回の速さ
+    float turn_speed = 10.0f;
+
     Nero::Component::AI::StateMachine* state_machine = nullptr;
+
 };
 
 //こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。
@@ -24,7 +59,6 @@ class PlayerInputComponent :public InputComponent
     void Initialize(GameObject* gameobj) override {}
     void Update(GameObject* gameobj, float elapsedTime) override;
 
-    DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
 
 };
 

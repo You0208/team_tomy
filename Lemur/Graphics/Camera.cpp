@@ -88,6 +88,7 @@ void Camera::Update(float elapsedTime)
 #endif
 #endif
 
+    
     target = CharacterManager::Instance().GetPlayer()->GetPosition();
 
     // ƒJƒƒ‰‚Ì‰ñ“]’l‚ð‰ñ“]s—ñ‚É•ÏŠ·

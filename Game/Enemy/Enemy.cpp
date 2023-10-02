@@ -11,6 +11,7 @@
 #include "Lemur/Input/Input.h"
 #include "Game/MathHelper.h"
 #include "Game/AI/JudgmentDerived.h"
+#include "Game/AI/NodeBase.h"
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -40,6 +41,8 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     
     enemy->Render(elapsedTime, replaced_pixel_shader);
+
+    enemy->DebugImgui();
 }
 
 void Enemy::BehaviorTreeInitialize()
@@ -82,52 +85,6 @@ void Enemy::BehaviorTreeUpdate()
 
 }
 
-void Enemy::Turn(float vx, float vz, float speed)
-{
-    speed *= high_resolution_timer::Instance().time_interval();
-
-    // ベクトルの大きさを取得
-    float Length = sqrtf(vx * vx + vz * vz);
-
-    // ベクトルの大きさが0なら(ゼロベクトルなら)
-    if (Length <= 0.01)
-    {
-        return;
-    }
-
-    // 進行ベクトルの正規化
-    vx = vx / Length;
-    vz = vz / Length;
-
-    // 自身の回転値から前方向を求める。
-    float frontX = sinf(rotation.y);
-    float frontZ = cosf(rotation.y);
-
-    // 回転角を求めるために、2つの単位ベクトルの内積を計算する
-    float dot = (vx * frontX) + (vz * frontZ);
-
-    // dot は -1.0f ～ 1.0f になる。なので rot は 0.0f ～ 2.0f になる。
-    float rot = 1.0f - dot;
-
-    // 内積が小さくなったら
-    if (rot < speed) speed = rot; // その分向きを変える角度も小さくする
-
-    // 左右判定を行うために2つの単位ベクトルの外積を計算する
-    float cross = (vx * frontZ) - (vz * frontX);
-
-    // 2Dの外積値が正の場合か負の場合によって左右反転が行える
-    // 左右判定を行うことによって左右回転を選択する
-    if (cross < 0.0f)
-    {
-        rotation.y -= speed;
-    }
-    else
-    {
-        rotation.y += speed;
-    }
-
-
-}
 
 bool Enemy::ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range)
 {
@@ -211,6 +168,27 @@ void Enemy::SetRandomTargetPosition()
     target_position.x = territory_origin.x + sinf(theta) * range;
     target_position.y = territory_origin.y;
     target_position.z = territory_origin.z + cosf(theta) * range;
+
+}
+
+void Enemy::DebugImgui()
+{
+    ImGui::Begin("Enemy");
+    if (ImGui::TreeNode("Transform"))
+    {
+        ImGui::DragFloat3("position", &position.x);
+        ImGui::DragFloat("scale_factor", &scaleFactor);
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode("AI"))
+    {
+        if (!activeNode)
+            ImGui::Text("null");
+        else
+            ImGui::Text(activeNode->GetName().c_str());
+        ImGui::TreePop();
+    }
+    ImGui::End();
 
 }
 
