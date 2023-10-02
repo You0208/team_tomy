@@ -1,13 +1,55 @@
 #pragma once
 #include "Lemur/Component/GameObject.h"
-
+//#include "Game/StateMachine/StateMachine.h"
+namespace Nero::Component::AI
+{
+    class StateMachine;
+}
 class Player:public GameObject
 {
+public:
+    enum AnimIndex
+    {
+        Run_Anim,
+        Idle_Anim,
+        Avoid_Anim,
+
+        Max_Anim
+    };
+
+    enum StateIndex
+    {
+        Idle_State,
+        Walk_State,
+        Avoid_State,
+
+        Max_State,
+    };
 public:
     Player() {}
     Player(InputComponent* input_,
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
+
+    virtual void DebugImgui() override;
+
+    void StateMachineInitialize();
+    void StateMachineUpdate();
+    Nero::Component::AI::StateMachine* GetStateMachine()const { return state_machine; }
+
+    bool InputMove();
+private:
+    DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
+
+
+private:
+    // ï‡Ç´ÇÃë¨Ç≥
+    float walk_speed = 3.0f;
+
+    // ê˘âÒÇÃë¨Ç≥
+    float turn_speed = 10.0f;
+
+    Nero::Component::AI::StateMachine* state_machine = nullptr;
 
 };
 
@@ -17,7 +59,6 @@ class PlayerInputComponent :public InputComponent
     void Initialize(GameObject* gameobj) override {}
     void Update(GameObject* gameobj, float elapsedTime) override;
 
-    DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
 
 };
 

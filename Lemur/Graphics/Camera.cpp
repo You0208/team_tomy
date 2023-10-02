@@ -63,7 +63,7 @@ void Camera::Update(float elapsedTime)
     angle.x -= ay * speed;
     angle.y += ax * speed;
 
-#if 0
+#if 1
     /*------------- マウス処理 -------------*/
     Mouse& mouse = Input::Instance().GetMouse();
 
@@ -88,7 +88,7 @@ void Camera::Update(float elapsedTime)
     mouse.SetPositionY(1080 / 2);
 #endif
 
-    if(CharacterManager::Instance().GetPlayer()!=nullptr) target = CharacterManager::Instance().GetPlayer()->GetPosition();
+    target = CharacterManager::Instance().GetPlayer()->GetPosition();
 
     // カメラの回転値を回転行列に変換
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);

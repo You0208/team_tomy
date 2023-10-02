@@ -42,8 +42,6 @@ public:
     // ビヘイビアツリーの更新処理
     void BehaviorTreeUpdate();
 
-    // 方向転換
-    void Turn(float vx, float vz, float speed);
 
     // ターゲットに到達したか判定する(第三引数には到達したって判定する半径)
     bool ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range);
@@ -68,6 +66,7 @@ public:
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
 
+    void DebugImgui() override;
 private:
 
     // todo ここら辺の変数と値は企画が決まってないから仮です

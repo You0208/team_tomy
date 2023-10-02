@@ -1,6 +1,7 @@
 #include "DemoPlayer.h"
 #include "DemoEnemyManager.h"
 #include "../Graphics/framework.h"
+#include "../Graphics/DebugRenderer.h"
 
 void DemoPlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -18,6 +19,7 @@ void DemoPlayerGraphicsComponent::Render(GameObject* gameobj,float elapsedTime,I
 {
 	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
 	demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+	demoPlayer->DrawDebugPrimitive();
 }
 
 // 入力処理
@@ -46,9 +48,16 @@ void DemoPlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 
 void DemoPlayer::DebugImgui()
 {
-	ImGui::Begin("Player");
+	ImGui::Begin("DemoPlayer");// ここのnameをDemoPlayerに変えました
 	ImGui::DragFloat("PlayerPosition", &position.x);
 	ImGui::DragFloat("ScaleFactor", &scaleFactor);
 
 	ImGui::End();
+}
+
+void DemoPlayer::DrawDebugPrimitive()
+{
+	DebugRenderer* debugRenderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
+	//衝突判定用のデバッグ円柱を描画
+	debugRenderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0, 0, 0, 1));
 }

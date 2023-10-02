@@ -71,6 +71,7 @@
 			// “r’†‚¶‚á‚È‚¢‚È‚çI—¹
 			if (sequenceNode == nullptr)
 			{
+				// todo ‚±‚±‚Ånullptr‚ğ•Ô‚·‚Ì‚ªŠ„‚Æ“s‡ˆ«‚¢
 				return nullptr;
 			}
 			else {

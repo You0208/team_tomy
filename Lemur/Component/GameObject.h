@@ -61,6 +61,7 @@ public:
     }
 
     virtual void DebugImgui(){};
+    virtual void DrawDebugPrimitive() {};
 public:
     // 位置取得
     const DirectX::XMFLOAT3& GetPosition() const { return position; }
@@ -113,11 +114,25 @@ public:
     // モデル取得(AI側でアニメーションの切り替えしたいから作りました Byトミー)
     skinned_mesh* GetModel()const { return Model.get(); }
 
+    // アニメーションの切り替え
+    void SetAnimationIndex(int index)
+    {
+        frame_index = 0;
+        animation_tick = 0;
+        animation_index = index;
+        end_animation = false;
+    }
+
+    // アニメーション終了フラグ取得
+    bool GetEndAnimation()const { return end_animation; }
+
     // 描画設定
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
 
     // 移動処理
     void Move(float vx, float vz, float speed);
+    // 方向転換
+    void Turn(float vx, float vz, float speed);
 
     void SetPixelShader(ID3D11PixelShader* ps) { pixelShader = ps; }
 
@@ -191,9 +206,12 @@ protected:
     float animation_tick                = 0; // アニメーション
     std::shared_ptr<skinned_mesh> Model = nullptr;
     // アニメーション用(メンバ化しときました。これに相当する変数とかもしあったらごめん)
-    int clip_index = 0;
+    //名前をclip_indexから変えました。
+    int animation_index = 0;
     int frame_index = 0;
 
+    // アニメーション終了フラグ
+    bool end_animation = false;
 
     Mouse* mouse;
 
