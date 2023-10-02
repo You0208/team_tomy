@@ -110,6 +110,9 @@ public:
     // モデル設定
     void SetModel(std::shared_ptr<skinned_mesh> Model) { this->Model = Model; }
 
+    // モデル取得(AI側でアニメーションの切り替えしたいから作りました Byトミー)
+    skinned_mesh* GetModel()const { return Model.get(); }
+
     // 描画設定
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
 
@@ -117,14 +120,16 @@ public:
     void Move(float vx, float vz, float speed);
 
     void SetPixelShader(ID3D11PixelShader* ps) { pixelShader = ps; }
+
+    // 速力更新
+    void UpdateVelocity(float elapsedTime);
+
 protected:
 
 
     // ジャンプ処理
     void Jump(float speed);
 
-    // 無敵時間更新
-    void UpdateInvincibleTimer(float elapsedTime);
 
     // 着地した時に呼ばれる
     virtual void OnLanding() {};
@@ -185,6 +190,10 @@ protected:
 
     float animation_tick                = 0; // アニメーション
     std::shared_ptr<skinned_mesh> Model = nullptr;
+    // アニメーション用(メンバ化しときました。これに相当する変数とかもしあったらごめん)
+    int clip_index = 0;
+    int frame_index = 0;
+
 
     Mouse* mouse;
 

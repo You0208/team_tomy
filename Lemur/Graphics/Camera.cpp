@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include"..\Input/Input.h"
+#include "Game/Manager/CharacterManager.h"
 
 void Camera::SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)
 {
@@ -47,6 +48,8 @@ void Camera::SetPerspectiveFov(Microsoft::WRL::ComPtr<ID3D11DeviceContext> dc)
 void Camera::Update(float elapsedTime)
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
+
+    /*----------- コントローラー処理 ------------*/
     float ax = gamePad.GetAxisRX();
     float ay = gamePad.GetAxisRY();
 
@@ -60,8 +63,31 @@ void Camera::Update(float elapsedTime)
     angle.x -= ay * speed;
     angle.y += ax * speed;
 
-    target.x -= lx * speed;
-    target.y -= ly * speed;
+    /*------------- マウス処理 -------------*/
+    Mouse& mouse = Input::Instance().GetMouse();
+
+    float mouse_pos_x = static_cast<int> (mouse.GetPositionX() - mouse.GetOldPositionX());
+    float mouse_pos_y = static_cast<int> (mouse.GetPositionY() - mouse.GetOldPositionY());
+
+    // マウスでの感度の補正値、rollSpeedにかける。
+    float speed_fit = 1.0f;
+
+    // カメラの回転速度。
+    speed = speed_fit * rollSpeed * elapsedTime;
+
+
+    // スティックの入力値に合わせてX軸とY軸を回転。
+    angle.x += mouse_pos_y * speed;
+    angle.y += mouse_pos_x * speed;
+
+    Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+#if 0
+    SetCursorPos(1920 / 2, 1080 / 2);
+    mouse.SetPositionX(1920 / 2);
+    mouse.SetPositionY(1080 / 2);
+#endif
+
+    target = CharacterManager::Instance().GetPlayer()->GetPosition();
 
     // カメラの回転値を回転行列に変換
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);

@@ -24,7 +24,7 @@ class PlayerInputComponent :public InputComponent
 class PlayerPhysicsComponent :public PhysicsComponent
 {
     void Initialize(GameObject* gameobj) override;
-    void Update(GameObject* gameobj, float elapsedTime) override {}
+    void Update(GameObject* gameobj, float elapsedTime) override;
 };
 
 class PlayerGraphicsComponent :public GraphicsComponent
