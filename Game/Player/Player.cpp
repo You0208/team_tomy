@@ -7,7 +7,7 @@
 #include "Lemur/Graphics/framework.h"
 #include "Lemur/Input/GamePad.h"
 #include "Lemur/Input/Input.h"
-
+#include "Game/StateMachine/StateDerived.h"
 
 void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -18,23 +18,39 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
 {
-    Player* demoPlayer = dynamic_cast<Player*> (gameobj);
+    Player* player = dynamic_cast<Player*> (gameobj);
 
-    ImGui::Begin("Player");
-    if (ImGui::TreeNode("Transform"))
-    {
-        DirectX::XMFLOAT3 pos = demoPlayer->GetPosition();
-        ImGui::DragFloat3("position", &pos.x);
-        demoPlayer->SetPosition(pos);
-        ImGui::TreePop();
-    }
-    ImGui::End();
+    player->DebugImgui();
 }
 
 void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
 {
     Player* demoPlayer = dynamic_cast<Player*> (gameobj);
     demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+}
+
+void Player::DebugImgui()
+{
+    ImGui::Begin("Player");
+    if(ImGui::TreeNode("Transform"))
+    {
+        ImGui::DragFloat3("position", &position.x);
+        //ImGui::DragFloat("scale_factor",scale)
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
+}
+
+void Player::StateMachineInitialize()
+{
+    state_machine->SetUpState<Nero::Component::AI::IdleState>(this);
+    state_machine->SetUpState<Nero::Component::AI::WalkState>(this);
+}
+
+void Player::StateMachineUpdate()
+{
+    state_machine->Update();
 }
 
 // ì¸óÕèàóù

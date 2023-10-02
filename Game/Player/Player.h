@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Component/GameObject.h"
 
 class Player:public GameObject
@@ -9,6 +10,12 @@ public:
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
 
+    virtual void DebugImgui() override;
+
+    void StateMachineInitialize();
+    void StateMachineUpdate();
+private:
+    Nero::Component::AI::StateMachine* state_machine = nullptr;
 };
 
 //こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。

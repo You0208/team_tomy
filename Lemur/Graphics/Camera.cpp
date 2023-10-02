@@ -63,7 +63,7 @@ void Camera::Update(float elapsedTime)
     angle.x -= ay * speed;
     angle.y += ax * speed;
 
-    /*------------- マウス処理 -------------*/
+#if 0 /*------------- マウス処理 -------------*/
     Mouse& mouse = Input::Instance().GetMouse();
 
     float mouse_pos_x = static_cast<int> (mouse.GetPositionX() - mouse.GetOldPositionX());
@@ -85,6 +85,7 @@ void Camera::Update(float elapsedTime)
     SetCursorPos(1920 / 2, 1080 / 2);
     mouse.SetPositionX(1920 / 2);
     mouse.SetPositionY(1080 / 2);
+#endif
 #endif
 
     target = CharacterManager::Instance().GetPlayer()->GetPosition();

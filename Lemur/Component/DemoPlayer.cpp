@@ -46,7 +46,7 @@ void DemoPlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 
 void DemoPlayer::DebugImgui()
 {
-	ImGui::Begin("Player");
+	ImGui::Begin("DemoPlayer");// ‚±‚±‚Ìname‚ðDemoPlayer‚É•Ï‚¦‚Ü‚µ‚½
 	ImGui::DragFloat("PlayerPosition", &position.x);
 
 	ImGui::End();
