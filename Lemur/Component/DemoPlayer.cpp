@@ -6,7 +6,7 @@ void DemoPlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
 	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-	demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx"));
+	demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Model\\Jummo\\Jummo.fbx"));
 }
 
 void DemoPlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -48,6 +48,7 @@ void DemoPlayer::DebugImgui()
 {
 	ImGui::Begin("Player");
 	ImGui::DragFloat("PlayerPosition", &position.x);
+	ImGui::DragFloat("ScaleFactor", &scaleFactor);
 
 	ImGui::End();
 }
