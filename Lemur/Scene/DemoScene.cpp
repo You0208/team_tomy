@@ -161,8 +161,8 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 
 	Camera& camera = Camera::Instance();
 
-	player->Update(elapsedTime);
 	camera.Update(elapsedTime);
+	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
 	ImGui::SliderFloat3("ptPosition", &light.ptPosition.x, 0.0f, +100.0f);
@@ -290,6 +290,15 @@ void DemoScene::Render(float elapsedTime)
 		DirectX::XMStoreFloat4x4(&world, S* R* T);
 
 		cube->render(immediate_context, world, material_color, nullptr, nullptr);
+
+		//TODO debug
+		{
+			DirectX::XMFLOAT4X4 view;
+			DirectX::XMFLOAT4X4 projection;
+			DirectX::XMStoreFloat4x4(&view, camera.GetViewMatrix());
+			DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
+			graphics.GetDebugRenderer()->Render(immediate_context, view, projection);
+		}
 	}
 	if (enableBloom) 
 	{

@@ -114,6 +114,8 @@ namespace Lemur::Graphics
 
 		//--------------------------Åöí«â¡Å™--------------------------
 
+
+		debugRenderer = std::make_unique<DebugRenderer>(device.Get());
 	}
 
 	void Graphics::create_swap_chain(IDXGIFactory6* dxgi_factory6)
@@ -370,6 +372,7 @@ namespace Lemur::Graphics
 
 	void Graphics::initialize(HWND hwnd, bool fullscreen)
 	{
+
 	}
 
 	void Graphics::render(float elapsed_time)

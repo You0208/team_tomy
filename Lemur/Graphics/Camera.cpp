@@ -88,7 +88,7 @@ void Camera::Update(float elapsedTime)
     mouse.SetPositionY(1080 / 2);
 #endif
 
-    target = CharacterManager::Instance().GetPlayer()->GetPosition();
+    if(CharacterManager::Instance().GetPlayer()!=nullptr)target = CharacterManager::Instance().GetPlayer()->GetPosition();
 
     // ƒJƒƒ‰‚Ì‰ñ“]’l‚ğ‰ñ“]s—ñ‚É•ÏŠ·
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);

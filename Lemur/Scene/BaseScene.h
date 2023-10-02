@@ -50,6 +50,9 @@ namespace Lemur::Scene
         // Zelda_Shader
         Microsoft::WRL::ComPtr<ID3D11PixelShader> zelda_ps;
 
+        bool enableShadow = false;
+        bool enableSkyMap = false;
+        bool enableBloom = false;
 
     private:
         bool ready = false;

@@ -123,6 +123,7 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
+
 	ImGui::End();
 }
 
@@ -278,7 +279,14 @@ void GameScene::Render(float elapsedTime)
 		}
 	}
 #endif
-
+	//TODO debug
+	{
+		DirectX::XMFLOAT4X4 view;
+		DirectX::XMFLOAT4X4 projection;
+		DirectX::XMStoreFloat4x4(&view, camera.GetViewMatrix());
+		DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
+		graphics.GetDebugRenderer()->Render(immediate_context, view, projection);
+	}
 	// 3Dエフェクト描画
 	{
 		DirectX::XMFLOAT4X4 view{};

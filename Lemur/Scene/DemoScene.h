@@ -106,9 +106,6 @@ private:
     float light_view_near_z{ 2.0f };
     float light_view_far_z{ 18.0f };
 
-    bool enableShadow = false;
-    bool enableSkyMap = false;
-    bool enableBloom = false;
 
     // Audio
     Microsoft::WRL::ComPtr<IXAudio2> xaudio2;
