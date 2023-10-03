@@ -62,16 +62,21 @@ void DemoScene::Initialize()
 	create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[1].GetAddressOf());
 	load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
 
-	//create_ps_from_cso(graphics.GetDevice(), "./Shader/try_ps.cso", zelda_ps.GetAddressOf());
+	// TODO
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/Wall.cso", zelda_ps.GetAddressOf());
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/Wall.cso", Wall.GetAddressOf());
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/try_ps.cso", Try.GetAddressOf());
 
 	// シェーダーの決定
-	//player->SetPixelShader(zelda_ps.Get());
+	player->SetPixelShader(Wall.Get());
 
 	skinned_meshes[1] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx");
 	cube = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\latha.fbx");
 	
 	// SHADOW
 	double_speed_z = std::make_unique<shadow_map>(graphics.GetDevice(), shadowmap_width, shadowmap_height);
+
+
 
 	//// MASK
 	//dummy_sprite = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\MASK\\chip_win.png");
@@ -141,6 +146,12 @@ void DemoScene::Initialize()
 
 	// step-4 ポイントライトの影響範囲を設定する
 	light.ptRange.x = 50.0f;
+
+	//TODO PBR
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_BaseColor.1001.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_Normal.1001.png", Normal.GetAddressOf(), graphics.GetTexture2D());
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_Roughness.1001.png", Roughness.GetAddressOf(), graphics.GetTexture2D());
+
 }
 
 void DemoScene::Finalize()
@@ -275,11 +286,16 @@ void DemoScene::Render(float elapsedTime)
 
 	//3D描画
 	{
+		//TODO PBR
+		immediate_context->PSSetShaderResources(10/*slot(1番にセットします)*/, 1, BaseColor.GetAddressOf());//TODO
+		immediate_context->PSSetShaderResources(11/*slot(1番にセットします)*/, 1, Normal.GetAddressOf());//TODO
+		immediate_context->PSSetShaderResources(12/*slot(1番にセットします)*/, 1, Roughness.GetAddressOf());//TODO
+
 		immediate_context->PSSetShaderResources(8, 1, double_speed_z->shader_resource_view.GetAddressOf());
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::SOLID)].Get());
 		player->Render(elapsedTime);
-		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, zelda_ps.Get());
+		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, Try.Get());
 		
 		
 		DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(0.01f, 0.01f, 0.01f) };
@@ -290,6 +306,15 @@ void DemoScene::Render(float elapsedTime)
 		DirectX::XMStoreFloat4x4(&world, S* R* T);
 
 		cube->render(immediate_context, world, material_color, nullptr, nullptr);
+
+		//TODO debug
+		{
+			DirectX::XMFLOAT4X4 view;
+			DirectX::XMFLOAT4X4 projection;
+			DirectX::XMStoreFloat4x4(&view, camera.GetViewMatrix());
+			DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
+			graphics.GetDebugRenderer()->Render(immediate_context, view, projection);
+		}
 	}
 	if (enableBloom) 
 	{

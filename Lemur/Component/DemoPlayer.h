@@ -15,6 +15,7 @@ public:
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
 
     void DebugImgui()override;
+    void DrawDebugPrimitive()override;
 };
 
 class DemoPlayerInputComponent :public InputComponent

@@ -24,7 +24,11 @@ bool framework::initialize()
 
 	// シーン初期化
 	Lemur::Scene::SceneManager::Instance().ChangeScene(new DemoScene);
+<<<<<<< HEAD
 	////merge前にこれをコメント化
+=======
+	//merge前にこれをコメント化
+>>>>>>> origin/muta
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 
 	return true;
