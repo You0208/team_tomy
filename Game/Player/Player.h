@@ -29,15 +29,17 @@ public:
         Max_State,
     };
 public:
-    Player()
-    {
-        
-    }
+    Player(){}
     Player(InputComponent* input_,
         PhysicsComponent* physics_,
-        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
+        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_)
+    {
+        height = 1.7f;
+        radius = 0.4f;
+    }
 
     virtual void DebugImgui() override;
+    virtual void DrawDebugPrimitive() override;
 
     void StateMachineInitialize();
     void StateMachineUpdate();

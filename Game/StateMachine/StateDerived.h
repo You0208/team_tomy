@@ -34,4 +34,15 @@ namespace Nero::Component::AI
         void End() override;
 
     };
+
+    class AttackState:public StateBase
+    {
+    public:
+        AttackState(Player* player) :StateBase(player, "AvoidState") {}
+
+        void Begin() override;
+        void Update() override;
+        void End() override;
+
+    };
 }

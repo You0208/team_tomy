@@ -56,10 +56,19 @@ void Player::DebugImgui()
     {
         ImGui::DragInt("MaxHealth", &maxHealth);
         ImGui::DragInt("health", &health);
+        ImGui::DragFloat("height", &height);
+        ImGui::DragFloat("radius", &radius);
         ImGui::TreePop();
     }
 
     ImGui::End();
+}
+
+void Player::DrawDebugPrimitive()
+{
+    DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
+    debug_renderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
+
 }
 
 void Player::StateMachineInitialize()

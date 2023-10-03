@@ -72,4 +72,23 @@ namespace Nero::Component::AI
     void AvoidState::End()
     {
     }
+
+    void AttackState::Begin()
+    {
+        // todo アニメーション
+
+    }
+
+    void AttackState::Update()
+    {
+        // todo てきのHPへらす
+        if (owner->GetEndAnimation())
+        {
+            owner->GetStateMachine()->SetNextState(owner->Idle_State);
+        }
+    }
+
+    void AttackState::End()
+    {
+    }
 }

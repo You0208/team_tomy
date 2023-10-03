@@ -298,6 +298,8 @@ void GameScene::Render(float elapsedTime)
 		DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
 
 		EffectManager::Instance().Render(view, projection);
+
+		player->DrawDebugPrimitive();
 	}
 
 	// 2Dデバッグ描画
