@@ -62,6 +62,11 @@ public:
 private:
     std::unique_ptr<framebuffer> framebuffers[8];
 
+    // PBR
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> BaseColor;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Normal;
+
     // SKYMAP
     //std::unique_ptr<fullscreen_quad> bit_block_transfer_sky;
     //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> skymap;
@@ -71,7 +76,7 @@ private:
     //std::unique_ptr<fullscreen_quad> bit_block_transfer;
     //std::unique_ptr<bloom> bloomer;
 
-        // bloom
+    // bloom
     std::unique_ptr<fullscreen_quad> bitBlockTransfer;
     std::unique_ptr<bloom> bloomer;
 

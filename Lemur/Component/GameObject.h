@@ -43,6 +43,7 @@ public:
     void Update(float elapsedTime)
     {
         UpdateScale();
+        AnimationUpdate(elapsedTime);
         input->Update(this, elapsedTime);
         physics->Update(this, elapsedTime);
         graphics->Update(this);
@@ -62,6 +63,9 @@ public:
 
     virtual void DebugImgui(){};
     virtual void DrawDebugPrimitive() {};
+    void AnimationUpdate(float elapsedTime);
+    animation animation{};
+    animation::keyframe keyframe{};
 public:
     // ˆÊ’uŽæ“¾
     const DirectX::XMFLOAT3& GetPosition() const { return position; }
