@@ -3,20 +3,23 @@
 
 void GameObject::AnimationUpdate(float elapsedTime)
 {
-    animation = { Model->animation_clips.at(animation_index) };
-    frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
-    if (frame_index > animation.sequence.size() - 1)
+    if (Model->animation_clips.size() > 0)
     {
-        frame_index = 0;
-        animation_tick = 0;
-        end_animation = true;
+        animation = { Model->animation_clips.at(animation_index) };
+        frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+        if (frame_index > animation.sequence.size() - 1)
+        {
+            frame_index = 0;
+            animation_tick = 0;
+            end_animation = true;
+        }
+        else
+        {
+            end_animation = false;
+            animation_tick += elapsedTime;
+        }
+        keyframe = { animation.sequence.at(frame_index) };
     }
-    else
-    {
-        end_animation = false;
-        animation_tick += elapsedTime;
-    }
-    keyframe = { animation.sequence.at(frame_index) };
 }
 
 bool GameObject::ApplyDamage(int damage, float invincibleTime)
