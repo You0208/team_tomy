@@ -16,8 +16,7 @@ public:
 	DirectX::XMFLOAT3 target_pos = {};
 };
 
-// égÇ§Ç©ÇÌÇ©ÇÁÇÒ
-// úpújçsìÆ
+// ë“ã@
 class IdleAction : public ActionBase
 {
 public:
@@ -27,12 +26,21 @@ public:
 	float idleing_time;
 };
 
+//í«ê’
 class PursueAction:public ActionBase
 {
 public:
 	PursueAction(Enemy* enemy):ActionBase(enemy){}
 	ActionBase::State Run(float elapsedTime) override;
 
+};
+
+// éÄñS
+class DeathAction:public ActionBase
+{
+public:
+	DeathAction(Enemy* enemy) :ActionBase(enemy) {}
+	ActionBase::State Run(float elapsedTime) override;
 
 };
 

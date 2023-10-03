@@ -32,8 +32,9 @@ public:
 
     void Update(float elapsedTime);
 
-private:
     void DrawDebug();
+
+private:
     void UpdateDebug();
 
     // ロックオン切り替え
@@ -70,6 +71,9 @@ private:
 
     // 水平に見るんやなくてちょっと上から俯瞰するための補正
     float eye_y_offset = 3.0f;
+
+    // 見たい人の足元みるんやなくてチョイ上
+    float target_y_offset = 1.5f;
 
     DirectX::XMFLOAT4X4 world;
     // デバッグ用

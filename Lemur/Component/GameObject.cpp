@@ -83,24 +83,7 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_sha
     if (Model->animation_clips.size() > 0)
     {
 #if 1
-<<<<<<< HEAD
-        animation& animation{ Model->animation_clips.at(animation_index) };
-        frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
-        if (frame_index > animation.sequence.size() - 1)
-        {
-            end_animation = true;
-            frame_index = 0;
-            animation_tick = 0;
-        }
-        else
-        {
-            end_animation = false;
-            animation_tick += elapsedTime;
-        }
-        animation::keyframe& keyframe{ animation.sequence.at(frame_index) };
-=======
 
->>>>>>> origin/muta
 #else
         animation::keyframe keyframe;
         const animation::keyframe* keyframes[2]{

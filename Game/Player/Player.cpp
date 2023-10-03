@@ -52,6 +52,12 @@ void Player::DebugImgui()
         ImGui::DragFloat("turn_speed", &turn_speed);
         ImGui::TreePop();
     }
+    if(ImGui::TreeNode("parameter"))
+    {
+        ImGui::DragInt("MaxHealth", &maxHealth);
+        ImGui::DragInt("health", &health);
+        ImGui::TreePop();
+    }
 
     ImGui::End();
 }
@@ -164,6 +170,7 @@ void PlayerPhysicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     player->StateMachineInitialize();
+
 }
 
 void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)

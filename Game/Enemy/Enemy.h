@@ -32,10 +32,21 @@ private:
 class Enemy :public GameObject
 {
 public:
-    Enemy() {}
+    enum AnimIndex
+    {
+        
+    };
+public:
+    Enemy(){}
     Enemy(InputComponent* input_,
         PhysicsComponent* physics_,
-        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
+        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_)
+    {
+        // todo 調整
+        maxHealth = 1000;
+        health = maxHealth;
+
+    }
 
     // ビヘイビアツリーの初期化
     void BehaviorTreeInitialize();
@@ -60,6 +71,7 @@ public:
     DirectX::XMFLOAT3 GetTargetPosition()const { return target_position; }
     DirectX::XMFLOAT3 GetTerritoryOrigin()const { return territory_origin; }
     float GetTerritoryRange()const { return territory_range; }
+    float GetVisionLength()const { return vision_length; }
     float GetAttackRange()const { return attack_range; }
     float GetWalkSpeed()const { return walk_speed; }
 
@@ -67,6 +79,10 @@ public:
     void SetRandomTargetPosition();
 
     void DebugImgui() override;
+
+    // 破棄
+    void Destroy();
+
 private:
 
     // todo ここら辺の変数と値は企画が決まってないから仮です
@@ -87,7 +103,7 @@ private:
     // 歩きの速さ
     float walk_speed = 3.0f;
 
-    BehaviorTree* ai_tree;
+    BehaviorTree* ai_tree = nullptr;
     NodeBase* activeNode = nullptr;
     BehaviorData* behaviorData = nullptr;
 };

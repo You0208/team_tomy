@@ -18,6 +18,14 @@ public:
 	bool Judgment() override;
 };
 
+class DeathJudgment:public JudgmentBase
+{
+public:
+	DeathJudgment(Enemy* enemy):JudgmentBase(enemy){}
+	// ”»’è
+	bool Judgment() override;
+};
+
 class ClawAttackJudgment : public JudgmentBase
 {
 public:

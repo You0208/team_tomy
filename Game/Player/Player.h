@@ -29,7 +29,10 @@ public:
         Max_State,
     };
 public:
-    Player() {}
+    Player()
+    {
+        
+    }
     Player(InputComponent* input_,
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_) {}
@@ -46,6 +49,7 @@ private:
 
 
 private:
+
     // •à‚«‚Ì‘¬‚³
     float walk_speed = 3.0f;
 

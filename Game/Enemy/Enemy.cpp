@@ -4,7 +4,6 @@
 
 #include "imgui.h"
 #include "Game/AI/ActionDerived.h"
-#include "Game/Manager/CharacterManager.h"
 #include "Game/Scene/SceneGame.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Lemur/Input/GamePad.h"
@@ -12,6 +11,7 @@
 #include "Game/MathHelper.h"
 #include "Game/AI/JudgmentDerived.h"
 #include "Game/AI/NodeBase.h"
+#include "Game/Manager/EnemyManager.h"
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -52,8 +52,13 @@ void Enemy::BehaviorTreeInitialize()
             ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
         }
         // í“¬
-        //ai_tree->AddNode("Root", "Battle", 0, BehaviorTree::SelectRule::Priority, , nullptr);
-        // todo O“ú‚Á‚½‚ç’ÇÕ‚·‚é’J’Ãì
+        ai_tree->AddNode("Root", "Battle", 0, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
+        {
+            // ’ÇÕ
+            ai_tree->AddNode("Battle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+            // €–S
+            ai_tree->AddNode("Battle", "Death", 1, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+        }
     }
 
 
@@ -177,10 +182,28 @@ void Enemy::DebugImgui()
             ImGui::Text("null");
         else
             ImGui::Text(activeNode->GetName().c_str());
+
+        ImGui::DragFloat("attack_range", &attack_range);
+
+        DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+        float enemy_to_player = Length(position, player_pos);
+        ImGui::DragFloat("enemy_to_player", &enemy_to_player);
         ImGui::TreePop();
     }
+    if (ImGui::TreeNode("parameter"))
+    {
+        ImGui::DragInt("MaxHealth", &maxHealth);
+        ImGui::DragInt("health", &health);
+        ImGui::TreePop();
+    }
+
     ImGui::End();
 
+}
+
+void Enemy::Destroy()
+{
+    EnemyManager::Instance().Remove(this);
 }
 
 // “ü—Íˆ—

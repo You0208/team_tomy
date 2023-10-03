@@ -100,11 +100,11 @@ public:
     // 地面に設置しているか
     bool IsGround() const { return isGround; }
 
-    // 健康状態を取得
-    int GetHealth() const { return health; }
+    //// 健康状態を取得
+    //int GetHealth() const { return health; }
 
-    // 最大健康状態を取得
-    int GetMaxHealth() const { return maxHealth; }
+    //// 最大健康状態を取得
+    //int GetMaxHealth() const { return maxHealth; }
 
     // ダメージを与える
     bool ApplyDamage(int damage, float invincibleTime);
@@ -176,6 +176,14 @@ private:
     // 水平移動更新処理
     void UpdateHorizontalMove(float elapsedTime);
 
+public:
+
+    /* HP関係はスキルとかギャンブルとかで変動する機会多いから
+     * 妥協でパブリックな。*/
+    int     maxHealth = 5; // 最大健康状態
+    int     health = maxHealth; // 健康状態
+
+
 protected:
     DirectX::XMFLOAT4X4 World;
 
@@ -203,8 +211,6 @@ protected:
     float	airControl                  = 0.3f; // 空気抵抗
 
     bool    isGround                    = false; // 着地フラグ
-    int     health                      = 5; // 健康状態
-    int     maxHealth                   = 5; // 最大健康状態
 
 
     float animation_tick                = 0; // アニメーション

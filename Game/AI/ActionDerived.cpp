@@ -100,6 +100,26 @@ ActionBase::State PursueAction::Run(float elapsedTime)
 	}
 }
 
+ActionBase::State DeathAction::Run(float elapsedTime)
+{
+    switch (step)
+    {
+    case 0:
+		// todo アニメーション再生
+		//owner->SetAnimationIndex()
+
+		break;
+    case 1:
+
+		if(owner->GetEndAnimation())
+		{
+			owner->Destroy();
+			return ActionBase::State::Complete;
+		}
+		return ActionBase::State::Run;
+    }
+}
+
 ActionBase::State ClawAttackAction::Run(float elapsedTime)
 {
 	//owner->GetOwner()->

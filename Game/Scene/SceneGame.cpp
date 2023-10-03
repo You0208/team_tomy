@@ -127,12 +127,6 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 
 	player->Update(elapsedTime);
 
-<<<<<<< HEAD
-=======
-	ImGui::Begin("ImGUI");
-
-	ImGui::End();
->>>>>>> origin/muta
 }
 
 void GameScene::Render(float elapsedTime)
@@ -309,7 +303,7 @@ void GameScene::Render(float elapsedTime)
 	// 2Dデバッグ描画
 	{
 		DebugImGui();
-
+		camera.DrawDebug();
 	}
 
 }

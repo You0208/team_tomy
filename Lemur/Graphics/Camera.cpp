@@ -68,14 +68,12 @@ void Camera::Update(float elapsedTime)
 void Camera::DrawDebug()
 {
     ImGui::Begin("Camera");
-    if(ImGui::TreeNode("Transform"))
-    {
-        ImGui::DragFloat3("eye", &eye.x);
-        ImGui::DragFloat3("target", &target.x);
-        ImGui::DragFloat("eye_y_offset", &eye_y_offset);
-        ImGui::TreePop();
-    }
-        ImGui::End();
+    ImGui::DragFloat3("eye", &eye.x);
+    ImGui::DragFloat3("target", &target.x);
+    ImGui::DragFloat("eye_y_offset", &eye_y_offset);
+    ImGui::DragFloat("target_y_offset", &target_y_offset);
+    ImGui::DragFloat("range", &range);
+    ImGui::End();
 }
 
 void Camera::UpdateDebug()
@@ -137,8 +135,11 @@ void Camera::LockOnUpdate(float elapsedTime)
         player_pos.z + (vec.z * range),
     };
 
-    target = lock_on_enemy->GetPosition();
-
+    target = {
+        enemy_pos.x,
+        enemy_pos.y + target_y_offset,
+        enemy_pos.z
+    };
     //カメラの視点と注視点を設定
     SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
 
@@ -187,12 +188,10 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     mouse.SetPositionY(1080 / 2);
 #endif
 
-<<<<<<< HEAD
     target = CharacterManager::Instance().GetPlayer()->GetPosition();
-=======
-    if(CharacterManager::Instance().GetPlayer()!=nullptr)target = CharacterManager::Instance().GetPlayer()->GetPosition();
+    target.y += target_y_offset;
+    //if(CharacterManager::Instance().GetPlayer()!=nullptr)target = CharacterManager::Instance().GetPlayer()->GetPosition();
 
->>>>>>> origin/muta
     // カメラの回転値を回転行列に変換
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 

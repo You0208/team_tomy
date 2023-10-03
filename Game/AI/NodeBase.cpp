@@ -136,7 +136,7 @@
 		}
 
 		// todo 何でこれ二回連続軸合わせの時に呼ばれる？アサートを呼ぶ位置が悪い？
-		//_ASSERT_EXPR(result, L"ノードが決まらなかった。うんち");
+		_ASSERT_EXPR(result, L"ノードが決まらなかった。うんち");
 
 		return result;
 	}
