@@ -49,14 +49,6 @@ void EnemyManager::DrawDebugPrimitive()
 {
 }
 
-void EnemyManager::DrawDebugImGui()
-{
-    for (Enemy* enemy : enemies)
-    {
-        enemy->DebugImgui();
-    }
-
-}
 
 void EnemyManager::CollisionEnemyVsEnemis()
 {

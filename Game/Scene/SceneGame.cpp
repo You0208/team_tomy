@@ -297,8 +297,6 @@ void GameScene::Render(float elapsedTime)
 	{
 		DebugImGui();
 
-		//player->DebugImgui();
-		//EnemyManager::Instance().DrawDebugImGui();
 	}
 
 }
