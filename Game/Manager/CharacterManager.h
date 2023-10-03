@@ -17,6 +17,9 @@ public:
     }
     Player* GetPlayer()const { return player; }
 
+    std::vector<Enemy*> GetEnemies()const { return enemies; }
+
+
     void SetPlayer(Player* player_) { player = player_; }
     void AddEnemy(Enemy* enemy) { enemies.emplace_back(enemy); }
 

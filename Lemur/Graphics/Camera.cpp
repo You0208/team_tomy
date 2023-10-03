@@ -1,6 +1,8 @@
 #include "Camera.h"
 #include"..\Input/Input.h"
-#include "Game/Manager/CharacterManager.h"
+#include "Game/MathHelper.h"
+#include "Game/Manager/EnemyManager.h"
+#include "imgui.h"
 
 void Camera::SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up)
 {
@@ -49,12 +51,109 @@ void Camera::Update(float elapsedTime)
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
 
-    /*----------- コントローラー処理 ------------*/
-    float ax = gamePad.GetAxisRX();
-    float ay = gamePad.GetAxisRY();
+    if (gamePad.GetButtonDown() & GamePad::BTN_LEFT_SHOULDER)
+    {
+        InputLockOn();
+    }
 
-    float lx = gamePad.GetAxisLX();
-    float ly = gamePad.GetAxisLY();
+
+    if (is_lockOn) LockOnUpdate(elapsedTime);
+
+    else NonLockOnUpdate(elapsedTime);
+
+
+
+}
+
+void Camera::DrawDebug()
+{
+    ImGui::Begin("Camera");
+    if(ImGui::TreeNode("Transform"))
+    {
+        ImGui::DragFloat3("eye", &eye.x);
+        ImGui::DragFloat3("target", &target.x);
+        ImGui::DragFloat("eye_y_offset", &eye_y_offset);
+        ImGui::TreePop();
+    }
+        ImGui::End();
+}
+
+void Camera::UpdateDebug()
+{
+}
+
+void Camera::InputLockOn()
+{
+    // まだロックオンしてなかったらする
+    if (!is_lockOn) {
+        DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+
+        // 敵と自分との距離
+        float player_to_enemy = FLT_MAX;
+
+        // 全エネミーとの距離判定
+        for (auto enemy : EnemyManager::Instance().GetEnemies())
+        {
+            DirectX::XMFLOAT3 enemy_pos = enemy->GetPosition();
+
+            float length = Length(player_pos, enemy_pos);
+            if (player_to_enemy > length)
+            {
+                is_lockOn = true;
+
+                player_to_enemy = length;
+                lock_on_enemy = enemy;
+            }
+        }
+    }
+    //ロックオンしてたら外す
+    else
+        is_lockOn = false;
+
+}
+
+void Camera::LockOnUpdate(float elapsedTime)
+{
+    DirectX::XMFLOAT3 enemy_pos = lock_on_enemy->GetPosition();
+    DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+
+    float length = Length(player_pos, enemy_pos);
+
+    // 敵からプレイヤーへのベクトル
+    DirectX::XMFLOAT3 vec =
+    {
+         player_pos.x - enemy_pos.x ,
+         player_pos.y - enemy_pos.y ,
+         player_pos.z - enemy_pos.z ,
+    };
+    vec.x = vec.x / length;
+    vec.y = vec.y / length;
+    vec.z = vec.z / length;
+
+
+    eye={
+        player_pos.x + (vec.x * range),
+        player_pos.y + (vec.y * range) + eye_y_offset,
+        player_pos.z + (vec.z * range),
+    };
+
+    target = lock_on_enemy->GetPosition();
+
+    //カメラの視点と注視点を設定
+    SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
+
+}
+
+void Camera::NonLockOnUpdate(float elapsedTime)
+{
+    GamePad& game_pad = Input::Instance().GetGamePad();
+
+    /*----------- コントローラー処理 ------------*/
+    float ax = game_pad.GetAxisRX();
+    float ay = game_pad.GetAxisRY();
+
+    float lx = game_pad.GetAxisLX();
+    float ly = game_pad.GetAxisLY();
 
     // カメラの回転速度
     float speed = rollSpeed * elapsedTime;
@@ -88,9 +187,7 @@ void Camera::Update(float elapsedTime)
 #endif
 #endif
 
-    
     target = CharacterManager::Instance().GetPlayer()->GetPosition();
-
     // カメラの回転値を回転行列に変換
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 
@@ -99,10 +196,9 @@ void Camera::Update(float elapsedTime)
     DirectX::XMFLOAT3 front;
     DirectX::XMStoreFloat3(&front, Front);
 
-    DirectX::XMFLOAT3 eye = {};
-    eye.x = target.x - front.x * range;// front=方向、長さを掛け算することで長さがわかる
-    eye.y = target.y - front.y * range;// 目標地点からカメラの距離を引くことでカメラの位置が出る
-    eye.z = target.z - front.z * range;// 解説８ページ
+    eye.x = target.x - (front.x * range);               // front=方向、長さを掛け算することで長さがわかる
+    eye.y = target.y - (front.y * range) + eye_y_offset;// 目標地点からカメラの距離を引くことでカメラの位置が出る
+    eye.z = target.z - (front.z * range);               // 解説８ページ
     // X軸のカメラ回転を制限
     angle.x = min(angle.x, maxAngleX);
     angle.x = max(angle.x, minAngleX);
@@ -128,12 +224,5 @@ void Camera::Update(float elapsedTime)
 
     //カメラの視点と注視点を設定
     SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
-}
 
-void Camera::DrawDebug()
-{
-}
-
-void Camera::UpdateDebug()
-{
 }

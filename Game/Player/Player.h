@@ -1,10 +1,13 @@
 #pragma once
+#include "..\Skill\BaseSkill.h"
 #include "Lemur/Component/GameObject.h"
 //#include "Game/StateMachine/StateMachine.h"
+
 namespace Nero::Component::AI
 {
     class StateMachine;
 }
+
 class Player:public GameObject
 {
 public:
@@ -51,6 +54,9 @@ private:
 
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
+    /*----------------- スキル関係 -----------------*/
+    std::unordered_map<std::string, std::unique_ptr<BaseSkill>> skills;
+
 };
 
 //こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。
@@ -58,7 +64,6 @@ class PlayerInputComponent :public InputComponent
 {
     void Initialize(GameObject* gameobj) override {}
     void Update(GameObject* gameobj, float elapsedTime) override;
-
 
 };
 

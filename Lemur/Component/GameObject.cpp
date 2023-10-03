@@ -66,9 +66,9 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_sha
         frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
         if (frame_index > animation.sequence.size() - 1)
         {
+            end_animation = true;
             frame_index = 0;
             animation_tick = 0;
-            end_animation = true;
         }
         else
         {

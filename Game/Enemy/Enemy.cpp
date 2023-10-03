@@ -24,16 +24,7 @@ void EnemyGraphicsComponent::Update(GameObject* gameobj)
 {
     Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
 
-    ImGui::Begin("Player");
-    if (ImGui::TreeNode("Transform"))
-    {
-        DirectX::XMFLOAT3 pos = demoPlayer->GetPosition();
-        ImGui::DragFloat3("position", &pos.x);
-        demoPlayer->SetPosition(pos);
 
-        ImGui::TreePop();
-    }
-    ImGui::End();
 }
 
 void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)

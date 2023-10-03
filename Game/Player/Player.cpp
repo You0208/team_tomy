@@ -3,6 +3,8 @@
 #include <directxmath.h>
 
 #include "imgui.h"
+#include "Game/Manager/CharacterManager.h"
+#include "Game/Manager/EnemyManager.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Lemur/Graphics/framework.h"
 #include "Lemur/Input/GamePad.h"
@@ -21,13 +23,18 @@ void PlayerGraphicsComponent::Update(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
 
-    player->DebugImgui();
+
+
 }
 
 void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
+
     player->Render(elapsedTime, replaced_pixel_shader);
+
+    player->DebugImgui();
+
 }
 
 void Player::DebugImgui()
@@ -91,9 +98,8 @@ void PlayerInputComponent::Update(GameObject* gameobj, float elapsedTime)
     float ly = gamePad.GetAxisLY();
 
 
-
-
 }
+
 
 DirectX::XMFLOAT3 Player::GetMoveVec(float input_x, float input_y)
 {

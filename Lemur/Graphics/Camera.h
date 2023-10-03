@@ -8,6 +8,8 @@
 #include "misc.h"
 #include <wrl.h>
 
+#include "Game/Enemy/Enemy.h"
+
 class Camera
 {
 private: // シングルトン化
@@ -34,12 +36,20 @@ private:
     void DrawDebug();
     void UpdateDebug();
 
+    // ロックオン切り替え
+    void InputLockOn();
 
+    // ロックオン時のカメラの挙動
+    void LockOnUpdate(float elapsedTime);
+
+    // ロックオンしてない時のカメラの挙動
+    void NonLockOnUpdate(float elapsedTime);
 public:
     DirectX::XMMATRIX GetViewMatrix() { return V; }         // view行列取得
     DirectX::XMMATRIX GetProjectionMatrix() { return P; }   // projection行列取得
     DirectX::XMFLOAT4X4 GetWorld() { return world; }   // projection行列取得
     DirectX::XMVECTOR GetEye() { return Eye; }   // projection行列取得
+
 
 private:
     // view行列
@@ -56,6 +66,11 @@ private:
     DirectX::XMFLOAT3 front{};
     DirectX::XMFLOAT3 right{};
 
+    DirectX::XMFLOAT3 eye = {};
+
+    // 水平に見るんやなくてちょっと上から俯瞰するための補正
+    float eye_y_offset = 3.0f;
+
     DirectX::XMFLOAT4X4 world;
     // デバッグ用
     DirectX::XMFLOAT3   target = { 0,0,0 };
@@ -65,4 +80,9 @@ private:
 
     float               maxAngleX = DirectX::XMConvertToRadians(45);
     float               minAngleX = DirectX::XMConvertToRadians(-45);
+
+    Enemy* lock_on_enemy;
+
+    // ロックオンしてるか
+    bool is_lockOn = false;
 };

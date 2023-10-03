@@ -109,6 +109,13 @@ void GameScene::Finalize()
 
 void GameScene::Update(HWND hwnd, float elapsedTime)
 {
+	Pause();
+
+	Camera& camera = Camera::Instance();
+	camera.Update(elapsedTime);
+
+	if (!is_update)return;
+
 	timer += elapsedTime;
 
 	// エフェクト更新処理
@@ -117,13 +124,9 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	// 敵の更新処理
 	EnemyManager::Instance().Update(elapsedTime);
 
-	Camera& camera = Camera::Instance();
 
-	camera.Update(elapsedTime);
 	player->Update(elapsedTime);
 
-	ImGui::Begin("ImGUI");
-	ImGui::End();
 }
 
 void GameScene::Render(float elapsedTime)
@@ -290,5 +293,19 @@ void GameScene::Render(float elapsedTime)
 		EffectManager::Instance().Render(view, projection);
 	}
 
+	// 2Dデバッグ描画
+	{
+		DebugImGui();
 
+		//player->DebugImgui();
+		//EnemyManager::Instance().DrawDebugImGui();
+	}
+
+}
+
+void GameScene::DebugImGui()
+{
+	ImGui::Begin("Scene");
+	ImGui::Checkbox("is_update", &is_update);
+	ImGui::End();
 }

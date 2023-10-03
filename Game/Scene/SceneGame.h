@@ -29,6 +29,7 @@ public:
     // 描画処理
     void Render(float elapsedTime)override;
 
+    void DebugImGui();
 
     Player* CreatePlayer()
     {
@@ -47,7 +48,21 @@ public:
             new EnemyGraphicsComponent()
         );
     }
+
+
 private:
+    // 更新処理止める用
+    bool is_update = true;
+
+    //ポーズ
+    void Pause()
+    {
+        if (Input::Instance().GetGamePad().GetButtonDown() & GamePad::BTN_RIGHT_THUMB)
+            is_update = !is_update;
+    }
+
+private:
+
     float timer;
 
     //DemoPlayer
