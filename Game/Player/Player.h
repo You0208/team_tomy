@@ -84,7 +84,17 @@ private:
 
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
+private:
     /*----------------- スキル関係 -----------------*/
+
+    // 所持スキルのInitを呼ぶ
+    void SkillInit();
+    // 所持スキルのupdateを呼ぶ
+    void SkillUpdate();
+    // スキルをリセット
+    void SkillFin();
+
+private:
     std::unordered_map<std::string, std::unique_ptr<BaseSkill>> skills;
 
 };

@@ -174,6 +174,27 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float input_x, float input_y)
 
 }
 
+void Player::SkillInit()
+{
+    for(auto skill:skills)
+    {
+        skill.second->Init();
+    }
+}
+
+void Player::SkillUpdate()
+{
+    for (auto skill : skills)
+    {
+        skill.second->Update();
+    }
+}
+
+void Player::SkillFin()
+{
+    skills.clear();
+}
+
 void PlayerPhysicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
