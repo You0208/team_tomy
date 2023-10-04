@@ -35,6 +35,11 @@ void DemoScene::Initialize()
 			hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, light_constant_buffer.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
+		{
+			buffer_desc.ByteWidth = sizeof(adjust_constants);
+			hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, adjust_constant_buffer.GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
 	}
 
 	player = CreatePlayer();
@@ -63,12 +68,12 @@ void DemoScene::Initialize()
 	load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
 
 	// TODO
-	create_ps_from_cso(graphics.GetDevice(), "./Shader/Wall.cso", zelda_ps.GetAddressOf());
+	create_ps_from_cso(graphics.GetDevice(), "./Shader/try_pbr_ps.cso", zelda_ps.GetAddressOf());
 	create_ps_from_cso(graphics.GetDevice(), "./Shader/Wall.cso", Wall.GetAddressOf());
 	create_ps_from_cso(graphics.GetDevice(), "./Shader/try_ps.cso", Try.GetAddressOf());
 
 	// シェーダーの決定
-	player->SetPixelShader(Wall.Get());
+	player->SetPixelShader(zelda_ps.Get());
 
 	skinned_meshes[1] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx");
 	cube = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\latha.fbx");
@@ -76,6 +81,8 @@ void DemoScene::Initialize()
 	// SHADOW
 	double_speed_z = std::make_unique<shadow_map>(graphics.GetDevice(), shadowmap_width, shadowmap_height);
 
+	// dissolve
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Image\\dissolve_animation.png", noise.GetAddressOf(), graphics.GetTexture2D());//TODO
 
 
 	//// MASK
@@ -148,9 +155,12 @@ void DemoScene::Initialize()
 	light.ptRange.x = 50.0f;
 
 	//TODO PBR
-	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_BaseColor.1001.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
-	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_Normal.1001.png", Normal.GetAddressOf(), graphics.GetTexture2D());
-	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_Roughness.1001.png", Roughness.GetAddressOf(), graphics.GetTexture2D());
+	//load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_BaseColor.1001.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
+	//load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_Normal.1001.png", Normal.GetAddressOf(), graphics.GetTexture2D());
+	//load_texture_from_file(graphics.GetDevice(), L".\\resources\\Stage\\wall.fbm\\wall_lambert1_Roughness.1001.png", Roughness.GetAddressOf(), graphics.GetTexture2D());
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_AlbedoTransparency.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_Normal.png", Normal.GetAddressOf(), graphics.GetTexture2D());
+	load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_MetallicSmoothness.png", Roughness.GetAddressOf(), graphics.GetTexture2D());
 
 }
 
@@ -176,7 +186,12 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
-	ImGui::SliderFloat3("ptPosition", &light.ptPosition.x, 0.0f, +100.0f);
+	ImGui::SliderFloat("dissolve_value", &dissolve_value, -1.0f, +1.0f);
+	//TODO PBR
+	ImGui::SliderFloat("adjustMetalness", &adjust.adjustMetalness.x, -1.0f, +1.0f);
+	ImGui::SliderFloat("adjustSmoothness", &adjust.adjustSmoothness.x, 0.0f, +1.0f);
+
+	ImGui::SliderFloat3("ptPosition", &light.ptPosition.x, -100.0f, +100.0f);
 	ImGui::SliderFloat3("ptRange", &light.ptRange.x, 1.0f, +100.0f);
 
 	ImGui::SliderFloat("second", &second, 1.0f, +100.0f);
@@ -268,6 +283,18 @@ void DemoScene::Render(float elapsedTime)
 		immediate_context->UpdateSubresource(light_constant_buffer.Get(), 0, 0, &light, 0, 0);
 		immediate_context->VSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
 		immediate_context->PSSetConstantBuffers(2, 1, light_constant_buffer.GetAddressOf());
+
+		//TODO PBR
+		immediate_context->UpdateSubresource(adjust_constant_buffer.Get(), 0, 0, &adjust, 0, 0);
+		immediate_context->VSSetConstantBuffers(3, 1, adjust_constant_buffer.GetAddressOf());
+		immediate_context->PSSetConstantBuffers(3, 1, adjust_constant_buffer.GetAddressOf());
+	
+		// ディゾルブ
+		dissolve_constants dissolve{};
+		dissolve.parameters.x = dissolve_value;
+		immediate_context->UpdateSubresource(dissolve_constant_buffer.Get(), 0, 0, &dissolve, 0, 0);
+		immediate_context->VSSetConstantBuffers(4, 1, dissolve_constant_buffer.GetAddressOf());
+		immediate_context->PSSetConstantBuffers(4, 1, dissolve_constant_buffer.GetAddressOf());
 	}
 
 	// ↓Skinned_mesh オブジェクトと sprite_batch オブジェクトのレンダリング関数の呼び出し
@@ -287,6 +314,7 @@ void DemoScene::Render(float elapsedTime)
 	//3D描画
 	{
 		//TODO PBR
+		immediate_context->PSSetShaderResources(9/*slot(1番にセットします)*/, 1, noise.GetAddressOf());//TODO
 		immediate_context->PSSetShaderResources(10/*slot(1番にセットします)*/, 1, BaseColor.GetAddressOf());//TODO
 		immediate_context->PSSetShaderResources(11/*slot(1番にセットします)*/, 1, Normal.GetAddressOf());//TODO
 		immediate_context->PSSetShaderResources(12/*slot(1番にセットします)*/, 1, Roughness.GetAddressOf());//TODO
