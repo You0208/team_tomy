@@ -62,6 +62,9 @@ public:
 private:
     std::unique_ptr<framebuffer> framebuffers[8];
 
+    // dissolve
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> noise;
+
     // PBR
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> BaseColor;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Roughness;
@@ -165,6 +168,16 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> light_constant_buffer;
     // ライトのデータを作成する
     light_constants light;
+
+    //TODO PBR
+    struct adjust_constants
+    {
+        DirectX::XMFLOAT4 materialColor;
+        DirectX::XMFLOAT4 adjustMetalness = { 1.0f,0,0,0 }; // メタルネスの調整値
+        DirectX::XMFLOAT4 adjustSmoothness = {1.0f,0,0,0}; // 滑らかさの調整値
+    };
+    Microsoft::WRL::ComPtr<ID3D11Buffer> adjust_constant_buffer;
+    adjust_constants adjust;
 
     std::shared_ptr<skinned_mesh> cube;
 
