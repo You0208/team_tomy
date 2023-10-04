@@ -9,7 +9,7 @@ namespace Nero::Component::AI
     void IdleState::Begin()
     {
         // todo アニメーション
-        owner->SetAnimationIndex(owner->Idle_Anim);
+        //owner->SetAnimationIndex(owner->Idle_Anim);
     }
 
     void IdleState::Update()
@@ -24,6 +24,11 @@ namespace Nero::Component::AI
         {
             owner->GetStateMachine()->SetNextState(owner->Walk_State);
         }
+
+        if(owner->GetButtonDownB())
+        {
+            owner->GetStateMachine()->SetNextState(owner->Attack_State);
+        }
     }
 
     void IdleState::End()
@@ -35,7 +40,7 @@ namespace Nero::Component::AI
     void WalkState::Begin()
     {
         // todo アニメーション
-        owner->SetAnimationIndex(owner->Run_Anim);
+        //owner->SetAnimationIndex(owner->Run_Anim);
     }
 
     void WalkState::Update()
@@ -58,7 +63,7 @@ namespace Nero::Component::AI
 
     void AvoidState::Begin()
     {
-        owner->SetAnimationIndex(owner->Avoid_Anim);
+        //owner->SetAnimationIndex(owner->Avoid_Anim);
     }
 
     void AvoidState::Update()
@@ -76,7 +81,7 @@ namespace Nero::Component::AI
     void AttackState::Begin()
     {
         // todo アニメーション
-
+        owner->SetAnimationIndex(owner->First_Attack);
     }
 
     void AttackState::Update()

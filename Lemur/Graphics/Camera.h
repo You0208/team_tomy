@@ -70,7 +70,7 @@ private:
     DirectX::XMFLOAT3 eye = {};
 
     // …•½‚ÉŒ©‚é‚ñ‚â‚È‚­‚Ä‚¿‚å‚Á‚Æã‚©‚ç˜ëáÕ‚·‚é‚½‚ß‚Ì•â³
-    float eye_y_offset = 3.0f;
+    float eye_y_offset = 4.0f;
 
     // Œ©‚½‚¢l‚Ì‘«Œ³‚İ‚é‚ñ‚â‚È‚­‚Äƒ`ƒ‡ƒCã
     float target_y_offset = 1.5f;
@@ -80,7 +80,7 @@ private:
     DirectX::XMFLOAT3   target = { 0,0,0 };
     DirectX::XMFLOAT3   angle = { 0,0,0 };
     float               rollSpeed = DirectX::XMConvertToRadians(180);
-    float               range = 10.0f;
+    float               range = 12.0f;
 
     float               maxAngleX = DirectX::XMConvertToRadians(45);
     float               minAngleX = DirectX::XMConvertToRadians(-45);

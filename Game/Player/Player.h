@@ -1,4 +1,5 @@
 #pragma once
+#include "Lemur/Input/Input.h"
 #include "..\Skill\BaseSkill.h"
 #include "Lemur/Component/GameObject.h"
 //#include "Game/StateMachine/StateMachine.h"
@@ -11,13 +12,23 @@ namespace Nero::Component::AI
 class Player:public GameObject
 {
 public:
-    enum AnimIndex
-    {
-        Run_Anim,
-        Idle_Anim,
-        Avoid_Anim,
+    //enum AnimIndex
+    //{
+    //    Run_Anim,
+    //    Idle_Anim,
+    //    Avoid_Anim,
 
-        Max_Anim
+    //    Max_Anim
+    //};
+
+    enum TestAnimIndex
+    {
+        FullAttack,
+        First_Attack,
+        Second_Attack,
+        Third_Attack,
+
+        Max_Anim,
     };
 
     enum StateIndex
@@ -25,6 +36,7 @@ public:
         Idle_State,
         Walk_State,
         Avoid_State,
+        Attack_State,
 
         Max_State,
     };
@@ -46,6 +58,18 @@ public:
     Nero::Component::AI::StateMachine* GetStateMachine()const { return state_machine; }
 
     bool InputMove();
+
+
+    /*-------------- “ü—Íó‘Ô‚Ìæ“¾‚ğŠÖ”‰» --------------*/
+
+    bool GetButtonDownB()
+    {
+        GamePad& game_pad = Input::Instance().GetGamePad();
+        return game_pad.GetButtonDown() & GamePad::BTN_B;
+    }
+
+
+
 private:
     DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
 

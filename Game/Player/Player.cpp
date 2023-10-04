@@ -7,8 +7,6 @@
 #include "Game/Manager/EnemyManager.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Lemur/Graphics/framework.h"
-#include "Lemur/Input/GamePad.h"
-#include "Lemur/Input/Input.h"
 #include "Game/StateMachine/StateDerived.h"
 #include "Game/StateMachine/StateMachine.h"
 
@@ -16,7 +14,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\test_v001.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v001.fbx"));
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -77,6 +75,7 @@ void Player::StateMachineInitialize()
     state_machine->SetUpState<Nero::Component::AI::IdleState>(this, true);
     state_machine->SetUpState<Nero::Component::AI::WalkState>(this);
     state_machine->SetUpState<Nero::Component::AI::AvoidState>(this);
+    state_machine->SetUpState<Nero::Component::AI::AttackState>(this);
 }
 
 void Player::StateMachineUpdate()
