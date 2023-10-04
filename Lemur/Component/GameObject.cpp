@@ -76,7 +76,6 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_sha
     DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y,rotation.z) };
     DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(position.x, position.y, position.z) };
     // ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ğì¬
-    DirectX::XMFLOAT4X4 world;
     DirectX::XMStoreFloat4x4(&world, C * S * R * T);
 
 

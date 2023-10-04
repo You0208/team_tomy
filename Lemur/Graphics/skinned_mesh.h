@@ -301,6 +301,7 @@ public:
 
     std::vector<animation> animation_clips;
 
+
 private:
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
@@ -323,6 +324,60 @@ public:
     // The coordinate system of all function arguments is world space.
     bool raycast(const DirectX::XMFLOAT4& position/*ray position*/, const DirectX::XMFLOAT4& direction/*ray direction*/, const DirectX::XMFLOAT4X4& world_transform, DirectX::XMFLOAT4& closest_point, DirectX::XMFLOAT3& intersected_normal,
         std::string& intersected_mesh, std::string& intersected_material);
+
+    // JOINT POSITION
+    DirectX::XMFLOAT3 joint_position(
+        const std::string& mesh_name,
+        const std::string& bone_name,
+        const animation::keyframe* keyframe,
+        const DirectX::XMFLOAT4X4& transform)
+    {
+        DirectX::XMFLOAT3 position = {};/*world space*/
+
+        for (const skinned_mesh::mesh& mesh : meshes)
+        {
+            if (mesh.name == mesh_name)
+            {
+                for (const skeleton::bone& bone : mesh.bind_pose.bones)
+                {
+                    if (bone.name == bone_name)
+                    {
+                        const animation::keyframe::node& node = keyframe->nodes.at(bone.node_index);
+                        DirectX::XMFLOAT4X4 global_transform = node.global_transform;
+                        position.x = global_transform._41;
+                        position.y = global_transform._42;
+                        position.z = global_transform._43;
+                        DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&mesh.default_global_transform) * DirectX::XMLoadFloat4x4(&transform);
+                        DirectX::XMStoreFloat3(&position, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&position), M));
+                        return position;
+                    }
+                }
+            }
+        }
+
+        _ASSERT_EXPR(FALSE, "Joint not found.");
+
+        return {};
+    }
+    DirectX::XMFLOAT3 joint_position(
+        size_t mesh_index,
+        size_t bone_index,
+        const animation::keyframe* keyframe,
+        const DirectX::XMFLOAT4X4& transform)
+    {
+        DirectX::XMFLOAT3 position = {};/*world space*/
+
+        const skinned_mesh::mesh& mesh = meshes.at(mesh_index);
+        const skeleton::bone& bone = mesh.bind_pose.bones.at(bone_index);
+        const animation::keyframe::node& node = keyframe->nodes.at(bone.node_index);
+        DirectX::XMFLOAT4X4 global_transform = node.global_transform;
+        position.x = global_transform._41;
+        position.y = global_transform._42;
+        position.z = global_transform._43;
+        DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&mesh.default_global_transform) * DirectX::XMLoadFloat4x4(&transform);
+        DirectX::XMStoreFloat3(&position, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&position), M));
+        return position;
+    }
 
 
 protected:

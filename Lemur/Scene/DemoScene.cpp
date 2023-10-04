@@ -186,7 +186,6 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ImGui::Begin("ImGUI");
-
 	ImGui::SliderFloat("dissolve_value", &dissolve_value, -1.0f, +1.0f);
 	//TODO PBR
 	ImGui::SliderFloat("adjustMetalness", &adjust.adjustMetalness.x, -1.0f, +1.0f);

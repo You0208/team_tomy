@@ -66,6 +66,7 @@ public:
     void AnimationUpdate(float elapsedTime);
     animation animation{};
     animation::keyframe keyframe{};
+    DirectX::XMFLOAT4X4 world;
 public:
     // ˆÊ’uŽæ“¾
     const DirectX::XMFLOAT3& GetPosition() const { return position; }
