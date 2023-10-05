@@ -49,6 +49,19 @@ public:
         );
     }
 
+    // ゲームに存在する全スキル
+    std::vector<std::unique_ptr<BaseSkill>> all_skills;
+
+    // スキルを設定
+    template<class Skill>
+    void SetSkill()
+    {
+        Skill* skill = new Skill();
+        all_skills.emplace_back(skill);
+    }
+
+    // 全スキルからランダムでスキルを取得
+    void SetPlayerSkills();
 
 private:
     // 更新処理止める用

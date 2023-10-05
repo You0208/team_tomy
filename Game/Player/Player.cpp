@@ -42,6 +42,9 @@ void Player::DebugImgui()
     {
         ImGui::DragFloat3("position", &position.x);
         ImGui::DragFloat("scale_factor", &scaleFactor);
+        ImGui::DragFloat("height", &height);
+        ImGui::DragFloat("radius", &radius);
+
         ImGui::TreePop();
     }
     if(ImGui::TreeNode("speed"))
@@ -54,8 +57,16 @@ void Player::DebugImgui()
     {
         ImGui::DragInt("MaxHealth", &maxHealth);
         ImGui::DragInt("health", &health);
-        ImGui::DragFloat("height", &height);
-        ImGui::DragFloat("radius", &radius);
+        ImGui::DragInt("attack_power", &attack_power);
+
+        ImGui::TreePop();
+    }
+    if(ImGui::TreeNode("Skills"))
+    {
+        for(auto& skill:skills)
+        {
+            ImGui::Text(skill->GetName().c_str());
+        }
         ImGui::TreePop();
     }
 
@@ -176,17 +187,17 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float input_x, float input_y)
 
 void Player::SkillInit()
 {
-    for(auto skill:skills)
+    for(auto& skill:skills)
     {
-        skill.second->Init();
+        skill->Init();
     }
 }
 
 void Player::SkillUpdate()
 {
-    for (auto skill : skills)
+    for (auto& skill : skills)
     {
-        skill.second->Update();
+        skill->Update();
     }
 }
 
@@ -200,11 +211,14 @@ void PlayerPhysicsComponent::Initialize(GameObject* gameobj)
     Player* player = dynamic_cast<Player*> (gameobj);
     player->StateMachineInitialize();
 
+    player->SkillInit();
 }
 
 void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
+    player->SkillUpdate();
     player->StateMachineUpdate();
     player->UpdateVelocity(elapsedTime);
+
 }

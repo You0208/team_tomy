@@ -46,6 +46,7 @@ public:
         maxHealth = 1000;
         health = maxHealth;
 
+        attack_power = 1;
     }
 
     // ビヘイビアツリーの初期化

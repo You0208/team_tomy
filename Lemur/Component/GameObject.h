@@ -179,11 +179,12 @@ private:
 
 public:
 
-    /* HP関係はスキルとかギャンブルとかで変動する機会多いから
+    /* 攻撃、HP関係はスキルとかギャンブルとかで変動する機会多いから
      * 妥協でパブリックな。*/
     int     maxHealth = 5; // 最大健康状態
     int     health = maxHealth; // 健康状態
 
+    int attack_power = 0;
 
 protected:
     DirectX::XMFLOAT4X4 World;

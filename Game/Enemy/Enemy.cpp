@@ -194,6 +194,7 @@ void Enemy::DebugImgui()
     {
         ImGui::DragInt("MaxHealth", &maxHealth);
         ImGui::DragInt("health", &health);
+        ImGui::DragInt("attack_power", &attack_power);
         ImGui::TreePop();
     }
 

@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "Game/Manager/CharacterManager.h"
 #include "Game/Manager/EnemyManager.h"
+#include "Game/Skill/AttackSkillDerived.h"
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"
 
@@ -32,8 +33,14 @@ void GameScene::Initialize()
 		}
 	}
 
+	// スキルの設定
+	SetSkill<StrongArm>();
+
 	// プレイヤーの生成
 	player = CreatePlayer();
+	// プレイヤーにスキルを取得させる
+	SetPlayerSkills();
+	// プレイヤー初期処理
 	player->Initialize();
 	// プレイヤーをキャラクターマネージャにセット
 	CharacterManager::Instance().SetPlayer(player);
@@ -95,7 +102,6 @@ void GameScene::Initialize()
 				sprite_pixel_shader.GetAddressOf());
 		}
 	}
-
 
 }
 
@@ -315,4 +321,14 @@ void GameScene::DebugImGui()
 	ImGui::Begin("Scene");
 	ImGui::Checkbox("is_update", &is_update);
 	ImGui::End();
+}
+
+void GameScene::SetPlayerSkills()
+{
+	for (int i = 0; i < player->skill_capacity; i++)
+	{
+		int a = all_skills.size();
+		BaseSkill* skill = all_skills.at(rand() % a).get();
+		player->SetSkill(skill);
+	}
 }

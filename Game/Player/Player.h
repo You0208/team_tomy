@@ -48,6 +48,11 @@ public:
     {
         height = 1.7f;
         radius = 0.4f;
+
+        attack_power = 50;
+
+        // 最初に所持できるスキルは三つ
+        //skills.resize(skill_capacity);
     }
 
     virtual void DebugImgui() override;
@@ -84,9 +89,14 @@ private:
 
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
-private:
-    /*----------------- スキル関係 -----------------*/
+public:/*----------------- スキル関係 -----------------*/
 
+    // プレイヤーにスキルをセット
+    void SetSkill(BaseSkill* skill)
+    {
+        skill->SetOwner(this);
+        skills.emplace_back(skill);
+    }
     // 所持スキルのInitを呼ぶ
     void SkillInit();
     // 所持スキルのupdateを呼ぶ
@@ -94,8 +104,11 @@ private:
     // スキルをリセット
     void SkillFin();
 
+    // 所持できるスキル数
+    int skill_capacity = 1;
 private:
-    std::unordered_map<std::string, std::unique_ptr<BaseSkill>> skills;
+    // 所持してるスキル
+    std::vector<BaseSkill*> skills;
 
 };
 
