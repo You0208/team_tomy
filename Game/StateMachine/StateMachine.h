@@ -50,6 +50,9 @@ namespace Nero::Component::AI
 
         }
 
+        StateBase* GetCurrentState()const { return current_state; }
+
+        float GetMotionValue();
     private:
         // ステートを切り替える関数
         //次のステートがセットされたら勝手に実行される

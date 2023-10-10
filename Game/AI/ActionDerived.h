@@ -35,6 +35,20 @@ public:
 
 };
 
+//近攻撃
+class NearAttackAction:public ActionBase
+{
+public:
+	NearAttackAction(Enemy* enemy):ActionBase(enemy){}
+	ActionBase::State Run(float elapsedTime) override;
+
+	// 当たり判定開始フレーム
+	int start_collision__frame = 30;
+	// 当たり判定終了フレーム
+	int end_collision__frame = 60;
+
+};
+
 // 死亡
 class DeathAction:public ActionBase
 {

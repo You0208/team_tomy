@@ -21,6 +21,7 @@ namespace Nero::Component::AI
 
         ~StateBase() = default;
 
+        virtual void DrawImGui(){}
         virtual void Begin() = 0;// ステートが始まるとき
         virtual void Update() = 0;// ステート中、常に呼ばれる
         virtual void End() = 0;// ステートが終了するとき
@@ -31,6 +32,9 @@ namespace Nero::Component::AI
         //回避ステートに移行する判定関数(めんどいから関数化した)
         // これをここに書くのだいぶきもいけど.。
         void ChangeJudgeAvoidState();
+
+        // 死亡ステートに移行する判定関数(これもめんどいから関数化)
+        void ChangeJudgeDeathState();
 
     protected:
         // todo テンプレート化

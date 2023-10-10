@@ -1,6 +1,5 @@
 #include "StateMachine.h"
 #include "imgui.h"
-
 namespace Nero::Component::AI
 {
 
@@ -18,6 +17,12 @@ namespace Nero::Component::AI
             ImGui::Text(current_state->state_name.c_str());
             ImGui::TreePop();
         }
+    }
+
+    float StateMachine::GetMotionValue()
+    {
+        //if(typeid(current_state)==Attack)
+        return 0;
     }
 
     void StateMachine::ChangeState()

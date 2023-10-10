@@ -8,7 +8,7 @@ class Player;
 class BaseSkill
 {
 public:
-    // プレイヤーがシーンの全スキル配列から取得するタイミングでオーナーをセットする。
+    // プレイヤーがシーンの全スキル配列からスキルを取得するタイミングで、オーナーをセットする。
     BaseSkill(std::string skill_name_) :skill_name(skill_name_){}
 
     //BaseSkill(Player* player,std::string skill_name_) :owner(player),skill_name(skill_name_){}
@@ -25,9 +25,12 @@ public:
     // プレイヤーがスキルを取得するタイミングでオーナーをセット
     void SetOwner(Player* player) { owner = player; }
 
+    Player* GetOwner()const { return owner; }
+
     // 名前取得
     std::string GetName()const { return skill_name; }
 
+    bool is_select = false;
 protected:
     std::string skill_name;
 

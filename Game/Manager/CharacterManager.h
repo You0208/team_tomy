@@ -23,6 +23,7 @@ public:
     void SetPlayer(Player* player_) { player = player_; }
     void AddEnemy(Enemy* enemy) { enemies.emplace_back(enemy); }
 
+    void CollisionAllCharacter();
 protected:
     Player* player;
     std::vector<Enemy*>enemies;

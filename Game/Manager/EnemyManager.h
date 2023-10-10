@@ -45,6 +45,8 @@ public:
     // エネミー削除
     void Remove(Enemy* enemy);
 
+    // エネミー当たり履歴消去
+    void HitClear();
 private:
     std::set<Enemy*>    removes;
 };

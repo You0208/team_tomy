@@ -2,8 +2,10 @@
 
 #include "imgui.h"
 #include "Game/Manager/CharacterManager.h"
+#include "Game/Manager/ColliderManager.h"
 #include "Game/Manager/EnemyManager.h"
 #include "Game/Skill/AttackSkillDerived.h"
+#include "Game/Skill/SkillDerived.h"
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"
 
@@ -33,8 +35,10 @@ void GameScene::Initialize()
 		}
 	}
 
-	// スキルの設定
+	// Gameにスキルの設定
 	SetSkill<StrongArm>();
+	SetSkill<DemonPower>();
+	SetSkill<BloodSucking>();
 
 	// プレイヤーの生成
 	player = CreatePlayer();
@@ -45,6 +49,8 @@ void GameScene::Initialize()
 	// プレイヤーをキャラクターマネージャにセット
 	CharacterManager::Instance().SetPlayer(player);
 
+	ColliderManager::Instance().SetCollider(player);
+
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	for (int i = 0; i < 1; ++i)
@@ -53,6 +59,8 @@ void GameScene::Initialize()
 		enemy->Initialize();
 		enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
 		enemyManager.Register(enemy);
+
+		ColliderManager::Instance().SetCollider(enemy);
 	}
 
 	//framebuffers[0] = std::make_unique<framebuffer>(graphics.GetDevice(), 1280, 720);
@@ -133,6 +141,7 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 
 	player->Update(elapsedTime);
 
+	ColliderManager::Instance().Update();
 }
 
 void GameScene::Render(float elapsedTime)
@@ -306,9 +315,10 @@ void GameScene::Render(float elapsedTime)
 		EffectManager::Instance().Render(view, projection);
 
 		player->DrawDebugPrimitive();
+		EnemyManager::Instance().DrawDebugPrimitive();
 	}
 
-	// 2Dデバッグ描画
+	// 2Dデバッグ描画　
 	{
 		DebugImGui();
 		camera.DrawDebug();
@@ -325,10 +335,21 @@ void GameScene::DebugImGui()
 
 void GameScene::SetPlayerSkills()
 {
-	for (int i = 0; i < player->skill_capacity; i++)
+	int all_skill_count = all_skills.size();
+
+	_ASSERT_EXPR(player->skill_capacity <= all_skill_count, L"取得可能スキル超過");
+
+	// 所持できる分だけ繰り返す
+	for (int i = 0; i < player->skill_capacity;)
 	{
-		int a = all_skills.size();
-		BaseSkill* skill = all_skills.at(rand() % a).get();
+		BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
+
+		// もうすでに取得してたらもう一回
+		if (skill->GetOwner())
+		{
+			continue;
+		}
 		player->SetSkill(skill);
+		i++;
 	}
 }

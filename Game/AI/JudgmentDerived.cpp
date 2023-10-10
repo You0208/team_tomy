@@ -27,9 +27,15 @@ bool BattleJudgment::Judgment()
 
 bool DeathJudgment::Judgment()
 {
-    if (owner->health <= 0)
+    if (owner->death)
         return true;
     return false;
+}
+
+bool AttackJudgment::Judgment()
+{
+    DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+    return owner->ReachTargetJudge(owner->GetPosition(), player_pos, owner->GetNearAttackRange());
 }
 
 bool ClawAttackJudgment::Judgment()

@@ -138,7 +138,7 @@ bool Collision::IntersectCylinderVsCylinder(
     return true;
 }
 
-bool Collision::IntersectSphereVsCylinder(
+bool Collision::IntersectSphereVsCylinderOut(
     const DirectX::XMFLOAT3& spherePosition,
     float sphereRadius,
     const DirectX::XMFLOAT3& cylinderPosition,
@@ -165,6 +165,26 @@ bool Collision::IntersectSphereVsCylinder(
     outCylinderPosition.x = spherePosition.x + (vx * radius);// Aから単位ベクトル方向に半径の合計分だけ移動する
     outCylinderPosition.y = cylinderPosition.y;
     outCylinderPosition.z = spherePosition.z + (vz * radius);// Aから単位ベクトル方向に半径の合計分だけ移動する
+
+    return true;
+}
+
+bool Collision::IntersectSphereVsCylinder(const DirectX::XMFLOAT3& spherePosition, float sphereRadius,
+    const DirectX::XMFLOAT3& cylinderPosition, float cylinderRadius, float cylinderHeight)
+{
+    // y軸当たり判定
+    if (spherePosition.y - sphereRadius > cylinderPosition.y + cylinderHeight)return false;
+    if (spherePosition.y + sphereRadius < cylinderPosition.y)return false;
+
+    // xz平面当たり判定
+    float vx = cylinderPosition.x - spherePosition.x;//ベクトルを求める
+    float vz = cylinderPosition.z - spherePosition.z;//ベクトルを求める
+    float radius = cylinderRadius + sphereRadius;//半径の合計を求める
+    float distXZ = sqrtf(vx * vx + vz * vz);//距離を求める
+    if (distXZ > radius)//比べる
+    {
+        return false;
+    }
 
     return true;
 }

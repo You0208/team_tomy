@@ -12,3 +12,11 @@ void Nero::Component::AI::StateBase::ChangeJudgeAvoidState()
     }
 
 }
+
+void Nero::Component::AI::StateBase::ChangeJudgeDeathState()
+{
+    if(owner->death)
+    {
+        owner->GetStateMachine()->SetNextState(owner->Death_State);
+    }
+}

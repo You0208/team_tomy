@@ -47,6 +47,10 @@ void EnemyManager::Clear()
 
 void EnemyManager::DrawDebugPrimitive()
 {
+    for(Enemy* enemy:enemies)
+    {
+        enemy->DrawDebugPrimitive();
+    }
 }
 
 
@@ -58,4 +62,13 @@ void EnemyManager::Remove(Enemy* enemy)
 {
     // ”jŠüƒŠƒXƒg‚É’Ç‰Á
     removes.insert(enemy);
+}
+
+void EnemyManager::HitClear()
+{
+    for (Enemy* enemy : enemies)
+    {
+        enemy->is_hit = false;
+    }
+
 }

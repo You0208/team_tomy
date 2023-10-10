@@ -9,12 +9,13 @@
 #include "Lemur/Graphics/framework.h"
 #include "Game/StateMachine/StateDerived.h"
 #include "Game/StateMachine/StateMachine.h"
+#include "Lemur/Collision/Collision.h"
 
 void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v001.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v007.fbx"));
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -47,17 +48,22 @@ void Player::DebugImgui()
 
         ImGui::TreePop();
     }
-    if(ImGui::TreeNode("speed"))
+    if(ImGui::TreeNode("State"))
     {
-        ImGui::DragFloat("walk_speed", &walk_speed);
-        ImGui::DragFloat("turn_speed", &turn_speed);
+        ImGui::Text(state_machine->GetCurrentState()->state_name.c_str());
+        state_machine->GetCurrentState()->DrawImGui();
         ImGui::TreePop();
     }
     if(ImGui::TreeNode("parameter"))
     {
+        ImGui::DragFloat("walk_speed", &walk_speed);
+        ImGui::DragFloat("turn_speed", &turn_speed);
+
         ImGui::DragInt("MaxHealth", &maxHealth);
         ImGui::DragInt("health", &health);
-        ImGui::DragInt("attack_power", &attack_power);
+        ImGui::DragFloat("attack_power", &attack_power);
+        ImGui::DragFloat("defense_power", &defense_power);
+        ImGui::DragFloat("speed_power", &speed_power);
 
         ImGui::TreePop();
     }
@@ -69,7 +75,22 @@ void Player::DebugImgui()
         }
         ImGui::TreePop();
     }
+    if(ImGui::TreeNode("Attack & Hit"))
+    {
+        ImGui::DragFloat("near_attack_range", &attack_collision_range);
+        ImGui::Checkbox("attack_collision_flag", &attack_collision_flag);
+        ImGui::Checkbox("invincible", &invincible);
+        ImGui::DragInt("invincible_frame", &invincible_frame);
 
+        ImGui::TreePop();
+    }
+    if(ImGui::TreeNode("Animation"))
+    {
+        ImGui::InputInt("animation_index", &animation_index);
+        ImGui::InputFloat("animation_tick", &animation_tick);
+        ImGui::InputInt("frame_index", &frame_index);
+        ImGui::TreePop();
+    }
     ImGui::End();
 }
 
@@ -78,6 +99,11 @@ void Player::DrawDebugPrimitive()
     DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
     debug_renderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
 
+    if(attack_collision_flag)
+    {
+        DirectX::XMFLOAT3 position = Model->joint_position("wepon", "J_wepon", &keyframe, world);
+        debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
+    }
 }
 
 void Player::StateMachineInitialize()
@@ -87,6 +113,7 @@ void Player::StateMachineInitialize()
     state_machine->SetUpState<Nero::Component::AI::WalkState>(this);
     state_machine->SetUpState<Nero::Component::AI::AvoidState>(this);
     state_machine->SetUpState<Nero::Component::AI::AttackState>(this);
+    state_machine->SetUpState<Nero::Component::AI::DeathState>(this);
 }
 
 void Player::StateMachineUpdate()
@@ -106,10 +133,57 @@ bool Player::InputMove()
     if (vec.x == 0.0f || vec.z == 0.0f)
         return false;
 
-    Move(vec.x, vec.z, walk_speed);
+    Move(vec.x, vec.z, walk_speed * speed_power);
     Turn(vec.x, vec.z, turn_speed);
 
     return true;
+}
+
+void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius)
+{
+
+    // ノード位置取得
+    DirectX::XMFLOAT3 nodePosition = Model->joint_position(mesh_name, bone_name, &keyframe, world);
+
+    // 指定のノードと全ての敵を総当たりで衝突処理
+
+    EnemyManager& enemy_manager = EnemyManager::Instance();
+    int enemy_count = enemy_manager.GetEnemyCount();
+    for (int i = 0; i < enemy_count; i++)
+    {
+        Enemy* enemy = enemy_manager.GetEnemy(i);
+
+        // 一回当たってたら判定しない
+        if (enemy->is_hit)continue;
+
+        // 衝突処理
+        DirectX::XMFLOAT3 outPosition;
+
+        // まずは当たり判定
+        if (Collision::IntersectSphereVsCylinderOut(
+            nodePosition, node_radius,
+            enemy->GetPosition(),
+            enemy->GetRadius(),
+            enemy->GetHeight(),
+            outPosition
+        ))
+        {
+            enemy->is_hit = true;
+
+            // ダメージを与える判定
+            if (enemy->ApplyDamage(attack_power*motion_value))
+            {
+                // このフレームで与えたダメージを保持
+                add_damage += attack_power * motion_value - enemy->defense_power;
+                // もし倒したら撃破数を増やす。
+                if (enemy->death)
+                    kill_count++;
+            }
+        }
+
+
+    }
+
 }
 
 // 入力処理

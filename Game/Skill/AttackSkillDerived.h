@@ -14,3 +14,13 @@ public:
 };
 
 // 鬼力(敵を倒すと攻撃力のステータスが50上がる)
+class DemonPower:public BaseSkill
+{
+public:
+    DemonPower() :BaseSkill("DemonPower"){}
+    ~DemonPower();
+
+    void Update() override;
+
+    int kill_count = 0;
+};

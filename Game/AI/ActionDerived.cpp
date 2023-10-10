@@ -18,9 +18,8 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 		break;
 	case 1:
 		
-		DirectX::XMFLOAT3 target_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
 
-		if (owner->ReachTargetJudge(owner->GetPosition(), target_pos, 1.0f))
+		if (owner->ReachTargetJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
 		{
 			step = 0;
 
@@ -28,6 +27,14 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 		}
 
 	    owner->Move_to_Target(elapsedTime);
+
+		// 敵を発見したら終了
+		if (owner->SearchPlayer(owner->GetVisionLength()))
+		{
+			step = 0;
+			return ActionBase::State::Failed;
+		}
+
 
 	    return ActionBase::State::Run;
 	}
@@ -62,6 +69,11 @@ ActionBase::State IdleAction::Run(float elapsedTime)
 		    return State::Complete;
 		}
 
+		// 敵を発見したら終了
+		if (owner->SearchPlayer(owner->GetVisionLength()))
+			return ActionBase::State::Failed;
+
+
 		return State::Run;
     }
     
@@ -73,31 +85,64 @@ ActionBase::State PursueAction::Run(float elapsedTime)
 	{
 	case 0:
 
-		// todo アニメーション設定
-		//owner->GetModel()->animation_clips
+		owner->SetAnimationIndex(owner->Walk_Anim);
 		step++;
 		break;
 
 	case 1:
 
-		DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
-		DirectX::XMFLOAT3 enemy_pos = owner->GetPosition();
+		// 追跡するターゲットの位置をセット
+		owner->SetTargetPosition(CharacterManager::Instance().GetPlayer()->GetPosition());
 
-		float vec_x = player_pos.x - enemy_pos.x;
-		float vec_z = player_pos.x - enemy_pos.x;
-		float length = Length(player_pos, enemy_pos);
-		vec_x = vec_x / length;
-		vec_z = vec_z / length;
-		if (length < owner->GetAttackRange())
+		// 攻撃可能範囲に到達したらコンプリート
+		if(owner->ReachTargetJudge(owner->GetPosition(), owner->GetTargetPosition(), owner->GetNearAttackRange()))
 		{
 			step = 0;
 
 			return ActionBase::State::Complete;
 		}
-	    owner->Move(vec_x, vec_z, owner->GetWalkSpeed());
-		
+
+		//攻撃可能範囲に到達するまで追跡
+	    owner->Move_to_Target(elapsedTime);
+
 		return ActionBase::State::Run;
 	}
+}
+
+ActionBase::State NearAttackAction::Run(float elapsedTime)
+{
+    switch (step)
+    {
+    case 0:
+		owner->SetAnimationIndex(owner->NearAttack_Anim);
+		step++;
+
+		break;
+    case 1:
+
+		// 限定フレームの間だけ攻撃判定可能
+		if (owner->GetFrameIndex() >= start_collision__frame &&
+			owner->GetFrameIndex() <= end_collision__frame)
+			owner->attack_collision_flag = true;
+
+		else owner->attack_collision_flag = false;
+
+
+		if (owner->GetEndAnimation())
+		{
+			step = 0;
+			return  ActionBase::State::Complete;
+		}
+
+		// 当たり判定
+		if(owner->attack_collision_flag)
+		{
+			owner->CollisionNodeVsPlayer("polySurface1", "J_leg_A_03_L", owner->GetAttackCollisionRange());
+		}
+
+
+		break;
+    }
 }
 
 ActionBase::State DeathAction::Run(float elapsedTime)

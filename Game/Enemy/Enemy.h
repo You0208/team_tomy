@@ -34,7 +34,11 @@ class Enemy :public GameObject
 public:
     enum AnimIndex
     {
-        
+        Walk_Anim,
+        NearAttack_Anim,
+        Death_Anim,
+
+        Max_Anim,
     };
 public:
     Enemy(){}
@@ -43,11 +47,23 @@ public:
         GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_)
     {
         // todo 調整
+
+        height=1.0f;
+        radius = 0.5f;
+
+        walk_speed = 1.5f;
+
+
         maxHealth = 1000;
         health = maxHealth;
+        defense_power = 50.5f;
 
         attack_power = 1;
+        attack_collision_range = 0.3f;
     }
+
+    virtual void DrawDebugPrimitive() override;
+
 
     // ビヘイビアツリーの初期化
     void BehaviorTreeInitialize();
@@ -68,14 +84,16 @@ public:
     // 目標地点へ進む
     void Move_to_Target(float elapsedTime, float move_speed_rate = 1.0f, float turn_speed_rate = 1.0f);
 
+    void CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, float node_radius);
 
     DirectX::XMFLOAT3 GetTargetPosition()const { return target_position; }
     DirectX::XMFLOAT3 GetTerritoryOrigin()const { return territory_origin; }
     float GetTerritoryRange()const { return territory_range; }
     float GetVisionLength()const { return vision_length; }
-    float GetAttackRange()const { return attack_range; }
-    float GetWalkSpeed()const { return walk_speed; }
+    float GetNearAttackRange()const { return near_attack_range; }
 
+    // ターゲット位置を設定
+    void SetTargetPosition(DirectX::XMFLOAT3 position) { target_position = position; };
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
 
@@ -83,6 +101,9 @@ public:
 
     // 破棄
     void Destroy();
+
+    // 多段ヒットしないように攻撃喰らったらtrue
+    bool is_hit = false;
 
 private:
 
@@ -98,11 +119,9 @@ private:
     // 視野範囲(索敵用)
     float vision_length = 10.0f;
 
-    // 攻撃可能範囲
-    float attack_range = 3.0f;
+    // 近攻撃可能範囲
+    float near_attack_range = 3.0f;
 
-    // 歩きの速さ
-    float walk_speed = 3.0f;
 
     BehaviorTree* ai_tree = nullptr;
     NodeBase* activeNode = nullptr;

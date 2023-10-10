@@ -53,12 +53,21 @@ public:
     );
 
     // 球と円柱の交差判定
-    static bool IntersectSphereVsCylinder(
+    static bool IntersectSphereVsCylinderOut(
         const DirectX::XMFLOAT3& spherePosition,
         float sphereradius,
         const DirectX::XMFLOAT3& cylinderPosition,
         float cylinderradius,
         float cylinderheigh,
         DirectX::XMFLOAT3& outCylinderPosition
+    );
+
+    // 球と円柱の交差判定(押し出し無しverを作りました。 byトミー)
+    static bool IntersectSphereVsCylinder(
+        const DirectX::XMFLOAT3& spherePosition,
+        float sphereradius,
+        const DirectX::XMFLOAT3& cylinderPosition,
+        float cylinderradius,
+        float cylinderheigh
     );
 };

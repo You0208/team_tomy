@@ -12,12 +12,13 @@
 #include "Game/AI/JudgmentDerived.h"
 #include "Game/AI/NodeBase.h"
 #include "Game/Manager/EnemyManager.h"
+#include "Lemur/Collision/Collision.h"
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\arakBarrak_v025.fbx"));
+    demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
 }
 
 void EnemyGraphicsComponent::Update(GameObject* gameobj)
@@ -34,6 +35,19 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     enemy->Render(elapsedTime, replaced_pixel_shader);
 
     enemy->DebugImgui();
+}
+
+void Enemy::DrawDebugPrimitive()
+{
+    DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
+    DirectX::XMFLOAT3 position = Model->joint_position("polySurface1","J_root" , &keyframe, world);
+    debug_renderer->DrawSphere(position, radius,  DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
+
+    if(attack_collision_flag)
+    {
+        position = Model->joint_position("polySurface1", "J_leg_A_03_L", &keyframe, world);
+        debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
+    }
 }
 
 void Enemy::BehaviorTreeInitialize()
@@ -55,9 +69,14 @@ void Enemy::BehaviorTreeInitialize()
         ai_tree->AddNode("Root", "Battle", 0, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
         {
             // 追跡
-            ai_tree->AddNode("Battle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+            ai_tree->AddNode("Battle", "Pursue", 2, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
             // 死亡
-            ai_tree->AddNode("Battle", "Death", 1, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+            ai_tree->AddNode("Battle", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+            // 攻撃
+            ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new AttackJudgment(this), nullptr);
+            {
+                ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
+            }
         }
     }
 
@@ -81,11 +100,11 @@ void Enemy::BehaviorTreeUpdate()
 
 }
 
-
+// todo これモジュール化してNeroに入れる。
 bool Enemy::ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range)
 {
-    float vx = target_position.x - position.x;
-    float vz = target_position.z - position.z;
+    float vx = target_pos.x - pos.x;
+    float vz = target_pos.z - pos.z;
 
     // ターゲット位置までの距離(二乗)
     float dist_sq = ((vx * vx) + (vz * vz));
@@ -150,9 +169,24 @@ void Enemy::Move_to_Target(float elapsedTime, float move_speed_rate, float turn_
     vz /= dist;
 
     // todo ここら辺も今はテキトー
-    Move(vx, vz, GetWalkSpeed());
-    Turn(vx, vz, 3.0f);
+    Move(vx, vz, walk_speed);
+    Turn(vx, vz, 5.0f);
 
+}
+
+void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, float node_radius)
+{
+    // ノード位置取得
+    DirectX::XMFLOAT3 nodePosition = Model->joint_position(mesh_name, bone_name, &keyframe, world);
+    Player* player = CharacterManager::Instance().GetPlayer();
+
+    if(Collision::IntersectSphereVsCylinder(
+        nodePosition,node_radius,
+        player->GetPosition(),player->GetRadius(),player->GetHeight())
+        )
+    {
+        player->ApplyDamage(attack_power);
+    }
 }
 
 void Enemy::SetRandomTargetPosition()
@@ -183,20 +217,33 @@ void Enemy::DebugImgui()
         else
             ImGui::Text(activeNode->GetName().c_str());
 
-        ImGui::DragFloat("attack_range", &attack_range);
+        ImGui::DragFloat("near_attack_range", &near_attack_range);
+        ImGui::DragFloat3("target_position", &target_position.x);
 
         DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
         float enemy_to_player = Length(position, player_pos);
         ImGui::DragFloat("enemy_to_player", &enemy_to_player);
+
+        float enemy_to_target = Length(target_position, position);
+        ImGui::DragFloat("enemy_to_target", &enemy_to_target);
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode("Attack"))
+    {
+        ImGui::DragFloat("near_attack_range", &near_attack_range);
+        ImGui::Checkbox("attack_collision_flag", &attack_collision_flag);
+        ImGui::InputFloat("attack_collision_range", &attack_collision_range);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode("parameter"))
     {
         ImGui::DragInt("MaxHealth", &maxHealth);
         ImGui::DragInt("health", &health);
-        ImGui::DragInt("attack_power", &attack_power);
+        ImGui::DragFloat("attack_power", &attack_power);
+        ImGui::DragFloat("defense_power", &defense_power);
         ImGui::TreePop();
     }
+    ImGui::Checkbox("is_hit", &is_hit);
 
     ImGui::End();
 

@@ -5,7 +5,11 @@
 
 
 // ‹zŒŒ(“G‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚é‚ÆHP‰ñ•œ)
-class Bloodsucking:public BaseSkill
+class BloodSucking:public BaseSkill
 {
-    
+public:
+    BloodSucking() :BaseSkill("BloodSucking") {}
+    ~BloodSucking() = default;
+
+    void Update() override;
 };

@@ -12,31 +12,27 @@ namespace Nero::Component::AI
 class Player:public GameObject
 {
 public:
-    //enum AnimIndex
-    //{
-    //    Run_Anim,
-    //    Idle_Anim,
-    //    Avoid_Anim,
-
-    //    Max_Anim
-    //};
-
-    enum TestAnimIndex
+    enum AnimIndex
     {
-        FullAttack,
-        First_Attack,
-        Second_Attack,
-        Third_Attack,
+        FirstAttack_Anim,
+        SecondAttack_Anim,
+        ThirdAttack_Anim,
 
-        Max_Anim,
+        Run_Anim,
+        Idle_Anim,
+        Avoid_Anim,
+        Death_Anim,
+
+        Max_Anim
     };
 
     enum StateIndex
     {
         Idle_State,
-        Walk_State,
+        Run_State,
         Avoid_State,
         Attack_State,
+        Death_State,
 
         Max_State,
     };
@@ -49,7 +45,11 @@ public:
         height = 1.7f;
         radius = 0.4f;
 
+        // 歩きの速さ(スピードパラメータがあるからベースの速度は激おそ)
+        walk_speed = 0.1f;
+
         attack_power = 50;
+
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);
@@ -64,7 +64,6 @@ public:
 
     bool InputMove();
 
-
     /*-------------- 入力状態の取得を関数化 --------------*/
 
     bool GetButtonDownB()
@@ -73,20 +72,48 @@ public:
         return game_pad.GetButtonDown() & GamePad::BTN_B;
     }
 
+    // 敵撃破数取得
+    int GetKillCount()const { return kill_count; }
 
-
+    // 与えたダメージ取得
+    int GetAddDamage()const { return add_damage; }
+    // 与えたダメージリセット
+    void ResetAddDamage() { add_damage = 0; }
 private:
+
+    // 敵を倒した数
+    int kill_count = 0;
+
+    // スキル系でいろいろ都合がいいから与えたダメージを変数で保持
+    int add_damage = 0;
+
+public:/*---------- 当たり判定系 ----------*/
+
+    // ノードとエネミーの衝突処理
+    void CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius);
+
+    // 無敵状態(喰らい当たり判定するか)
+    bool invincible = false;
+
+    int GetInvincibleFrame()const { return invincible_frame; }
+private:
+
+    // 無敵フレーム
+    int invincible_frame = 20;
+
+private:/*---------- 移動、速度関係 -----------*/
+
     DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
 
-
 private:
-
-    // 歩きの速さ
-    float walk_speed = 3.0f;
 
     // 旋回の速さ
     float turn_speed = 10.0f;
 
+    // スピードパラメータ
+    float speed_power = 10.0f;
+
+private:
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
 public:/*----------------- スキル関係 -----------------*/
@@ -105,7 +132,7 @@ public:/*----------------- スキル関係 -----------------*/
     void SkillFin();
 
     // 所持できるスキル数
-    int skill_capacity = 1;
+    int skill_capacity = 3;
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;

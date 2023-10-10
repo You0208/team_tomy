@@ -22,17 +22,16 @@ void GameObject::AnimationUpdate(float elapsedTime)
     }
 }
 
-bool GameObject::ApplyDamage(int damage, float invincibleTime)
+bool GameObject::ApplyDamage(int damage)
 {
+    damage -= static_cast<int>(defense_power);
+
     // ダメージが０の場合は健康状態を変更する必要がない
-    if (damage == 0)return false;
+    if (damage <= 0)return false;
 
     // 死亡している間は健康状態を変更しない
     if (health <= 0)return false;
 
-    if (invincibleTimer > 0.0f)return false;
-
-    invincibleTimer = invincibleTime;
 
     // ダメージ処理
     health -= damage;
@@ -40,6 +39,8 @@ bool GameObject::ApplyDamage(int damage, float invincibleTime)
     // 死亡通知
     if (health <= 0)
     {
+        health = 0;
+        death = true;
         OnDead();
     }
     else

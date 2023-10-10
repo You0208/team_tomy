@@ -108,7 +108,10 @@ public:
     //int GetMaxHealth() const { return maxHealth; }
 
     // ダメージを与える
-    bool ApplyDamage(int damage, float invincibleTime);
+    bool ApplyDamage(int damage);
+
+    // 攻撃当たり半径取得
+    float GetAttackCollisionRange()const { return attack_collision_range; }
 
     // 色取得
     const DirectX::XMFLOAT4& GetColor() { return material_color; }
@@ -130,6 +133,9 @@ public:
 
     // アニメーション終了フラグ取得
     bool GetEndAnimation()const { return end_animation; }
+
+    // アニメーションフレーム取得
+    int GetFrameIndex()const { return frame_index; }
 
     // 描画設定
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
@@ -183,8 +189,18 @@ public:
      * 妥協でパブリックな。*/
     int     maxHealth = 5; // 最大健康状態
     int     health = maxHealth; // 健康状態
+    bool death = false;
 
-    int attack_power = 0;
+    //基礎攻撃力
+    float attack_power = 0;
+    // モーション値(○倍)
+    float motion_value = 1.0f;
+
+    // 基礎防御力
+    float defense_power = 0;
+
+    // 攻撃当たり判定するか
+    bool attack_collision_flag = false;
 
 protected:
     DirectX::XMFLOAT4X4 World;
@@ -213,6 +229,12 @@ protected:
     float	airControl                  = 0.3f; // 空気抵抗
 
     bool    isGround                    = false; // 着地フラグ
+
+    // 攻撃当たり判定する半径
+    float attack_collision_range = 0.3f;
+
+    // 歩きの速さ
+    float walk_speed = 3.0f;
 
 
     float animation_tick                = 0; // アニメーション
