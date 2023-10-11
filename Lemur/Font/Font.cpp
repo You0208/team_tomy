@@ -18,6 +18,7 @@ namespace Lemur::Graphics
 	}
 	void Font::render()
 	{
+#ifdef ENABLE_DIRECT2D
 		Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 
 		//--------------------------š’Ç‰Á«--------------------------
@@ -40,5 +41,6 @@ namespace Lemur::Graphics
 		graphics.g_pRT->DrawText(wcText7, ARRAYSIZE(wcText7) - 1, graphics.g_pTextFormat, D2D1::RectF(0, 120, 800, 140), graphics.g_pSolidBrush, D2D1_DRAW_TEXT_OPTIONS_NONE);
 		graphics.g_pRT->EndDraw();
 		//--------------------------š’Ç‰Áª--------------------------
+#endif
 	}
 };

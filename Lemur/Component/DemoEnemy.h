@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Component.h"
-#include "../Graphics/skinned_mesh.h"
+#include "../Model/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Resource/ResourceManager.h"
 #include"../Input/Input.h"

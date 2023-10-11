@@ -50,6 +50,7 @@ public:
     DirectX::XMMATRIX GetProjectionMatrix() { return P; }   // projections—ñæ“¾
     DirectX::XMFLOAT4X4 GetWorld() { return world; }   // projections—ñæ“¾
     DirectX::XMVECTOR GetEye() { return Eye; }   // projections—ñæ“¾
+    DirectX::XMVECTOR GetFocus() { return Focus; }
 
 
 private:

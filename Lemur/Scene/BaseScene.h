@@ -30,7 +30,7 @@ namespace Lemur::Scene
         void SetReady() { ready = true; }
 
     protected:
-        enum class SAMPLER_STATE { POINT, LINEAR, ANISOTROPIC, LINEAR_BORDER_BLACK, LINEAR_BORDER_WHITE, COMPARISON_LINEAR_BORDER_WHITE};
+        enum class SAMPLER_STATE { POINT, LINEAR, ANISOTROPIC, LINEAR_BORDER_BLACK, LINEAR_BORDER_WHITE, COMPARISON_LINEAR_BORDER_WHITE, LINEAR_CLAMP };
         Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_states[6];
 
         enum  DEPTH_STATE { ZT_ON_ZW_ON, ZT_ON_ZW_OFF, ZT_OFF_ZW_ON, ZT_OFF_ZW_OFF };
@@ -44,7 +44,7 @@ namespace Lemur::Scene
 
         void SetState();
 
-        void SetUpRendering(bool shadow = false);
+        void SetUpRendering();
 
     protected:
         // Zelda_Shader
@@ -55,6 +55,7 @@ namespace Lemur::Scene
         bool enableShadow = false;
         bool enableSkyMap = false;
         bool enableBloom = false;
+        bool enableFog = false;
 
     private:
         bool ready = false;

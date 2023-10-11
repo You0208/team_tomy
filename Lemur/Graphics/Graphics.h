@@ -9,8 +9,6 @@
 #include "sprite_batch.h"
 #include "high_resolution_timer.h"
 #include "geometric_primitive.h"
-#include "static_mesh.h"
-#include "skinned_mesh.h"
 #include "framebuffer.h"
 #include "fullscreen_quad.h"
 
@@ -25,12 +23,15 @@
 // Debug
 #include "DebugRenderer.h"
 
+// Model
+#include "./Lemur/Model/Model.h"
+
 #include <d3d11.h>
 #include <directxmath.h>
 #include <wrl.h>
 #include <dxgi1_6.h>
 
-#define ENABLE_DIRECT2D
+//#define ENABLE_DIRECT2D
 #ifdef ENABLE_DIRECT2D
 #include <d2d1_1.h>
 #include <dwrite.h>
@@ -149,6 +150,7 @@ namespace Lemur::Graphics
         std::unique_ptr<geometric_primitive> geometric_primitives[8];
 
     public:
+#ifdef ENABLE_DIRECT2D
         //TODO Font
         ID2D1Factory* g_pD2DFactory = nullptr;
         IDXGISurface* g_pBackBuffer = nullptr;
@@ -156,6 +158,7 @@ namespace Lemur::Graphics
         IDWriteTextFormat* g_pTextFormat = nullptr;
         ID2D1RenderTarget* g_pRT = nullptr;
         ID2D1SolidColorBrush* g_pSolidBrush = nullptr;
+#endif
 
     private:
         static Graphics* instance;

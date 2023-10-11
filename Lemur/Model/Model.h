@@ -16,6 +16,7 @@
 #include <cereal/types/set.hpp>
 #include <cereal/types/unordered_map.hpp>
 
+#include "Model.h"
 namespace DirectX
 {
     template<class T>
@@ -63,8 +64,6 @@ namespace DirectX
         );
     }
 }
-
-
 
 struct skeleton
 {
@@ -122,7 +121,7 @@ struct animation
         {
             // ノードのローカル空間からシーンのグローバル空間に変換するために使用 
             DirectX::XMFLOAT4X4 global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-       
+
             // ノードの変換データには、その親に対する移動、回転、およびスケーリングベクトルが含まれる
             DirectX::XMFLOAT3 scaling{ 1, 1, 1 };
             DirectX::XMFLOAT4 rotation{ 0, 0, 0, 1 }; // 回転クオータニオン
@@ -183,12 +182,32 @@ struct scene
         archive(nodes);
     }
 };
+// STATIC_BATCHING
+struct material
+{
+    uint64_t unique_id{ 0 };
+    std::string name;
+
+    DirectX::XMFLOAT4 Ka{ 0.2f, 0.2f, 0.2f, 1.0f };
+    DirectX::XMFLOAT4 Kd{ 0.8f, 0.8f, 0.8f, 1.0f };
+    DirectX::XMFLOAT4 Ks{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+    std::string texture_filenames[4];
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
+
+    // UNIT.30
+    template<class T>
+    void serialize(T& archive)
+    {
+        archive(unique_id, name, Ka, Kd, Ks, texture_filenames);
+    }
+};
 
 class skinned_mesh
 {
 public:
     static const int MAX_BONE_INFLUENCES{ 4 };
-    
+
     struct vertex
     {
         DirectX::XMFLOAT3 position;
@@ -266,6 +285,7 @@ public:
             { +D3D11_FLOAT32_MAX, +D3D11_FLOAT32_MAX, +D3D11_FLOAT32_MAX },
             { -D3D11_FLOAT32_MAX, -D3D11_FLOAT32_MAX, -D3D11_FLOAT32_MAX }
         };
+
         template<class T>
         void serialize(T& archive)
         {
@@ -277,7 +297,8 @@ public:
         friend class skinned_mesh;
     };
     std::vector<mesh> meshes;
-
+#if 0
+    //このクラスの外で材料構造を定義することに
     struct material
     {
         uint64_t unique_id{ 0 };
@@ -296,7 +317,7 @@ public:
             archive(unique_id, name, Ka, Kd, Ks, texture_filenames);
         }
     };
-    
+#endif
     std::unordered_map<uint64_t, material> materials;
 
     std::vector<animation> animation_clips;
@@ -307,7 +328,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
     Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
-   
+
     void create_com_objects(ID3D11Device* device, const char* fbx_filename, bool used_as_collider/*RAYCAST*/);
 public:
     skinned_mesh(ID3D11Device* device, const char* fbx_filename, bool triangulate = false, float sampling_rate = 0/*UNIT.25*/, bool used_as_collider = false/*RAYCAST*/);
@@ -387,6 +408,141 @@ protected:
     void fetch_skeleton(FbxMesh* fbx_mesh, skeleton& bind_pose);
     void fetch_animations(FbxScene* fbx_scene, std::vector<animation>& animation_clips, float sampling_rate /*この値が 0 の場合、アニメーション データはデフォルトのフレーム レートでサンプリングされる*/);
     void fetch_scene(const char* fbx_filename, bool triangulate, float sampling_rate/*If this value is 0, the animation data will be sampled at the default frame rate.*/);
-
 };
 
+// STATIC_BATCHING
+class static_mesh
+{
+public:
+    struct vertex
+    {
+        DirectX::XMFLOAT3 position;
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMFLOAT4 tangent;
+        DirectX::XMFLOAT2 texcoord;
+        template<class T>
+        void serialize(T& archive)
+        {
+            archive(position, normal, tangent, texcoord);
+        }
+    };
+    struct constants
+    {
+        DirectX::XMFLOAT4X4 world;
+        DirectX::XMFLOAT4 material_color;
+    };
+    struct mesh
+    {
+        uint64_t unique_id{ 0 };
+        std::string name;
+        // 'node_index' is an index that refers to the node array of the scene.
+        int64_t node_index{ 0 };
+
+        std::vector<vertex> vertices;
+        std::vector<uint32_t> indices;
+
+        struct subset
+        {
+            uint64_t material_unique_id{ 0 };
+            std::string material_name;
+
+            uint32_t start_index_location{ 0 }; // The location of the first index read by the GPU from the index buffer.
+            uint32_t index_count{ 0 }; // Number of indices to draw.
+
+            template<class T>
+            void serialize(T& archive)
+            {
+                archive(material_unique_id, material_name, start_index_location, index_count);
+            }
+        };
+        std::vector<subset> subsets;
+
+        DirectX::XMFLOAT4X4 default_global_transform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+
+        DirectX::XMFLOAT3 bounding_box[2]
+        {
+            { +D3D11_FLOAT32_MAX, +D3D11_FLOAT32_MAX, +D3D11_FLOAT32_MAX },
+            { -D3D11_FLOAT32_MAX, -D3D11_FLOAT32_MAX, -D3D11_FLOAT32_MAX }
+        };
+
+        template<class T>
+        void serialize(T& archive)
+        {
+            archive(unique_id, name, node_index, subsets, default_global_transform, bounding_box, vertices, indices);
+        }
+    private:
+        Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer;
+        Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer;
+        friend class static_mesh;
+    };
+    std::vector<mesh> meshes;
+
+    std::unordered_map<uint64_t, material> materials;
+
+private:
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
+    void create_com_objects(ID3D11Device* device, const char* fbx_filename);
+
+    // STATIC_BATCHING
+    bool batching = true;
+
+public:
+    static_mesh(ID3D11Device* device, const char* fbx_filename, bool triangulate = false);
+    virtual ~static_mesh() = default;
+
+    size_t render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color);
+
+protected:
+    scene scene_view;
+    void fetch_meshes(FbxScene* fbx_scene, std::vector<mesh>& meshes);
+    void fetch_materials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
+    void fetch_scene(const char* fbx_filename, bool triangulate);
+};
+
+class static_mesh_batch
+{
+public:
+    struct vertex
+    {
+        DirectX::XMFLOAT3 position;
+        DirectX::XMFLOAT3 normal;
+        DirectX::XMFLOAT4 tangent;
+        DirectX::XMFLOAT2 texcoord;
+        template<class T>
+        void serialize(T& archive)
+        {
+            archive(position, normal, tangent, texcoord);
+        }
+    };
+    struct constants
+    {
+        DirectX::XMFLOAT4X4 world;
+        DirectX::XMFLOAT4 material_color;
+    };
+
+    std::unordered_map<uint64_t, material> materials;
+    std::unordered_map<uint64_t/*material_unique_id*/, std::vector<vertex>> vertices;
+    std::unordered_map<uint64_t/*material_unique_id*/, Microsoft::WRL::ComPtr<ID3D11Buffer>> vertex_buffers;
+
+private:
+    Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
+    void create_com_objects(ID3D11Device* device, const char* fbx_filename);
+
+public:
+    static_mesh_batch(ID3D11Device* device, const char* fbx_filename, bool triangulate = false);
+    virtual ~static_mesh_batch() = default;
+
+    size_t render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color);
+
+protected:
+    scene scene_view;
+    void fetch_meshes(FbxScene* fbx_scene);
+    void fetch_materials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
+    void fetch_scene(const char* fbx_filename, bool triangulate);
+};

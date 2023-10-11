@@ -192,7 +192,7 @@ void Lemur::Scene::BaseScene::SetState()
 
 }
 
-void Lemur::Scene::BaseScene::SetUpRendering(bool shadow)
+void Lemur::Scene::BaseScene::SetUpRendering()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 
@@ -210,8 +210,9 @@ void Lemur::Scene::BaseScene::SetUpRendering(bool shadow)
 	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
 	// キャンバス全体を指定した色に塗りつぶす
 	immediate_context->ClearRenderTargetView(render_target_view, color);
-	// キャンバス全体の奥行き情報をリセットする
-	immediate_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	if (!enableFog)immediate_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 	// これから描くキャンバスを指定する
 	immediate_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
 
@@ -222,6 +223,7 @@ void Lemur::Scene::BaseScene::SetUpRendering(bool shadow)
 	immediate_context->PSSetSamplers(4, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_WHITE)].GetAddressOf());
 	// SHADOW
 	immediate_context->PSSetSamplers(5, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::COMPARISON_LINEAR_BORDER_WHITE)].GetAddressOf());
-
+	//FOG
+	immediate_context->PSSetSamplers(6, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_CLAMP)].GetAddressOf());
 
 }

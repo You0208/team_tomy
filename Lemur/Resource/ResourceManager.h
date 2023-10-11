@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "../Graphics/skinned_mesh.h"
+#include "../Model/Model.h"
 
 
 class ResourceManager

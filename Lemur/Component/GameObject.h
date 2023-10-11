@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "../Graphics/skinned_mesh.h"
+#include "../Model/Model.h"
 #include "../Graphics/Graphics.h"
 #include "../Resource/ResourceManager.h"
 #include "./Lemur/Input/Mouse.h"
