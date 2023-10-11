@@ -122,9 +122,17 @@ void GameScene::Initialize()
 		SetSkill<StrongArm>();
 		SetSkill<DemonPower>();
 		SetSkill<BloodSucking>();
+		SetSkill<Sprint>();
+		SetSkill<Patience>();
+		SetSkill<Regeneration>();
 
+		SetSkill<Tofu>();
 		// プレイヤーの生成
 		player = CreatePlayer();
+
+		// テストしたいスキルの設定
+		TestSkillSet("Regeneration");
+
 		// プレイヤーにスキルを取得させる
 		SetPlayerSkills();
 		// プレイヤー初期処理

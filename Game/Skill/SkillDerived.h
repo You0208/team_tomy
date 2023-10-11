@@ -39,7 +39,7 @@ public:
     Regeneration():BaseSkill("Regeneration"){}
 
     void Update() override;
-    float heal_time = 30.0f;
+    float heal_time = 5.0f;
     float heal_timer = 0.0f;
     int heal_power = 5;
 };

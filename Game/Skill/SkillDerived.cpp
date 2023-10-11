@@ -32,8 +32,10 @@ void Patience::Update()
 
 void Regeneration::Update()
 {
-    if(heal_time>=heal_timer)
+    if (heal_timer >= heal_time)
     {
-        
+        owner->health += heal_power;
+        heal_timer = 0.0f;
     }
+    heal_timer += high_resolution_timer::Instance().time_interval();
 }
