@@ -1,8 +1,14 @@
 #include "GameObject.h"
 
+#include "Game/Easing.h"
+
 
 void GameObject::AnimationUpdate(float elapsedTime)
 {
+    //todo ヒットストップどっちにするか決める
+    // ヒットストップ中なら更新しない
+    //if (is_hit_stop) return;
+
     if (Model->animation_clips.size() > 0)
     {
         animation = { Model->animation_clips.at(animation_index) };
@@ -16,7 +22,7 @@ void GameObject::AnimationUpdate(float elapsedTime)
         else
         {
             end_animation = false;
-            animation_tick += elapsedTime;
+            animation_tick += elapsedTime*hitStopCoefficient;
         }
         keyframe = { animation.sequence.at(frame_index) };
     }
@@ -182,6 +188,13 @@ void GameObject::UpdateVelocity(float elapsedTime)
     UpdateHorizontalMove(elapsedTime);
 }
 
+void GameObject::HitStopON(float hit_stop_time_)
+{
+    hit_stop_time = hit_stop_time_;
+    hit_stop_timer = 0;
+    is_hit_stop = true;
+}
+
 void GameObject::UpdataVerticalVelocity(float elapsedFrame)
 {
     // 重力処理
@@ -279,4 +292,32 @@ void GameObject::UpdateHorizontalMove(float elapsedTime)
     // 移動処理
     position.x += velocity.x * elapsedTime;
     position.z += velocity.z * elapsedTime;
+}
+
+void GameObject::HitStopCalc()
+{
+    //todo ヒットストップどっちにするか決める
+
+#if 0 ヒットストップをブールでして完全に止まるパターン
+    if(hit_stop_timer>hit_stop_time)
+    {
+        is_hit_stop = false;
+    }
+
+    hit_stop_timer += high_resolution_timer::Instance().time_interval();
+#else ヒットストップをイージングでしてちょっとずつ動き出すパターン
+
+    if (hit_stop_timer > hit_stop_time)
+    {
+        hitStopCoefficient = 1.0f;
+        is_hit_stop = false;
+
+        return;
+    }
+
+    hitStopCoefficient = Easing::InSine(hit_stop_timer, hit_stop_time, 1.0f, 0.0f);
+
+    hit_stop_timer += high_resolution_timer::Instance().time_interval();
+#endif
+
 }

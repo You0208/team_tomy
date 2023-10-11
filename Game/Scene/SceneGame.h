@@ -75,6 +75,21 @@ private:// ゲーム関連
             is_update = !is_update;
     }
 
+    // 特定のスキルをテストしたいときに使う
+    void TestSkillSet(const char* set_skill_name)
+    {
+        BaseSkill* skill = nullptr;
+        for(auto& s:all_skills)
+        {
+            if (s->GetName() == set_skill_name)
+                skill = s.get();
+        }
+        _ASSERT_EXPR(skill, L"テストしたいスキルが全スキル配列に設定されてません");
+
+        player->SetSkill(skill);
+    }
+
+
     float timer;
 
     //DemoPlayer

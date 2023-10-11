@@ -185,6 +185,9 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(),player->GetRadius(),player->GetHeight())
         )
     {
+        // “¤•…ƒXƒLƒ‹Ž‚Á‚Ä‚½‚ç‹­§“I‚ÉHP0‚É‚·‚é
+        if (player->HaveSkill("Tofu"))
+            player->death = true;
         player->ApplyDamage(attack_power);
     }
 }

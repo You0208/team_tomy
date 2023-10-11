@@ -5,6 +5,7 @@
 #include "Game/Manager/ColliderManager.h"
 #include "Game/Manager/EnemyManager.h"
 #include "Game/Skill/AttackSkillDerived.h"
+#include "Game/Skill/BadSkillDerived.h"
 #include "Game/Skill/SkillDerived.h"
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"

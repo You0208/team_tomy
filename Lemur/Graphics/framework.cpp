@@ -4,6 +4,7 @@
 #include "Graphics.h"
 #include "..\Scene\SceneManager.h"
 #include "./Game/Scene/SceneGame.h"
+#include "./Game/Scene/TitleScene.h"
 
 // Effect
 #include "../Effekseer/EffekseerManager.h"
@@ -27,7 +28,7 @@ bool framework::initialize()
 
 
     //merge前にこれをコメント化
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
 
 	return true;
 }
