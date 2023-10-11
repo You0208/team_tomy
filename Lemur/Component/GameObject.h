@@ -44,6 +44,7 @@ public:
     {
         UpdateScale();
         AnimationUpdate(elapsedTime);
+        HitStopCalc();
         input->Update(this, elapsedTime);
         physics->Update(this, elapsedTime);
         graphics->Update(this);
@@ -150,6 +151,8 @@ public:
     // 速力更新
     void UpdateVelocity(float elapsedTime);
 
+    // ヒットストップする(秒)
+    void HitStopON(float hit_stop_time_);
 protected:
 
 
@@ -182,6 +185,9 @@ private:
 
     // 水平移動更新処理
     void UpdateHorizontalMove(float elapsedTime);
+
+    // ヒットストップの計算
+    void HitStopCalc();
 
 public:
 
@@ -246,6 +252,16 @@ protected:
 
     // アニメーション終了フラグ
     bool end_animation = false;
+
+    // ヒットストップする時間
+    float hit_stop_time;
+    // ヒットストップ経過時間
+    float hit_stop_timer;
+    // ヒットストップしてるか
+    bool is_hit_stop = false;
+    //これをアニメーション再生速度に掛けてヒットストップを表現する
+    float hitStopCoefficient = 1.0f;
+
 
     Mouse* mouse;
 

@@ -63,6 +63,7 @@ public:
     // 全スキルからランダムでスキルを取得
     void SetPlayerSkills();
 
+
 private:
     // 更新処理止める用
     bool is_update = true;
@@ -75,6 +76,21 @@ private:
     }
 
 private:
+
+    // 特定のスキルをテストしたいときに使う
+    void TestSkillSet(const char* set_skill_name)
+    {
+        BaseSkill* skill = nullptr;
+        for(auto& s:all_skills)
+        {
+            if (s->GetName() == set_skill_name)
+                skill = s.get();
+        }
+        _ASSERT_EXPR(skill, L"テストしたいスキルが全スキル配列に設定されてません");
+
+        player->SetSkill(skill);
+    }
+
 
     float timer;
 

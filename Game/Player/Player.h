@@ -64,6 +64,8 @@ public:
 
     bool InputMove();
 
+    // 引数のスキル持ってるか検索する関数
+    bool HaveSkill(const char* search_skill_name);
     /*-------------- 入力状態の取得を関数化 --------------*/
 
     bool GetButtonDownB()
@@ -109,7 +111,7 @@ private:
 
     // 旋回の速さ
     float turn_speed = 10.0f;
-
+public:
     // スピードパラメータ
     float speed_power = 10.0f;
 

@@ -13,3 +13,27 @@ void BloodSucking::Update()
         owner->ResetAddDamage();
     }
 }
+
+void Sprint::Init()
+{
+    owner->speed_power *= 1.25f;
+}
+
+void Patience::Update()
+{
+    // Ž€‚ñ‚Å‚Ü‚¾ƒXƒLƒ‹‚ðŽg‚Á‚Ä‚È‚©‚Á‚½‚ç
+    if(owner->death&&!is_used)
+    {
+        owner->death = false;
+        owner->health = 1;
+        is_used = true;
+    }
+}
+
+void Regeneration::Update()
+{
+    if(heal_time>=heal_timer)
+    {
+        
+    }
+}

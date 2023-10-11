@@ -79,6 +79,7 @@ void Player::DebugImgui()
     {
         ImGui::DragFloat("near_attack_range", &attack_collision_range);
         ImGui::Checkbox("attack_collision_flag", &attack_collision_flag);
+        ImGui::Checkbox("is_hit_stop", &is_hit_stop);
         ImGui::Checkbox("invincible", &invincible);
         ImGui::DragInt("invincible_frame", &invincible_frame);
 
@@ -139,6 +140,16 @@ bool Player::InputMove()
     return true;
 }
 
+bool Player::HaveSkill(const char* search_skill_name)
+{
+    for(auto& skill: skills)
+    {
+        if (skill->GetName() == search_skill_name)
+            return true;
+    }
+    return false;
+}
+
 void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius)
 {
 
@@ -173,6 +184,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
             // ダメージを与える判定
             if (enemy->ApplyDamage(attack_power*motion_value))
             {
+                HitStopON(0.15f);
                 // このフレームで与えたダメージを保持
                 add_damage += attack_power * motion_value - enemy->defense_power;
                 // もし倒したら撃破数を増やす。

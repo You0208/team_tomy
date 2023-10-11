@@ -18,7 +18,7 @@ class DemonPower:public BaseSkill
 {
 public:
     DemonPower() :BaseSkill("DemonPower"){}
-    ~DemonPower();
+    ~DemonPower() = default;
 
     void Update() override;
 

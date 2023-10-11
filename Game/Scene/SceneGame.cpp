@@ -5,6 +5,7 @@
 #include "Game/Manager/ColliderManager.h"
 #include "Game/Manager/EnemyManager.h"
 #include "Game/Skill/AttackSkillDerived.h"
+#include "Game/Skill/BadSkillDerived.h"
 #include "Game/Skill/SkillDerived.h"
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"
@@ -39,10 +40,20 @@ void GameScene::Initialize()
 	SetSkill<StrongArm>();
 	SetSkill<DemonPower>();
 	SetSkill<BloodSucking>();
+	SetSkill<Sprint>();
+	SetSkill<Patience>();
+
+	SetSkill<Tofu>();
+
 
 	// プレイヤーの生成
 	player = CreatePlayer();
-	// プレイヤーにスキルを取得させる
+
+	// スキルテスト
+	TestSkillSet("Patience");
+
+
+    // プレイヤーにスキルを取得させる
 	SetPlayerSkills();
 	// プレイヤー初期処理
 	player->Initialize();
