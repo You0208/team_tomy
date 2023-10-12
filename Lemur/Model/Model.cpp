@@ -321,8 +321,17 @@ void skinned_mesh::create_com_objects(ID3D11Device* device, const char* fbx_file
             make_dummy_texture(device, iterator->second.shader_resource_views[2].GetAddressOf(), 0xFF000000, 4);
         }
 
+        // ディレクトリパス取得
+        char drive[32], dir[256], dirname[256];
+        ::_splitpath_s(fbx_filename, drive, sizeof(drive), dir, sizeof(dir), nullptr, 0, nullptr, 0);
+        ::_makepath_s(dirname, sizeof(dirname), drive, dir, nullptr, nullptr);
+
+        // 相対パスの解決
+        char filename[256];
+        ::_makepath_s(filename, 256, nullptr, dirname, iterator->second.texture_filenames[0].c_str(), nullptr);
+
         //TODO materil実験
-        LoadTexture(device, fbx_filename, "_MS", true, iterator->second.roughness, 0x00FFFF00);
+        LoadTexture(device, filename, "_MS", true, iterator->second.roughness.GetAddressOf(), 0x00FFFF00);
     }
 
     HRESULT hr = S_OK;
@@ -431,7 +440,7 @@ void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT4
 
 }
 
-HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, const char* suffix, bool dummy, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, UINT dummy_color)
+HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, const char* suffix, bool dummy, ID3D11ShaderResourceView** srv, UINT dummy_color)
 {
     // パスを分解
     char drive[256], dirname[256], fname[256], ext[256];
@@ -452,7 +461,7 @@ HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, co
 
     // テクスチャ読み込み
     Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-    HRESULT hr = DirectX::CreateWICTextureFromFile(device, wfilepath, resource.GetAddressOf(), srv.GetAddressOf());
+    HRESULT hr = DirectX::CreateWICTextureFromFile(device, wfilepath, resource.GetAddressOf(), srv);
     if (FAILED(hr))
     {
         // WICでサポートされていないフォーマットの場合（TGAなど）は
@@ -482,7 +491,7 @@ HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, co
             hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
             _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-            hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf());
+            hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv);
             _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
             // 後始末
@@ -525,7 +534,7 @@ HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, co
             hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
             _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-            hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf());
+            hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv);
             _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
         }
     }

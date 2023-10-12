@@ -129,6 +129,8 @@ void GameScene::Initialize()
 		SetPlayerSkills();
 		// プレイヤー初期処理
 		player->Initialize();
+		// プレイヤーにシェーダーをセット
+		player->SetPixelShader(Try.Get());
 		// プレイヤーをキャラクターマネージャにセット
 		CharacterManager::Instance().SetPlayer(player);
 
