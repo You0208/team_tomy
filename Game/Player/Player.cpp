@@ -15,7 +15,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v007.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v008.fbx"));
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -59,7 +59,7 @@ void Player::DebugImgui()
         ImGui::DragFloat("walk_speed", &walk_speed);
         ImGui::DragFloat("turn_speed", &turn_speed);
 
-        ImGui::DragInt("MaxHealth", &maxHealth);
+        ImGui::DragInt("MaxHealth", &max_health);
         ImGui::DragInt("health", &health);
         ImGui::DragFloat("attack_power", &attack_power);
         ImGui::DragFloat("defense_power", &defense_power);
@@ -69,9 +69,17 @@ void Player::DebugImgui()
     }
     if(ImGui::TreeNode("Skills"))
     {
+        //for(int i=0;i<skills.size();i++)
+        //{
+        //    ImGui::Text()
+        //}
         for(auto& skill:skills)
         {
-            ImGui::Text(skill->GetName().c_str());
+            if(ImGui::TreeNode(skill->GetName().c_str()))
+            {
+                skill->DrawImGui();
+                ImGui::TreePop();
+            }
         }
         ImGui::TreePop();
     }
@@ -98,7 +106,13 @@ void Player::DebugImgui()
 void Player::DrawDebugPrimitive()
 {
     DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
-    debug_renderer->DrawCylinder(position, radius, height, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
+    DirectX::XMFLOAT4 color{0.0f, 1.0f, 0.0f, 0.0f};
+
+    // –³“GŽž‚ÍÂ‚Å•`‰æ
+    if (invincible)
+        color = { 0.0f,0.0f,1.0f,0.0f };
+
+    debug_renderer->DrawCylinder(position, radius, height, color);
 
     if(attack_collision_flag)
     {
@@ -115,6 +129,7 @@ void Player::StateMachineInitialize()
     state_machine->SetUpState<Nero::Component::AI::AvoidState>(this);
     state_machine->SetUpState<Nero::Component::AI::AttackState>(this);
     state_machine->SetUpState<Nero::Component::AI::DeathState>(this);
+    state_machine->SetUpState<Nero::Component::AI::FearState>(this);
 }
 
 void Player::StateMachineUpdate()
@@ -304,6 +319,7 @@ void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     player->SkillUpdate();
+    player->ResetAddDamage();
     player->StateMachineUpdate();
     player->UpdateVelocity(elapsedTime);
 

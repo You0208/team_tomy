@@ -137,6 +137,8 @@ ActionBase::State NearAttackAction::Run(float elapsedTime)
 		// “–‚½‚è”»’è
 		if(owner->attack_collision_flag)
 		{
+			Player* player = CharacterManager::Instance().GetPlayer();
+
 			owner->CollisionNodeVsPlayer("polySurface1", "J_leg_A_03_L", owner->GetAttackCollisionRange());
 		}
 

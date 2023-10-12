@@ -19,10 +19,18 @@ namespace Nero::Component::AI
         }
     }
 
-    float StateMachine::GetMotionValue()
+
+    AttackState* StateMachine::GetAttackState() 
     {
-        //if(typeid(current_state)==Attack)
-        return 0;
+        for (auto& state : states) {
+            if (typeid((*state)) == typeid(AttackState))
+            {
+                AttackState* attack_state = dynamic_cast<AttackState*>(state.get());
+                return attack_state;
+            }
+        }
+        _ASSERT_EXPR(false, L"攻撃ステートがない？");
+        return nullptr;
     }
 
     void StateMachine::ChangeState()

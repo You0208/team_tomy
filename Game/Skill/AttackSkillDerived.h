@@ -3,17 +3,19 @@
 #include "BaseSkill.h"
 
 
-// „˜r(UŒ‚—Í‚ª1.25”{ã‚ª‚é)
+// 1.„˜r(UŒ‚—Í‚ª1.25”{ã‚ª‚é)
 class StrongArm : public BaseSkill
 {
 public:
-    StrongArm() :BaseSkill("StrongArm") {}
+    StrongArm() :BaseSkill("StrongArm"){}
     ~StrongArm() = default;
 
     void Init() override;
+
+    
 };
 
-// ‹S—Í(“G‚ğ“|‚·‚ÆUŒ‚—Í‚ÌƒXƒe[ƒ^ƒX‚ª50ã‚ª‚é)
+// 2.‹S—Í(“G‚ğ“|‚·‚ÆUŒ‚—Í‚ÌƒXƒe[ƒ^ƒX‚ª50ã‚ª‚é)
 class DemonPower:public BaseSkill
 {
 public:
@@ -23,4 +25,59 @@ public:
     void Update() override;
 
     int kill_count = 0;
+};
+
+// 3.–‚Œ•(˜AŒ‚‚Ìƒ_ƒ[ƒW‚ªã‚ª‚é)
+class MagicSword :public BaseSkill
+{
+public:
+    MagicSword():BaseSkill("MagicSword"){}
+
+    void Init() override;
+};
+
+// 4.c“(˜AŒ‚‚·‚é“x‚ÉUŒ‚—Í‚ªã‚ª‚é)
+class Cruel :public BaseSkill
+{
+public:
+    Cruel():BaseSkill("Cruel"){}
+
+    void Update() override;
+};
+
+// 5.•œQ(HP‚ª­‚È‚¢‚ÉUŒ‚—Í‚ªã‚ª‚é)
+class Revenge :public BaseSkill
+{
+public:
+    Revenge() :BaseSkill("Revenge",1){}
+
+    void DrawImGui() override;
+    void Init() override;
+    void Update() override;
+    // ‘OƒtƒŒ[ƒ€‚ÌHP•Û
+    int old_health;
+
+    // HPŒ¸­—¦‚É‚©‚¯‚éUŒ‚—Í
+    float basic_AP;
+
+    // ‚±‚ÌƒXƒLƒ‹‚Å‚Ç‚ê‚¾‚¯‚ÌUŒ‚—Í‚ª‘‚¦‚½‚©
+    float power_up_value;
+};
+
+// 8.¹Œ•(’ÊíUŒ‚‚Ìƒ_ƒ[ƒW‚ªã‚ª‚é)
+class HolySword :public BaseSkill
+{
+public:
+    HolySword():BaseSkill("HolySword"){}
+
+    void Init()override;
+};
+
+// 22.Œ•¹(UŒ‚—Í‚ª1.15”{ã‚ª‚é)
+class SwordSaint:public BaseSkill
+{
+public:
+    SwordSaint():BaseSkill("SwordSaint"){}
+
+    void Init() override;
 };

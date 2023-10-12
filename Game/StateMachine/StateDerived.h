@@ -1,8 +1,8 @@
 // ReSharper disable All
 #pragma once
 #include"StateBase.h"
-#include "Game/Player/Player.h"
 
+class Player;
 namespace Nero::Component::AI
 {
     class IdleState :public StateBase
@@ -50,15 +50,44 @@ namespace Nero::Component::AI
 
     };
 
+    class FearState :public StateBase
+    {
+    public:
+        FearState(Player* player) :StateBase(player, "FearState") {}
+
+        void Begin() override;
+        void Update() override;
+        void End() override;
+
+    };
+
     class AttackState:public StateBase
     {
     public:
         AttackState(Player* player) :StateBase(player, "AttackState") {}
 
+        enum AttackStep
+        {
+            first_attack,
+            second_attack,
+            third_attack,
+        };
+
         void DrawImGui() override;
         void Begin() override;
         void Update() override;
         void End() override;
+
+        //motion_value_は何倍か。
+        void SetMotionValue(AttackState::AttackStep motion_num, float motion_value_)
+        {
+            motion_value[motion_num] = motion_value_;
+        }
+
+        float GetMotionValue(AttackState::AttackStep motion_num)const { return motion_value[motion_num]; }
+        float GetMotionValue(int motion_num)const { return motion_value[motion_num]; }
+
+        int GetAttackStep()const { return attack_step; }
 
     private:
         // 先行入力受付開始フレーム
@@ -67,12 +96,6 @@ namespace Nero::Component::AI
             First_Judge = 30,
             Second_Judge = 60,
 
-        };
-        enum AttackStep
-        {
-            first_attack,
-            second_attack,
-            third_attack,
         };
         int attack_step = first_attack;
 
@@ -90,12 +113,7 @@ namespace Nero::Component::AI
         bool buffered_input_OK = false;
 
         // 先行入力チェック
-        void BufferedInputCheck()
-        {
-            buffered_input_OK = true;
-            if (owner->GetButtonDownB())
-                buffered_input = true;
-        }
+        void BufferedInputCheck();
 
         // 次の攻撃に進む
         void NextStep(int next_attack_step, int next_attack_anim);

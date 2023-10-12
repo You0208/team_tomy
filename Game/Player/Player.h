@@ -1,6 +1,7 @@
 #pragma once
 #include "Lemur/Input/Input.h"
 #include "..\Skill\BaseSkill.h"
+#include "Game/StateMachine/StateDerived.h"
 #include "Lemur/Component/GameObject.h"
 //#include "Game/StateMachine/StateMachine.h"
 
@@ -22,6 +23,7 @@ public:
         Idle_Anim,
         Avoid_Anim,
         Death_Anim,
+        Fear_Anim,
 
         Max_Anim
     };
@@ -33,6 +35,7 @@ public:
         Avoid_State,
         Attack_State,
         Death_State,
+        Fear_State,
 
         Max_State,
     };
@@ -68,10 +71,15 @@ public:
     bool HaveSkill(const char* search_skill_name);
     /*-------------- 入力状態の取得を関数化 --------------*/
 
-    bool GetButtonDownB()
+    bool GetButtonDownB_AND_MouseLeft()
     {
         GamePad& game_pad = Input::Instance().GetGamePad();
-        return game_pad.GetButtonDown() & GamePad::BTN_B;
+        if (game_pad.GetButtonDown() & GamePad::BTN_B)
+            return true;
+
+        Mouse& mouse = Input::Instance().GetMouse();
+        if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+            return true;
     }
 
     // 敵撃破数取得
@@ -81,6 +89,14 @@ public:
     int GetAddDamage()const { return add_damage; }
     // 与えたダメージリセット
     void ResetAddDamage() { add_damage = 0; }
+
+    // HPが最大HPをオーバーしたら最大HPにする
+    void MaxHealthCheck()
+    {
+        if (health >= max_health)
+            health = max_health;
+    }
+
 private:
 
     // 敵を倒した数
@@ -119,7 +135,6 @@ private:
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
 public:/*----------------- スキル関係 -----------------*/
-
     // プレイヤーにスキルをセット
     void SetSkill(BaseSkill* skill)
     {
@@ -135,9 +150,19 @@ public:/*----------------- スキル関係 -----------------*/
 
     // 所持できるスキル数
     int skill_capacity = 3;
+
+    // スキルの配列の並びを入れ替える(スキルの関数を呼ぶ順番を変えるために)
+    void SkillSort()
+    {
+        // こういう書き方で関数を使ってソートできる。
+        //参照 https://qiita.com/threecups/items/aa1923a9922dc0a7abfe
+        auto fcomp = [](BaseSkill*& a, BaseSkill*& b) {return a->priorty < b->priorty; };
+        std::sort(skills.begin(), skills.end(), fcomp);
+    }
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;
+
 
 };
 

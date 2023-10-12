@@ -54,8 +54,8 @@ public:
         walk_speed = 1.5f;
 
 
-        maxHealth = 1000;
-        health = maxHealth;
+        max_health = 1000;
+        health = max_health;
         defense_power = 50.5f;
 
         attack_power = 1;

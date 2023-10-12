@@ -106,7 +106,7 @@ public:
     //int GetHealth() const { return health; }
 
     //// Å‘åŒ’Nó‘Ô‚ğæ“¾
-    //int GetMaxHealth() const { return maxHealth; }
+    //int GetMaxHealth() const { return max_health; }
 
     // ƒ_ƒ[ƒW‚ğ—^‚¦‚é
     bool ApplyDamage(int damage);
@@ -193,8 +193,8 @@ public:
 
     /* UŒ‚AHPŠÖŒW‚ÍƒXƒLƒ‹‚Æ‚©ƒMƒƒƒ“ƒuƒ‹‚Æ‚©‚Å•Ï“®‚·‚é‹@‰ï‘½‚¢‚©‚ç
      * ‘Ã‹¦‚ÅƒpƒuƒŠƒbƒN‚ÈB*/
-    int     maxHealth = 5; // Å‘åŒ’Nó‘Ô
-    int     health = maxHealth; // Œ’Nó‘Ô
+    int     max_health = 5; // Å‘åŒ’Nó‘Ô
+    int     health = max_health; // Œ’Nó‘Ô
     bool death = false;
 
     //Šî‘bUŒ‚—Í

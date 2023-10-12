@@ -30,7 +30,7 @@ namespace Nero::Component::AI
             owner->GetStateMachine()->SetNextState(owner->Run_State);
         }
 
-        if(owner->GetButtonDownB())
+        if(owner->GetButtonDownB_AND_MouseLeft())
         {
             owner->GetStateMachine()->SetNextState(owner->Attack_State);
         }
@@ -62,7 +62,7 @@ namespace Nero::Component::AI
         {
             owner->GetStateMachine()->SetNextState(owner->Idle_State);
         }
-        if (owner->GetButtonDownB())
+        if (owner->GetButtonDownB_AND_MouseLeft())
         {
             owner->GetStateMachine()->SetNextState(owner->Attack_State);
         }
@@ -105,6 +105,7 @@ namespace Nero::Component::AI
 
     void DeathState::Begin()
     {
+        owner->invincible = true;
         owner->SetAnimationIndex(owner->Death_Anim);
     }
 
@@ -117,12 +118,31 @@ namespace Nero::Component::AI
     {
     }
 
+    void FearState::Begin()
+    {
+        owner->SetAnimationIndex(owner->Fear_Anim);
+    }
+
+    void FearState::Update()
+    {
+        // ‹¯‚Ý’†‚Í–³“G
+        owner->invincible = true;
+        if (owner->GetEndAnimation())
+            owner->GetStateMachine()->SetNextState(owner->Idle_State);
+    }
+
+    void FearState::End()
+    {
+        owner->invincible = false;
+    }
+
 
     void AttackState::DrawImGui()
     {
         ImGui::DragInt("attack_step", &attack_step);
         ImGui::Checkbox("buffered_input", &buffered_input);
         ImGui::Checkbox("buffered_input_OK", &buffered_input_OK);
+        ImGui::DragFloat("motion_value", &motion_value[attack_step]);
     }
 
     void AttackState::Begin()
@@ -217,6 +237,13 @@ namespace Nero::Component::AI
     {
         owner->attack_collision_flag = false;
         EnemyManager::Instance().HitClear();
+    }
+
+    void AttackState::BufferedInputCheck()
+    {
+        buffered_input_OK = true;
+        if (owner->GetButtonDownB_AND_MouseLeft())
+            buffered_input = true;
     }
 
     void AttackState::NextStep(int next_attack_step, int next_attack_anim)

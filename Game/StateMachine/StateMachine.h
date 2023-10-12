@@ -52,7 +52,8 @@ namespace Nero::Component::AI
 
         StateBase* GetCurrentState()const { return current_state; }
 
-        float GetMotionValue();
+        // 攻撃ステートをとってくる関数(スキル系とかで都合いいから)
+        AttackState* GetAttackState();
     private:
         // ステートを切り替える関数
         //次のステートがセットされたら勝手に実行される

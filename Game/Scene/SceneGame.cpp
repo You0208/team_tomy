@@ -121,22 +121,37 @@ void GameScene::Initialize()
 		// Gameにスキルの設定
 		SetSkill<StrongArm>();
 		SetSkill<DemonPower>();
+		SetSkill<MagicSword>();
+		SetSkill<Cruel>();
+		SetSkill<Revenge>();
 		SetSkill<BloodSucking>();
 		SetSkill<Sprint>();
+		SetSkill<Acceleration>();
 		SetSkill<Patience>();
 		SetSkill<Regeneration>();
+		SetSkill<SuperMan>();
+		SetSkill<SwordSaint>();
+		SetSkill<Gale>();
+		SetSkill<Obesity>();
 
 		SetSkill<Tofu>();
 		// プレイヤーの生成
 		player = CreatePlayer();
 
 		// テストしたいスキルの設定
-		TestSkillSet("Regeneration");
+		TestSkillSet("Revenge");
+		//TestSkillSet("Sprint");
+		player->skill_capacity = 0;
 
 		// プレイヤーにスキルを取得させる
 		SetPlayerSkills();
-		// プレイヤー初期処理
+
+		// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
+		player->SkillSort();
+
+	    // プレイヤー初期処理
 		player->Initialize();
+
 		// プレイヤーをキャラクターマネージャにセット
 		CharacterManager::Instance().SetPlayer(player);
 

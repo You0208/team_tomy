@@ -12,6 +12,7 @@
 #include "Game/AI/JudgmentDerived.h"
 #include "Game/AI/NodeBase.h"
 #include "Game/Manager/EnemyManager.h"
+#include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Collision/Collision.h"
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
@@ -176,19 +177,33 @@ void Enemy::Move_to_Target(float elapsedTime, float move_speed_rate, float turn_
 
 void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, float node_radius)
 {
-    // ノード位置取得
-    DirectX::XMFLOAT3 nodePosition = Model->joint_position(mesh_name, bone_name, &keyframe, world);
     Player* player = CharacterManager::Instance().GetPlayer();
 
-    if(Collision::IntersectSphereVsCylinder(
-        nodePosition,node_radius,
-        player->GetPosition(),player->GetRadius(),player->GetHeight())
+    // 無敵中なら判定しない
+    if (player->invincible)
+        return;
+
+
+    // ノード位置取得
+    DirectX::XMFLOAT3 nodePosition = Model->joint_position(mesh_name, bone_name, &keyframe, world);
+
+    if (Collision::IntersectSphereVsCylinder(
+        nodePosition, node_radius,
+        player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        // 豆腐スキル持ってたら強制的にHP0にする
-        if (player->HaveSkill("Tofu"))
-            player->death = true;
-        player->ApplyDamage(attack_power);
+        if (player->ApplyDamage(attack_power))
+        {
+            // 豆腐スキル持ってたら強制的にHP0にする
+            if (player->HaveSkill("Tofu"))
+            {
+                player->health = 0;
+                player->death = true;
+                return;
+            }
+
+            player->GetStateMachine()->SetNextState(player->Fear_State);
+        }
     }
 }
 
@@ -240,7 +255,7 @@ void Enemy::DebugImgui()
     }
     if (ImGui::TreeNode("parameter"))
     {
-        ImGui::DragInt("MaxHealth", &maxHealth);
+        ImGui::DragInt("MaxHealth", &max_health);
         ImGui::DragInt("health", &health);
         ImGui::DragFloat("attack_power", &attack_power);
         ImGui::DragFloat("defense_power", &defense_power);

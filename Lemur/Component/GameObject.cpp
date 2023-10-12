@@ -30,10 +30,13 @@ void GameObject::AnimationUpdate(float elapsedTime)
 
 bool GameObject::ApplyDamage(int damage)
 {
-    damage -= static_cast<int>(defense_power);
+    if (damage <= defense_power)
+        damage = 1;
+    else
+        damage -= static_cast<int>(defense_power);
 
-    // ダメージが０の場合は健康状態を変更する必要がない
-    if (damage <= 0)return false;
+    //// ダメージが０の場合は健康状態を変更する必要がない
+    //if (damage <= 0)return false;
 
     // 死亡している間は健康状態を変更しない
     if (health <= 0)return false;
