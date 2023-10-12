@@ -208,6 +208,8 @@ public:
     // 攻撃当たり判定するか
     bool attack_collision_flag = false;
 
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> PS;
+
 protected:
     DirectX::XMFLOAT4X4 World;
 
@@ -264,6 +266,7 @@ protected:
 
 
     Mouse* mouse;
+
 
     ID3D11PixelShader* pixelShader      = nullptr; // シェーダー
 private:

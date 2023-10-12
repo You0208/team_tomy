@@ -369,7 +369,7 @@ void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT4
         }
 
         constants data;
-
+        data.threshold = dissolve;
         if (keyframe && keyframe->nodes.size() > 0)
         {
             // メッシュ全体が動くように変更
@@ -412,6 +412,7 @@ void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT4
             // サブリソースにデータをコピー
             immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
             immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+            immediate_context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 
             // テクスチャを設定する
             immediate_context->PSSetShaderResources(0, 1, material.shader_resource_views[0].GetAddressOf());

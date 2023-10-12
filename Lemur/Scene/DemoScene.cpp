@@ -40,11 +40,6 @@ void DemoScene::Initialize()
 				hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::D_FOG)].GetAddressOf());
 				_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 			}
-			{ // ディゾルブ
-				buffer_desc.ByteWidth = sizeof(dissolve_constants);
-				hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].GetAddressOf());
-				_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-			}
 			{ // PBR
 				buffer_desc.ByteWidth = sizeof(adjust_constants);
 				hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].GetAddressOf());
@@ -189,11 +184,6 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 		ImGui::ColorEdit3("fog_color", &fog_color.x);
 		ImGui::SliderFloat("fog_near", &fog_range.x, 0.1f, +100.0f);
 		ImGui::SliderFloat("fog_far", &fog_range.y, 0.1f, +100.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("mask"))
-	{
-		ImGui::SliderFloat("dissolve_value", &dissolve_value, -1.0f, +1.0f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("fog"))
@@ -347,13 +337,6 @@ void DemoScene::Render(float elapsedTime)
 		immediate_context->UpdateSubresource(constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].Get(), 0, 0, &pbr, 0, 0);
 		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::PBR), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].GetAddressOf());
 		immediate_context->PSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::PBR), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].GetAddressOf());
-
-		// ディゾルブ
-		dissolve_constants dissolve{};
-		dissolve.parameters.x = dissolve_value;
-		immediate_context->UpdateSubresource(constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].Get(), 0, 0, &dissolve, 0, 0);
-		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::MASK), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].GetAddressOf());
-		immediate_context->PSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::MASK), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].GetAddressOf());
 
 		// FOG
 		dis_fog_constants fogs{};

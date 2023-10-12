@@ -233,7 +233,10 @@ public:
         DirectX::XMFLOAT4X4 world;
         DirectX::XMFLOAT4 material_color;
         DirectX::XMFLOAT4X4 bone_transforms[MAX_BONES]{ { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 } };
+        float threshold = 1.0f;
+        float pads[3];
     };
+    float dissolve = 1.0f;
     struct mesh
     {
 
