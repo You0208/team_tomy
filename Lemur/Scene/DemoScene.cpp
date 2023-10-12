@@ -156,7 +156,6 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	using namespace DirectX;
 	Camera& camera = Camera::Instance();
 
-
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -269,7 +268,9 @@ void DemoScene::Render(float elapsedTime)
 
 		ID3D11PixelShader* null_pixel_shader{ NULL };
 		player->Render(elapsedTime);
+		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
 		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
+		skinned_meshes[2]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
 
 		double_speed_z->deactivate(immediate_context);
 	}
