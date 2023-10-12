@@ -57,7 +57,6 @@ void DemoScene::Initialize()
 			}
 		}
 
-
 		// FOG
 		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::FOG)] = std::make_unique<fullscreen_quad>(graphics.GetDevice());
 		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)] = std::make_unique<framebuffer>(graphics.GetDevice(), SCREEN_WIDTH, SCREEN_HEIGHT, true);
@@ -82,14 +81,8 @@ void DemoScene::Initialize()
 		// dissolve
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Image\\dissolve_animation.png", noise.GetAddressOf(), graphics.GetTexture2D());//TODO
 
-
 		//TODO 実験用
 		create_ps_from_cso(graphics.GetDevice(), "./Shader/fog_pbr_ps.cso", Try.GetAddressOf());
-
-		//TODO　ごり押しPBR
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_AlbedoTransparency.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_Normal.png", Normal.GetAddressOf(), graphics.GetTexture2D());
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_MetallicSmoothness.png", Roughness.GetAddressOf(), graphics.GetTexture2D());
 	}
 	// ゲーム部分
 	{
@@ -383,9 +376,6 @@ void DemoScene::Render(float elapsedTime)
 	{
 		// PBR実験用
 		immediate_context->PSSetShaderResources(9/*slot(1番にセットします)*/, 1, noise.GetAddressOf());//TODO
-		immediate_context->PSSetShaderResources(10/*slot(1番にセットします)*/, 1, BaseColor.GetAddressOf());//TODO
-		immediate_context->PSSetShaderResources(11/*slot(1番にセットします)*/, 1, Normal.GetAddressOf());//TODO
-		immediate_context->PSSetShaderResources(12/*slot(1番にセットします)*/, 1, Roughness.GetAddressOf());//TODO
 		// シャドウ
 		immediate_context->PSSetShaderResources(8, 1, double_speed_z->shader_resource_view.GetAddressOf());
 	}
@@ -397,7 +387,7 @@ void DemoScene::Render(float elapsedTime)
 	}
 	if (enableFog)
 	{
-		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->clear(immediate_context);
+		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->clear(immediate_context, 0.4f, 0.4f, 0.4f);
 		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->activate(immediate_context);
 	}
 	//3D描画
@@ -453,7 +443,7 @@ void DemoScene::Render(float elapsedTime)
 
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
-		ID3D11ShaderResourceView* shader_resource_views[]{ framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->shader_resource_views[0].Get(), framebuffers[1]->shader_resource_views[0].Get() };
+		ID3D11ShaderResourceView* shader_resource_views[]{ framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->shader_resource_views[0].Get(), framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_2)]->shader_resource_views[0].Get() };
 		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::FOG)]->blit(immediate_context, shader_resource_views, 0, _countof(shader_resource_views), pixel_shaders[static_cast<size_t>(PS::FINAL)].Get());
 	}
 

@@ -194,6 +194,8 @@ struct material
 
     std::string texture_filenames[4];
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
+   //TODO material実験
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
 
     // UNIT.30
     template<class T>
@@ -400,6 +402,8 @@ public:
         return position;
     }
 
+    // テクスチャ読み込み
+    HRESULT LoadTexture(ID3D11Device* device, const char* filename, const char* suffix, bool dummy, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, UINT dummy_color = 0xFFFFFFFF);
 
 protected:
     scene scene_view;

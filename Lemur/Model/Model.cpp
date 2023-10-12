@@ -12,6 +12,10 @@ using namespace DirectX;
 #include "./Lemur/Graphics/texture.h"
 
 #include <fstream>
+#include <WICTextureLoader.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 
 inline XMFLOAT4X4  to_xmfloat4x4(const FbxAMatrix& fbxamatrix)
@@ -196,6 +200,7 @@ skinned_mesh::skinned_mesh(ID3D11Device* device, const char* fbx_filename, bool 
         serialization(scene_view, meshes, materials, animation_clips);
     }
     create_com_objects(device, fbx_filename, used_as_collider/*RAYCAST*/);
+
 }
 
 // アペンドアニメーション
@@ -315,6 +320,9 @@ void skinned_mesh::create_com_objects(ID3D11Device* device, const char* fbx_file
         {
             make_dummy_texture(device, iterator->second.shader_resource_views[2].GetAddressOf(), 0xFF000000, 4);
         }
+
+        //TODO materil実験
+        LoadTexture(device, fbx_filename, "_MS", true, iterator->second.roughness, 0x00FFFF00);
     }
 
     HRESULT hr = S_OK;
@@ -411,12 +419,116 @@ void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT4
             immediate_context->PSSetShaderResources(1, 1, material.shader_resource_views[1].GetAddressOf());
             //TODO EMISSIVE
             immediate_context->PSSetShaderResources(2, 1, material.shader_resource_views[2].GetAddressOf());
+            //TODO material実験
+            immediate_context->PSSetShaderResources(3, 1, material.roughness.GetAddressOf());
+
 
             // 使用するインデックスバッファの範囲を指定して描画する
             immediate_context->DrawIndexed(subset.index_count, subset.start_index_location, 0);
         }
     }
 
+}
+
+HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, const char* suffix, bool dummy, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv, UINT dummy_color)
+{
+    // パスを分解
+    char drive[256], dirname[256], fname[256], ext[256];
+    ::_splitpath_s(filename, drive, sizeof(drive), dirname, sizeof(dirname), fname, sizeof(fname), ext, sizeof(ext));
+
+    // 末尾文字を追加
+    if (suffix != nullptr)
+    {
+        ::strcat_s(fname, sizeof(fname), suffix);
+    }
+    // パスを結合
+    char filepath[256];
+    ::_makepath_s(filepath, 256, drive, dirname, fname, ext);
+
+    // マルチバイト文字からワイド文字へ変換
+    wchar_t wfilepath[256];
+    ::MultiByteToWideChar(CP_ACP, 0, filepath, -1, wfilepath, 256);
+
+    // テクスチャ読み込み
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+    HRESULT hr = DirectX::CreateWICTextureFromFile(device, wfilepath, resource.GetAddressOf(), srv.GetAddressOf());
+    if (FAILED(hr))
+    {
+        // WICでサポートされていないフォーマットの場合（TGAなど）は
+        // STBで画像読み込みをしてテクスチャを生成する
+        int width, height, bpp;
+        unsigned char* pixels = stbi_load(filepath, &width, &height, &bpp, STBI_rgb_alpha);
+        if (pixels != nullptr)
+        {
+            D3D11_TEXTURE2D_DESC desc = { 0 };
+            desc.Width = width;
+            desc.Height = height;
+            desc.MipLevels = 1;
+            desc.ArraySize = 1;
+            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            desc.SampleDesc.Count = 1;
+            desc.SampleDesc.Quality = 0;
+            desc.Usage = D3D11_USAGE_DEFAULT;
+            desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            desc.CPUAccessFlags = 0;
+            desc.MiscFlags = 0;
+            D3D11_SUBRESOURCE_DATA data;
+            ::memset(&data, 0, sizeof(data));
+            data.pSysMem = pixels;
+            data.SysMemPitch = width * 4;
+
+            Microsoft::WRL::ComPtr<ID3D11Texture2D>	texture;
+            hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
+            _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+            hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf());
+            _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+            // 後始末
+            stbi_image_free(pixels);
+        }
+        else if (dummy)
+        {
+            // 読み込み失敗したらダミーテクスチャを作る
+            //LOG("load failed : %s\n", filepath);
+
+            const int width = 8;
+            const int height = 8;
+            UINT pixels[width * height];
+            for (int yy = 0; yy < height; ++yy)
+            {
+                for (int xx = 0; xx < width; ++xx)
+                {
+                    pixels[yy * width + xx] = dummy_color;
+                }
+            }
+
+            D3D11_TEXTURE2D_DESC desc = { 0 };
+            desc.Width = width;
+            desc.Height = height;
+            desc.MipLevels = 1;
+            desc.ArraySize = 1;
+            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            desc.SampleDesc.Count = 1;
+            desc.SampleDesc.Quality = 0;
+            desc.Usage = D3D11_USAGE_DEFAULT;
+            desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            desc.CPUAccessFlags = 0;
+            desc.MiscFlags = 0;
+            D3D11_SUBRESOURCE_DATA data;
+            ::memset(&data, 0, sizeof(data));
+            data.pSysMem = pixels;
+            data.SysMemPitch = width;
+
+            Microsoft::WRL::ComPtr<ID3D11Texture2D>	texture;
+            hr = device->CreateTexture2D(&desc, &data, texture.GetAddressOf());
+            _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+            hr = device->CreateShaderResourceView(texture.Get(), nullptr, srv.GetAddressOf());
+            _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+        }
+    }
+    return hr;
 }
 
 void skinned_mesh::fetch_meshes(FbxScene* fbx_scene, std::vector<mesh>& meshes)
@@ -1162,6 +1274,7 @@ size_t static_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT
             immediate_context->PSSetShaderResources(0, 1, material.shader_resource_views[0].GetAddressOf());
             immediate_context->PSSetShaderResources(1, 1, material.shader_resource_views[1].GetAddressOf());
             immediate_context->PSSetShaderResources(2, 1, material.shader_resource_views[2].GetAddressOf());
+            immediate_context->PSSetShaderResources(3, 1, material.roughness.GetAddressOf());
 
             immediate_context->DrawIndexed(subset.index_count, subset.start_index_location, 0);
             drawcall_count++;
