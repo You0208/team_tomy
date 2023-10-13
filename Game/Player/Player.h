@@ -159,6 +159,9 @@ public:/*----------------- スキル関係 -----------------*/
         auto fcomp = [](BaseSkill*& a, BaseSkill*& b) {return a->priorty < b->priorty; };
         std::sort(skills.begin(), skills.end(), fcomp);
     }
+
+    //std::vector<BaseSkill*> GetPlayerSkill() { return skills; }
+
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;

@@ -27,6 +27,7 @@ public:
     // エネミー登録
     void Register(Enemy* enemy);
 
+
     // エネミー全削除
     void Clear();
 
@@ -39,6 +40,8 @@ public:
     // エネミー取得
     Enemy* GetEnemy(int index) { return enemies.at(index); }
 
+    std::vector<Enemy*> GetEnemies()const { return enemies; }
+
     // エネミー同士の衝突判定
     void CollisionEnemyVsEnemis();
 
@@ -49,4 +52,6 @@ public:
     void HitClear();
 private:
     std::set<Enemy*>    removes;
+    std::vector<Enemy*>enemies;
+
 };

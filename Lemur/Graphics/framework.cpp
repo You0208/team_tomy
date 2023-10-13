@@ -8,7 +8,7 @@
 
 // Effect
 #include "../Effekseer/EffekseerManager.h"
-
+#include "Game/Scene/GambleScene.h"
 
 
 framework::framework(HWND hwnd) 
@@ -28,8 +28,8 @@ bool framework::initialize()
 
 
     //merge前にこれをコメント化
-	//Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 
 	return true;
 }
