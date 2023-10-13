@@ -7,7 +7,6 @@
 #include "Lemur/Component/DemoEnemy.h"
 #include "Lemur/Component/DemoPlayer.h"
 #include "Lemur/Scene/BaseScene.h"
-
 class GameScene :public Lemur::Scene::BaseScene
 {
 public:
@@ -49,21 +48,12 @@ public:
         );
     }
 
-    // ゲームに存在する全スキル
-    std::vector<std::unique_ptr<BaseSkill>> all_skills;
-
-    // スキルを設定
-    template<class Skill>
-    void SetSkill()
-    {
-        Skill* skill = new Skill();
-        all_skills.emplace_back(skill);
-    }
-
-    // 全スキルからランダムでスキルを取得
-    void SetPlayerSkills();
 
 private:// ゲーム関連
+
+    // 敵を生み出す(関数名は仮)
+    //選択されたクエストによって生み出す敵が変わる
+    void CreateEnemy_KARI();
 
     // 更新処理止める用
     bool is_update = true;
@@ -75,19 +65,6 @@ private:// ゲーム関連
             is_update = !is_update;
     }
 
-    // 特定のスキルをテストしたいときに使う
-    void TestSkillSet(const char* set_skill_name)
-    {
-        BaseSkill* skill = nullptr;
-        for(auto& s:all_skills)
-        {
-            if (s->GetName() == set_skill_name)
-                skill = s.get();
-        }
-        _ASSERT_EXPR(skill, L"テストしたいスキルが全スキル配列に設定されてません");
-
-        player->SetSkill(skill);
-    }
 
 
     float timer;

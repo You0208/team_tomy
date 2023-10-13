@@ -135,12 +135,38 @@ private:
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
 public:/*----------------- スキル関係 -----------------*/
+    // スキルを設定
+    template<class Skill>
+    void SetSkill()
+    {
+        Skill* skill = new Skill();
+        all_skills.emplace_back(skill);
+    }
+
+    // 特定のスキルをテストしたいときに使う
+    void TestSkillSet(const char* set_skill_name)
+    {
+        BaseSkill* skill = nullptr;
+        for (auto& s : all_skills)
+        {
+            if (s->GetName() == set_skill_name)
+                skill = s.get();
+        }
+        _ASSERT_EXPR(skill, L"テストしたいスキルが全スキル配列に設定されてません");
+
+        SetSkill(skill);
+    }
+
+    // 全スキルからランダムでスキルを取得
+    void SetPlayerSkills();
+
     // プレイヤーにスキルをセット
     void SetSkill(BaseSkill* skill)
     {
         skill->SetOwner(this);
         skills.emplace_back(skill);
     }
+
     // 所持スキルのInitを呼ぶ
     void SkillInit();
     // 所持スキルのupdateを呼ぶ
@@ -166,6 +192,8 @@ private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;
 
+    // ゲームに存在する全スキル
+    std::vector<std::unique_ptr<BaseSkill>> all_skills;
 
 };
 

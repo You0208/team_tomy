@@ -7,45 +7,47 @@
 #include "Lemur/Input/Input.h"
 #include "Lemur/Scene/SceneManager.h"
 #include "SceneGame.h"
+#include "Quest.h"
+
+// todo 牟田さん こいつにQuestPattern型のどのクエストにするのか選択して値を入れる処理を作ってください
+QuestPattern quest_pattern = QuestPattern::B;
 
 void GambleScene::Initialize()
 {
     // アセットロード
 
+		// プレイヤーの生成
+	player = CreatePlayer();
 
 
     // シーンにスキルの設定
-	SetSkill<StrongArm>();
-	SetSkill<DemonPower>();
-	SetSkill<MagicSword>();
-	SetSkill<Cruel>();
-	SetSkill<Revenge>();
-	SetSkill<BloodSucking>();
-	SetSkill<Sprint>();
-	SetSkill<Acceleration>();
-	SetSkill<Patience>();
-	SetSkill<Regeneration>();
-	SetSkill<SuperMan>();
-	SetSkill<SwordSaint>();
-	SetSkill<Gale>();
-	SetSkill<Obesity>();
+	player->SetSkill<StrongArm>();
+	player->SetSkill<DemonPower>();
+	player->SetSkill<MagicSword>();
+	player->SetSkill<Cruel>();
+	player->SetSkill<Revenge>();
+	player->SetSkill<BloodSucking>();
+	player->SetSkill<Sprint>();
+	player->SetSkill<Acceleration>();
+	player->SetSkill<Patience>();
+	player->SetSkill<Regeneration>();
+	player->SetSkill<SuperMan>();
+	player->SetSkill<SwordSaint>();
+	player->SetSkill<Gale>();
+	player->SetSkill<Obesity>();
 
-	SetSkill<Tofu>();
+	player->SetSkill<Tofu>();
 
-	// プレイヤーの生成
-	player = CreatePlayer();
 
 	// プレイヤーにスキルを取得させる
-	SetPlayerSkills();
+	player->SetPlayerSkills();
 
 	// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
 	player->SkillSort();
 
-	// プレイヤー初期処理
-	player->Initialize();
-
-	// プレイヤーをキャラクターマネージャにセット
+	// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 	CharacterManager::Instance().SetPlayer(player);
+
 
 }
 
@@ -58,6 +60,8 @@ void GambleScene::Finalize()
 
 void GambleScene::Update(HWND hwnd, float elapsedTime)
 {
+
+
     GamePad& game_pad = Input::Instance().GetGamePad();
     if (game_pad.GetButtonDown() & GamePad::BTN_START)
     {
@@ -75,25 +79,5 @@ void GambleScene::Render(float elapsedTime)
 {
 }
 
-void GambleScene::SetPlayerSkills()
-{
-	int all_skill_count = all_skills.size();
-
-	_ASSERT_EXPR(player->skill_capacity <= all_skill_count, L"取得可能スキル超過");
-
-	// 所持できる分だけ繰り返す
-	for (int i = 0; i < player->skill_capacity;)
-	{
-		BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
-
-		// もうすでに取得してたらもう一回
-		if (skill->GetOwner())
-		{
-			continue;
-		}
-		player->SetSkill(skill);
-		i++;
-	}
-}
 
 

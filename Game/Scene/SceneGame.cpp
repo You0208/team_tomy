@@ -9,6 +9,8 @@
 #include "Game/Skill/SkillDerived.h"
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"
+#include "Quest.h"
+extern QuestPattern quest_pattern;
 
 void GameScene::Initialize()
 {
@@ -118,59 +120,15 @@ void GameScene::Initialize()
 
 	// ゲーム部分
 	{
-		//// Gameにスキルの設定
-		//SetSkill<StrongArm>();
-		//SetSkill<DemonPower>();
-		//SetSkill<MagicSword>();
-		//SetSkill<Cruel>();
-		//SetSkill<Revenge>();
-		//SetSkill<BloodSucking>();
-		//SetSkill<Sprint>();
-		//SetSkill<Acceleration>();
-		//SetSkill<Patience>();
-		//SetSkill<Regeneration>();
-		//SetSkill<SuperMan>();
-		//SetSkill<SwordSaint>();
-		//SetSkill<Gale>();
-		//SetSkill<Obesity>();
 
-		//SetSkill<Tofu>();
-		//// プレイヤーの生成
-		//player = CreatePlayer();
-
-		// テストしたいスキルの設定
-		//TestSkillSet("Revenge");
-		//TestSkillSet("Sprint");
-		//player->skill_capacity = 0;
-
-		//// プレイヤーにスキルを取得させる
-		//SetPlayerSkills();
-
-		//// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
-		//player->SkillSort();
-
-	 //   // プレイヤー初期処理
-		//player->Initialize();
-
-		//// プレイヤーをキャラクターマネージャにセット
-		//CharacterManager::Instance().SetPlayer(player);
-
+		// プレイヤーをキャラクターマネージャから持ってくる
 		player = CharacterManager::Instance().GetPlayer();
+		// プレイヤー初期処理
+		player->Initialize();
 
 		ColliderManager::Instance().SetCollider(player);
 
-		// エネミー初期化
-		EnemyManager& enemyManager = EnemyManager::Instance();
-		for (int i = 0; i < 1; ++i)
-		{
-			Enemy* enemy = CreateEnemy();
-			enemy->Initialize();
-			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
-			enemyManager.Register(enemy);
-
-			ColliderManager::Instance().SetCollider(enemy);
-		}
-
+		CreateEnemy_KARI();
 	}
 
 	// ライト
@@ -627,23 +585,59 @@ void GameScene::DebugImGui()
 	ImGui::End();
 }
 
-void GameScene::SetPlayerSkills()
+void GameScene::CreateEnemy_KARI()
 {
-	int all_skill_count = all_skills.size();
+	// エネミー初期化
+	EnemyManager& enemyManager = EnemyManager::Instance();
 
-	_ASSERT_EXPR(player->skill_capacity <= all_skill_count, L"取得可能スキル超過");
+    switch (quest_pattern)
+    {
+    case QuestPattern::A:
 
-	// 所持できる分だけ繰り返す
-	for (int i = 0; i < player->skill_capacity;)
-	{
-		BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
-
-		// もうすでに取得してたらもう一回
-		if (skill->GetOwner())
+		for (int i = 0; i < 1; ++i)
 		{
-			continue;
+			Enemy* enemy = CreateEnemy();
+			enemy->Initialize();
+			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
+			enemyManager.Register(enemy);
+
+			ColliderManager::Instance().SetCollider(enemy);
 		}
-		player->SetSkill(skill);
-		i++;
-	}
+
+		break;
+    case QuestPattern::B:
+		for (int i = 0; i < 2; ++i)
+		{
+			Enemy* enemy = CreateEnemy();
+			enemy->Initialize();
+			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
+			enemyManager.Register(enemy);
+
+			ColliderManager::Instance().SetCollider(enemy);
+		}
+
+
+    }
 }
+
+//
+//void GameScene::SetPlayerSkills()
+//{
+//	int all_skill_count = all_skills.size();
+//
+//	_ASSERT_EXPR(player->skill_capacity <= all_skill_count, L"取得可能スキル超過");
+//
+//	// 所持できる分だけ繰り返す
+//	for (int i = 0; i < player->skill_capacity;)
+//	{
+//		BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
+//
+//		// もうすでに取得してたらもう一回
+//		if (skill->GetOwner())
+//		{
+//			continue;
+//		}
+//		player->SetSkill(skill);
+//		i++;
+//	}
+//}
