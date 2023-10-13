@@ -1,5 +1,6 @@
 #include "SceneGame.h"
 
+#include "GambleScene.h"
 #include "imgui.h"
 #include "Game/Manager/CharacterManager.h"
 #include "Game/Manager/ColliderManager.h"
@@ -10,6 +11,7 @@
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Quest.h"
+#include "Lemur/Scene/SceneManager.h"
 extern QuestPattern quest_pattern;
 
 void GameScene::Initialize()
@@ -124,11 +126,15 @@ void GameScene::Initialize()
 		// プレイヤーをキャラクターマネージャから持ってくる
 		player = CharacterManager::Instance().GetPlayer();
 		// プレイヤー初期処理
-		player->Initialize();
+		if (!player->is_initialize)
+			player->Initialize();
+
+		player->SkillInit();
 
 		ColliderManager::Instance().SetCollider(player);
 
 		CreateEnemy_KARI();
+
 	}
 
 	// ライト
@@ -181,8 +187,8 @@ void GameScene::Initialize()
 
 void GameScene::Finalize()
 {
-	player->Delete();
-	delete player;
+	//player->Delete();
+	//delete player;
 	//エネミー終了
 	EnemyManager::Instance().Clear();
 }
@@ -208,6 +214,8 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 	ColliderManager::Instance().Update();
+
+	QuestClear();
 
 //---------------------------------------------------------------------------------------
 // Imgui
@@ -618,6 +626,16 @@ void GameScene::CreateEnemy_KARI()
 
 
     }
+}
+
+void GameScene::QuestClear()
+{
+	int enemy_count = EnemyManager::Instance().GetEnemyCount();
+
+	// todo リサイズ
+	if (enemy_count <= 0)
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+
 }
 
 //

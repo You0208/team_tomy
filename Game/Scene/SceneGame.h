@@ -55,6 +55,8 @@ private:// ゲーム関連
     //選択されたクエストによって生み出す敵が変わる
     void CreateEnemy_KARI();
 
+    // 敵を全員倒したらシーン切り替え
+    void QuestClear();
     // 更新処理止める用
     bool is_update = true;
 

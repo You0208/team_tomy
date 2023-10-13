@@ -7,6 +7,9 @@ void EnemyManager::Update(float elapsedTime)
         enemy->Update(elapsedTime);
     }
 
+    //// 消す前に何体いるか保持
+    //int enemy_count = enemies.size();
+
     // 破棄処理
     for (Enemy* enemy : removes)
     {
@@ -14,13 +17,20 @@ void EnemyManager::Update(float elapsedTime)
         if (it != enemies.end())
         {
             enemies.erase(it);
-        }
 
+            //// 消した分だけカウントを減らす
+            //enemy_count--;
+        }
         // 削除
         delete enemy;
+
     }
     // 破棄リストをクリア
     removes.clear();
+
+    
+    //enemies.resize(enemy_count);
+
 }
 
 void EnemyManager::Render(float elapsedTime)

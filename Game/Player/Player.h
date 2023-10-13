@@ -97,6 +97,8 @@ public:
             health = max_health;
     }
 
+    // ˆê‰ñ‰Šúİ’è‚µ‚½‚çtrueB
+    bool is_initialize = false;
 private:
 
     // “G‚ğ“|‚µ‚½”

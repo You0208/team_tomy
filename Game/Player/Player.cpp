@@ -334,7 +334,6 @@ void PlayerPhysicsComponent::Initialize(GameObject* gameobj)
     Player* player = dynamic_cast<Player*> (gameobj);
     player->StateMachineInitialize();
 
-    player->SkillInit();
 }
 
 void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)

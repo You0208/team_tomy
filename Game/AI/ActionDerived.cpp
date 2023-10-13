@@ -17,7 +17,9 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 	    step++;
 		break;
 	case 1:
-		
+		// 死亡してたら死亡アクションに移行
+		if (owner->death)
+			return ActionBase::State::Failed;
 
 		if (owner->ReachTargetJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
 		{
@@ -54,6 +56,9 @@ ActionBase::State IdleAction::Run(float elapsedTime)
 		break;
 
     case 1:
+		// 死亡してたら死亡アクションに移行
+		if (owner->death)
+			return ActionBase::State::Failed;
 
 		idleing_time -= elapsedTime;
 
@@ -91,6 +96,10 @@ ActionBase::State PursueAction::Run(float elapsedTime)
 
 	case 1:
 
+		// 死亡してたら死亡アクションに移行
+		if (owner->death)
+			return ActionBase::State::Failed;
+
 		// 追跡するターゲットの位置をセット
 		owner->SetTargetPosition(CharacterManager::Instance().GetPlayer()->GetPosition());
 
@@ -119,6 +128,9 @@ ActionBase::State NearAttackAction::Run(float elapsedTime)
 
 		break;
     case 1:
+		// 死亡してたら死亡アクションに移行
+		if (owner->death)
+			return ActionBase::State::Failed;
 
 		// 限定フレームの間だけ攻撃判定可能
 		if (owner->GetFrameIndex() >= start_collision__frame &&
@@ -153,14 +165,15 @@ ActionBase::State DeathAction::Run(float elapsedTime)
     {
     case 0:
 		// todo アニメーション再生
-		//owner->SetAnimationIndex()
-
+		owner->SetAnimationIndex(owner->Death_Anim);
+		step ++ ;
 		break;
     case 1:
 
 		if(owner->GetEndAnimation())
 		{
 			owner->Destroy();
+			step = 0;
 			return ActionBase::State::Complete;
 		}
 		return ActionBase::State::Run;

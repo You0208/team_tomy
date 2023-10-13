@@ -27,8 +27,12 @@ bool BattleJudgment::Judgment()
 
 bool DeathJudgment::Judgment()
 {
+    if (owner->health <= 0)
+        owner->death = true;
+
     if (owner->death)
         return true;
+    
     return false;
 }
 
