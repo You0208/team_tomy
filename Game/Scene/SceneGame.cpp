@@ -126,10 +126,18 @@ void GameScene::Initialize()
 		// プレイヤーをキャラクターマネージャから持ってくる
 		player = CharacterManager::Instance().GetPlayer();
 		// プレイヤー初期処理
+<<<<<<< HEAD
 		if (!player->is_initialize)
 			player->Initialize();
 
 		player->SkillInit();
+=======
+		player->Initialize();
+		// プレイヤーにシェーダーをセット
+		player->SetPixelShader(Try.Get());
+		// プレイヤーをキャラクターマネージャにセット
+		CharacterManager::Instance().SetPlayer(player);
+>>>>>>> muta
 
 		ColliderManager::Instance().SetCollider(player);
 
@@ -504,7 +512,7 @@ void GameScene::Render(float elapsedTime)
 
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
-		ID3D11ShaderResourceView* shader_resource_views[]{ framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->shader_resource_views[0].Get(), framebuffers[1]->shader_resource_views[0].Get() };
+		ID3D11ShaderResourceView* shader_resource_views[]{ framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->shader_resource_views[0].Get(), framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_2)]->shader_resource_views[0].Get() };
 		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::FOG)]->blit(immediate_context, shader_resource_views, 0, _countof(shader_resource_views), pixel_shaders[static_cast<size_t>(PS::FINAL)].Get());
 	}
 

@@ -6,19 +6,19 @@
 void DemoPlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
 	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
-    Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Model\\Jummo\\Jummo.fbx"));
 	//demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Stage\\wall.fbx"));
 }
 
 void DemoPlayerGraphicsComponent::Update(GameObject* gameobj)
 {
-
 }
 
 void DemoPlayerGraphicsComponent::Render(GameObject* gameobj,float elapsedTime,ID3D11PixelShader* replaced_pixel_shader)
 {
 	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
+
 	demoPlayer->Render(elapsedTime, replaced_pixel_shader);
 	demoPlayer->DrawDebugPrimitive();
 }
@@ -54,6 +54,7 @@ void DemoPlayer::DebugImgui()
 	// int‚ÌêŠ‚É–¼‘O‚ð“ü‚ê‚Ä‚ào—ˆ‚Ü‚·B
 	float f = Model->joint_position(0, 0, &keyframe, world).x;
 	ImGui::Begin("DemoPlayer");// ‚±‚±‚Ìname‚ðDemoPlayer‚É•Ï‚¦‚Ü‚µ‚½
+	ImGui::DragFloat("dissolve", &GetModel()->dissolve,-1.0f,1.0f);
 	ImGui::DragFloat("PlayerPosition", &position.x);
 	ImGui::DragFloat("ScaleFactor", &scaleFactor);
 	ImGui::DragFloat("jointposition", &f);

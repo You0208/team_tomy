@@ -20,10 +20,6 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
 {
-    Player* player = dynamic_cast<Player*> (gameobj);
-
-
-
 }
 
 void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
@@ -33,7 +29,6 @@ void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3
     player->Render(elapsedTime, replaced_pixel_shader);
 
     player->DebugImgui();
-
 }
 
 void Player::DebugImgui()

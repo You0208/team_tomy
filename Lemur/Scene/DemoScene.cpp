@@ -40,11 +40,6 @@ void DemoScene::Initialize()
 				hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::D_FOG)].GetAddressOf());
 				_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 			}
-			{ // ディゾルブ
-				buffer_desc.ByteWidth = sizeof(dissolve_constants);
-				hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].GetAddressOf());
-				_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-			}
 			{ // PBR
 				buffer_desc.ByteWidth = sizeof(adjust_constants);
 				hr = graphics.GetDevice()->CreateBuffer(&buffer_desc, nullptr, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].GetAddressOf());
@@ -56,7 +51,6 @@ void DemoScene::Initialize()
 				_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 			}
 		}
-
 
 		// FOG
 		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::FOG)] = std::make_unique<fullscreen_quad>(graphics.GetDevice());
@@ -82,14 +76,8 @@ void DemoScene::Initialize()
 		// dissolve
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Image\\dissolve_animation.png", noise.GetAddressOf(), graphics.GetTexture2D());//TODO
 
-
 		//TODO 実験用
 		create_ps_from_cso(graphics.GetDevice(), "./Shader/fog_pbr_ps.cso", Try.GetAddressOf());
-
-		//TODO　ごり押しPBR
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_AlbedoTransparency.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_Normal.png", Normal.GetAddressOf(), graphics.GetTexture2D());
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_MetallicSmoothness.png", Roughness.GetAddressOf(), graphics.GetTexture2D());
 	}
 	// ゲーム部分
 	{
@@ -168,7 +156,6 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	using namespace DirectX;
 	Camera& camera = Camera::Instance();
 
-
 	// エフェクト更新処理
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -196,11 +183,6 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 		ImGui::ColorEdit3("fog_color", &fog_color.x);
 		ImGui::SliderFloat("fog_near", &fog_range.x, 0.1f, +100.0f);
 		ImGui::SliderFloat("fog_far", &fog_range.y, 0.1f, +100.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("mask"))
-	{
-		ImGui::SliderFloat("dissolve_value", &dissolve_value, -1.0f, +1.0f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("fog"))
@@ -286,7 +268,9 @@ void DemoScene::Render(float elapsedTime)
 
 		ID3D11PixelShader* null_pixel_shader{ NULL };
 		player->Render(elapsedTime);
+		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
 		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
+		skinned_meshes[2]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
 
 		double_speed_z->deactivate(immediate_context);
 	}
@@ -355,13 +339,6 @@ void DemoScene::Render(float elapsedTime)
 		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::PBR), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].GetAddressOf());
 		immediate_context->PSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::PBR), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::PBR)].GetAddressOf());
 
-		// ディゾルブ
-		dissolve_constants dissolve{};
-		dissolve.parameters.x = dissolve_value;
-		immediate_context->UpdateSubresource(constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].Get(), 0, 0, &dissolve, 0, 0);
-		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::MASK), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].GetAddressOf());
-		immediate_context->PSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::MASK), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::MASK)].GetAddressOf());
-
 		// FOG
 		dis_fog_constants fogs{};
 		fogs.fog_color = fog_color;
@@ -383,9 +360,6 @@ void DemoScene::Render(float elapsedTime)
 	{
 		// PBR実験用
 		immediate_context->PSSetShaderResources(9/*slot(1番にセットします)*/, 1, noise.GetAddressOf());//TODO
-		immediate_context->PSSetShaderResources(10/*slot(1番にセットします)*/, 1, BaseColor.GetAddressOf());//TODO
-		immediate_context->PSSetShaderResources(11/*slot(1番にセットします)*/, 1, Normal.GetAddressOf());//TODO
-		immediate_context->PSSetShaderResources(12/*slot(1番にセットします)*/, 1, Roughness.GetAddressOf());//TODO
 		// シャドウ
 		immediate_context->PSSetShaderResources(8, 1, double_speed_z->shader_resource_view.GetAddressOf());
 	}
@@ -397,7 +371,7 @@ void DemoScene::Render(float elapsedTime)
 	}
 	if (enableFog)
 	{
-		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->clear(immediate_context);
+		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->clear(immediate_context, 0.4f, 0.4f, 0.4f);
 		framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->activate(immediate_context);
 	}
 	//3D描画
@@ -453,7 +427,7 @@ void DemoScene::Render(float elapsedTime)
 
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
-		ID3D11ShaderResourceView* shader_resource_views[]{ framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->shader_resource_views[0].Get(), framebuffers[1]->shader_resource_views[0].Get() };
+		ID3D11ShaderResourceView* shader_resource_views[]{ framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->shader_resource_views[0].Get(), framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_2)]->shader_resource_views[0].Get() };
 		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::FOG)]->blit(immediate_context, shader_resource_views, 0, _countof(shader_resource_views), pixel_shaders[static_cast<size_t>(PS::FINAL)].Get());
 	}
 
