@@ -52,11 +52,6 @@ void GambleScene::Initialize()
 		player = CharacterManager::Instance().GetPlayer();
 	}
 
-	player->TestSkillSet("StrongArm");
-	player->TestSkillSet("SuperMan");
-
-	// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
-	player->SkillSort();
 
 	// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 	CharacterManager::Instance().SetPlayer(player);
@@ -78,27 +73,38 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	{
 	case Skill_Lottery:
 
-
+		
 		// 抽選できる数だけ繰り返す
 		if(can_lottery_count>0)
 		{
 			// todo 牟田さん ここで抽選するかどうかの判定をするからプレイヤーに選ばせれるようにしてください。お願いします。
 			// もう一回抽選するときはほしいスキルはキープできるような処理もお願いします。is_selectをfalseにしたらまた抽選されます
+			// ImGuiに抽選されてるスキルが表示されるようになってます。
 
 		    // 今はバグるから強制的に三回抽選する
-			if (can_lottery_count > 0)
+			if (can_lottery_count > 0/*todo 牟田さん ここのif文は(もっかい抽選が選ばれたら)にしてください*/)
 			{
 				SetLotterySkills();
 				can_lottery_count--;
 			}
-			else 
+			/*if(// このスキルで決定するを選択したら)
 				can_lottery_count = 0;
-
+				*/
 		}
+		// Todo　ここ最終的に演出が終了したらにしたい
 		if (can_lottery_count <= 0)
 		{
 			// 抽選されたスキルの配列をプレイヤーに持たせる。
 			player->SetSkill(lottery_skills);
+
+#if 0 /*----------- ここはテスト用 -----------*/
+			player->TestSkillSet("StrongArm");
+			player->TestSkillSet("SuperMan");
+#endif
+
+			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
+			player->SkillSort();
+
 			step++;
 		}
 
@@ -107,9 +113,14 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 	case Quest_Select:
 
+		// todo 牟田さん　ここでクエストの選択です。quest_patternに値を入れてstepをインクリメントしてください。お願いします。
+
+		step++;
 		break;
 
 	case Gamble_Status:
+
+		
 
 		break;
 	}

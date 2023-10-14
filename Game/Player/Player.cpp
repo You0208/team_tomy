@@ -75,10 +75,6 @@ void Player::DebugImgui()
     }
     if(ImGui::TreeNode("Skills"))
     {
-        //for(int i=0;i<skills.size();i++)
-        //{
-        //    ImGui::Text()
-        //}
         for(auto& skill:skills)
         {
             if(ImGui::TreeNode(skill->GetName().c_str()))
@@ -104,6 +100,8 @@ void Player::DebugImgui()
         ImGui::InputInt("animation_index", &animation_index);
         ImGui::InputFloat("animation_tick", &animation_tick);
         ImGui::InputInt("frame_index", &frame_index);
+        ImGui::Checkbox("end_animation", &end_animation);
+        ImGui::Checkbox("loop_animation", &loop_animation);
         ImGui::TreePop();
     }
     ImGui::End();
@@ -310,40 +308,6 @@ DirectX::XMFLOAT3 Player::GetMoveVec(float input_x, float input_y)
 
 }
 
-void Player::SetPlayerSkills()
-{
-    int all_skill_count = all_skills.size();
-
-    _ASSERT_EXPR(skill_capacity <= all_skill_count, L"取得可能スキル超過");
-
-    // 抽選されたスキルが入る配列
-    std::vector<BaseSkill*> select_skill;
-
-        //ここのfor文はスキルを三つ抽選するところ
-        // スキルを所持できる分だけ繰り返す
-        for (int i = 0; i < skill_capacity;)
-        {
-            // ランダム抽選
-            BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
-
-            // もうすでに抽選されてたらもう一回
-            if (skill->is_select)
-            {
-                continue;
-            }
-            skill->is_select = true;
-
-            select_skill.emplace_back(skill);
-            i++;
-        }
-        
-        // todo 牟田さん ここで選択によってコンティニュー(もう一回抽選)するか、breakするかの処理を作ってください。お願いします。
-        // もう一回抽選するときはほしいスキルはキープできるような処理もお願いします。is_selectをfalseにしたらまた抽選されます
-        // 今はバグるからbreak
-
-    // 抽選されたスキルの配列をプレイヤーに持たせる。
-    SetSkill(select_skill);
-}
 
 void Player::SkillInit()
 {

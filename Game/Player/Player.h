@@ -82,6 +82,8 @@ public:
         Mouse& mouse = Input::Instance().GetMouse();
         if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
             return true;
+
+        return false;
     }
 
     // 敵撃破数取得
@@ -130,6 +132,10 @@ private:
     float retention_basicDP;
     // スキル無しMaxHP
     int retention_basicMHP;
+
+    // ステータスをかけるポイント量
+    int status__bet_point;
+
 public:
     // 一回初期設定したらtrue。
     bool is_initialize = false;
@@ -137,6 +143,7 @@ public:
     // スピードパラメータ
     float speed_power = 10.0f;
 
+    int down_count = 2;
 public:/*---------- 当たり判定系 ----------*/
 
     // ノードとエネミーの衝突処理
@@ -172,9 +179,6 @@ public:/*----------------- スキル関係 -----------------*/
 
         SetSkill(skill);
     }
-
-    // 全スキルからランダムでスキルを取得
-    void SetPlayerSkills();
 
     // プレイヤーにスキルをセット
     void SetSkill(BaseSkill* skill)

@@ -8,16 +8,19 @@ void GameObject::AnimationUpdate(float elapsedTime)
     //todo ヒットストップどっちにするか決める
     // ヒットストップ中なら更新しない
     //if (is_hit_stop) return;
-
     if (Model->animation_clips.size() > 0)
     {
         animation = { Model->animation_clips.at(animation_index) };
         frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
         if (frame_index > animation.sequence.size() - 1)
         {
-            frame_index = 0;
-            animation_tick = 0;
+            // todo アニメーションループじゃないなら＝０のとこセットしない
             end_animation = true;
+            if (loop_animation)
+            {
+                frame_index = 0;
+                animation_tick = 0;
+            }
         }
         else
         {

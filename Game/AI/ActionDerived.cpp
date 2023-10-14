@@ -11,7 +11,7 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 	{
 	case 0:
 		// todo アニメーション設定
-
+		owner->SetAnimationIndex(owner->Walk_Anim);
 		owner->SetRandomTargetPosition();
 
 	    step++;

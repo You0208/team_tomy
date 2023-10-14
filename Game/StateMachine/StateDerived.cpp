@@ -4,7 +4,10 @@
 #include "Lemur/Input/Input.h"
 
 #include "Game/Player/Player.h"
+#include "Game/Scene/TitleScene.h"
 #include "Game/StateMachine/StateMachine.h"
+#include "Lemur/Scene/SceneManager.h"
+
 namespace Nero::Component::AI
 {
     void IdleState::Begin()
@@ -106,12 +109,24 @@ namespace Nero::Component::AI
     void DeathState::Begin()
     {
         owner->invincible = true;
-        owner->SetAnimationIndex(owner->Death_Anim);
+        owner->SetAnimationIndex(owner->Death_Anim,false);
     }
 
     void DeathState::Update()
     {
         // todo 死亡後の処理どうするか
+        if(owner->GetEndAnimation())
+        {
+            owner->down_count--;
+            if(owner->down_count<0)
+            {
+                //Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+            }
+            else
+            {
+                // todo リザルトシーン
+            }
+        }
     }
 
     void DeathState::End()

@@ -124,12 +124,13 @@ public:
     skinned_mesh* GetModel()const { return Model.get(); }
 
     // アニメーションの切り替え
-    void SetAnimationIndex(int index)
+    void SetAnimationIndex(int index, bool loop_animation_ = true)
     {
         frame_index = 0;
         animation_tick = 0;
         animation_index = index;
         end_animation = false;
+        loop_animation = loop_animation_;
     }
 
     // アニメーション終了フラグ取得
@@ -153,6 +154,7 @@ public:
 
     // ヒットストップする(秒)
     void HitStopON(float hit_stop_time_);
+
 protected:
 
 
@@ -252,6 +254,10 @@ protected:
 
     // アニメーション終了フラグ
     bool end_animation = false;
+
+    // アニメーションループするかフラグ
+    //(再生時にデフォルト引数でループしないようにできます。 by:tomy)
+    bool loop_animation = false;
 
     // ヒットストップする時間
     float hit_stop_time;

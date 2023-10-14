@@ -60,6 +60,9 @@ private:// ゲーム関連
     // 更新処理止める用
     bool is_update = true;
 
+    // 勝利時にかけたステータスの増える倍率
+    float bet_rate = 1.0f;
+
     //ポーズ
     void Pause()
     {
