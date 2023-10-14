@@ -18,7 +18,9 @@ void TitleScene::Finalize()
 void TitleScene::Update(HWND hwnd, float elapsedTime)
 {
     GamePad& game_pad = Input::Instance().GetGamePad();
-    if(game_pad.GetButtonDown()&GamePad::BTN_START)
+    Mouse& mouse = Input::Instance().GetMouse();
+    if(game_pad.GetButtonDown()&GamePad::BTN_START||
+        mouse.GetButtonDown()&Mouse::BTN_RIGHT)
     {
         // タイトルから行くときは初めから。
         is_first_set_player = false;

@@ -117,10 +117,11 @@ namespace Nero::Component::AI
         // todo Ž€–SŒã‚Ìˆ—‚Ç‚¤‚·‚é‚©
         if(owner->GetEndAnimation())
         {
+            //owner->animStop = true;
             owner->down_count--;
             if(owner->down_count<0)
             {
-                //Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+                Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
             }
             else
             {

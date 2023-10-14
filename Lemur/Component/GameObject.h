@@ -210,6 +210,8 @@ public:
     // UŒ‚“–‚½‚è”»’è‚·‚é‚©
     bool attack_collision_flag = false;
 
+    bool animStop = false;
+
 protected:
     DirectX::XMFLOAT4X4 World;
 

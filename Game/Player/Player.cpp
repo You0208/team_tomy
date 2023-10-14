@@ -39,6 +39,7 @@ void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3
 void Player::DebugImgui()
 {
     ImGui::Begin("Player");
+    ImGui::DragInt("down_count", &down_count);
     if(ImGui::TreeNode("Transform"))
     {
         ImGui::DragFloat3("position", &position.x);
