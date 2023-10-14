@@ -33,6 +33,7 @@ public:
     };
     int step;
 
+    void DebugImGui();
 
 private:
     Player* CreatePlayer()

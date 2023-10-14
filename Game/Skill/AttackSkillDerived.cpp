@@ -7,6 +7,11 @@ void StrongArm::Init()
     owner->attack_power *= 1.25f;
 }
 
+void StrongArm::Fin()
+{
+
+}
+
 void DemonPower::Update()
 {
     // ƒXƒLƒ‹ŠÒ‚ÌƒLƒ‹”

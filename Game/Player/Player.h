@@ -65,6 +65,8 @@ public:
     void StateMachineUpdate();
     Nero::Component::AI::StateMachine* GetStateMachine()const { return state_machine; }
 
+    DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
+
     bool InputMove();
 
     // 引数のスキル持ってるか検索する関数
@@ -97,8 +99,6 @@ public:
             health = max_health;
     }
 
-    // 一回初期設定したらtrue。
-    bool is_initialize = false;
 private:
 
     // 敵を倒した数
@@ -107,34 +107,47 @@ private:
     // スキル系でいろいろ都合がいいから与えたダメージを変数で保持
     int add_damage = 0;
 
+
+    // 無敵フレーム
+    int invincible_frame = 20;
+
+    // 旋回の速さ
+    float turn_speed = 10.0f;
+
+    /* --------スキルによって影響を受ける前のパラメータを保持する---------
+     * --------------スキル解除の時に代入パラメータに代入-----------------*/
+
+    // パラメータを保持する
+    void RetentionParamSet();
+    // 保持したパラメータをセットする
+    void RetentionParamGet();
+
+    // スキル無し攻撃力
+    float retention_basicAP;
+    // スキル無しスピード
+    float retention_basicSP;
+    // スキル無し防御力
+    float retention_basicDP;
+    // スキル無しHP　
+    int retention_basicHP;
+    // スキル無しMaxHP
+    int retention_basicMHP;
+public:
+    // 一回初期設定したらtrue。
+    bool is_initialize = false;
+
+    // スピードパラメータ
+    float speed_power = 10.0f;
+
 public:/*---------- 当たり判定系 ----------*/
 
     // ノードとエネミーの衝突処理
-    void CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius);
+    void CollisionNodeVsEnemies(const char* mesh_name, const char* bone_name, float node_radius);
 
     // 無敵状態(喰らい当たり判定するか)
     bool invincible = false;
 
     int GetInvincibleFrame()const { return invincible_frame; }
-private:
-
-    // 無敵フレーム
-    int invincible_frame = 20;
-
-private:/*---------- 移動、速度関係 -----------*/
-
-    DirectX::XMFLOAT3 GetMoveVec(float input_x, float input_y);
-
-private:
-
-    // 旋回の速さ
-    float turn_speed = 10.0f;
-public:
-    // スピードパラメータ
-    float speed_power = 10.0f;
-
-private:
-    Nero::Component::AI::StateMachine* state_machine = nullptr;
 
 public:/*----------------- スキル関係 -----------------*/
     // スキルを設定
@@ -144,6 +157,9 @@ public:/*----------------- スキル関係 -----------------*/
         Skill* skill = new Skill();
         all_skills.emplace_back(skill);
     }
+
+    // 最初にゲームの全スキルをセットしたらtrueにする。
+    bool is_set_allSkill = false;
 
     // 特定のスキルをテストしたいときに使う
     void TestSkillSet(const char* set_skill_name)
@@ -188,7 +204,6 @@ public:/*----------------- スキル関係 -----------------*/
         std::sort(skills.begin(), skills.end(), fcomp);
     }
 
-    //std::vector<BaseSkill*> GetPlayerSkill() { return skills; }
 
 private:
     // 所持してるスキル
@@ -196,6 +211,9 @@ private:
 
     // ゲームに存在する全スキル
     std::vector<std::unique_ptr<BaseSkill>> all_skills;
+
+private:
+    Nero::Component::AI::StateMachine* state_machine = nullptr;
 
 };
 

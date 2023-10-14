@@ -4,6 +4,8 @@
 #include "Lemur/Input/Input.h"
 #include "Lemur/Scene/SceneManager.h"
 
+extern bool is_first_set_player;
+
 void TitleScene::Initialize()
 {
     title = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/pic001.png");
@@ -18,6 +20,9 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
     GamePad& game_pad = Input::Instance().GetGamePad();
     if(game_pad.GetButtonDown()&GamePad::BTN_START)
     {
+        // タイトルから行くときは初めから。
+        is_first_set_player = false;
+
         Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
     }
 }

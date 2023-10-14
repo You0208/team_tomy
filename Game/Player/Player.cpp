@@ -61,6 +61,12 @@ void Player::DebugImgui()
 
         ImGui::DragInt("MaxHealth", &max_health);
         ImGui::DragInt("health", &health);
+        if (health <= 0)
+        {
+            health = 0;
+            death = true;
+        }
+
         ImGui::DragFloat("attack_power", &attack_power);
         ImGui::DragFloat("defense_power", &defense_power);
         ImGui::DragFloat("speed_power", &speed_power);
@@ -163,6 +169,24 @@ bool Player::HaveSkill(const char* search_skill_name)
             return true;
     }
     return false;
+}
+
+void Player::RetentionParamSet()
+{
+    retention_basicAP  = attack_power;
+    retention_basicDP  = defense_power;
+    retention_basicHP  = health;
+    retention_basicMHP = max_health;
+    retention_basicSP  = speed_power;
+}
+
+void Player::RetentionParamGet()
+{
+    attack_power  = retention_basicAP;
+    defense_power = retention_basicDP;
+    health        = retention_basicHP;
+    max_health    = retention_basicMHP;
+    speed_power   = retention_basicSP;
 }
 
 void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius)
@@ -310,6 +334,7 @@ void Player::SetPlayerSkills()
 
 void Player::SkillInit()
 {
+    RetentionParamSet();
     for(auto& skill:skills)
     {
         skill->Init();
@@ -327,6 +352,7 @@ void Player::SkillUpdate()
 void Player::SkillFin()
 {
     skills.clear();
+    RetentionParamGet();
 }
 
 void PlayerPhysicsComponent::Initialize(GameObject* gameobj)

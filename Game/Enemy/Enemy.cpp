@@ -59,7 +59,7 @@ void Enemy::BehaviorTreeInitialize()
     ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
     {
         // ”ñí“¬
-        ai_tree->AddNode("Root", "NonBattle", 1, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        ai_tree->AddNode("Root", "NonBattle", 2, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
         {
             // œpœj
             ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
@@ -67,18 +67,19 @@ void Enemy::BehaviorTreeInitialize()
             ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
         }
         // í“¬
-        ai_tree->AddNode("Root", "Battle", 0, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
+        ai_tree->AddNode("Root", "Battle", 1, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
         {
             // ’ÇÕ
             ai_tree->AddNode("Battle", "Pursue", 2, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
-            // Ž€–S
-            ai_tree->AddNode("Battle", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
             // UŒ‚
             ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new AttackJudgment(this), nullptr);
             {
                 ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
             }
         }
+        // Ž€–S
+        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+
     }
 
 
@@ -257,6 +258,11 @@ void Enemy::DebugImgui()
     {
         ImGui::DragInt("MaxHealth", &max_health);
         ImGui::DragInt("health", &health);
+        if (health <= 0)
+        {
+            health = 0;
+            death = true;
+        }
         ImGui::DragFloat("attack_power", &attack_power);
         ImGui::DragFloat("defense_power", &defense_power);
         ImGui::TreePop();

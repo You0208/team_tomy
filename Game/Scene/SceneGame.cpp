@@ -632,9 +632,11 @@ void GameScene::QuestClear()
 {
 	int enemy_count = EnemyManager::Instance().GetEnemyCount();
 
-	// todo ƒŠƒTƒCƒY
 	if (enemy_count <= 0)
+	{
+		player->SkillFin();
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+	}
 
 }
 

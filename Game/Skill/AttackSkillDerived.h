@@ -11,7 +11,7 @@ public:
     ~StrongArm() = default;
 
     void Init() override;
-
+    void Fin() override;
     
 };
 
