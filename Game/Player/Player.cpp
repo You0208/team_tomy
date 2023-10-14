@@ -175,18 +175,18 @@ void Player::RetentionParamSet()
 {
     retention_basicAP  = attack_power;
     retention_basicDP  = defense_power;
-    retention_basicHP  = health;
-    retention_basicMHP = max_health;
     retention_basicSP  = speed_power;
+    retention_basicMHP = max_health;
 }
 
 void Player::RetentionParamGet()
 {
     attack_power  = retention_basicAP;
     defense_power = retention_basicDP;
-    health        = retention_basicHP;
-    max_health    = retention_basicMHP;
     speed_power   = retention_basicSP;
+    max_health    = retention_basicMHP;
+    if (health > max_health)
+        health = max_health;
 }
 
 void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius)
@@ -316,20 +316,33 @@ void Player::SetPlayerSkills()
 
     _ASSERT_EXPR(skill_capacity <= all_skill_count, L"取得可能スキル超過");
 
-    // 所持できる分だけ繰り返す
-    for (int i = 0; i < skill_capacity;)
-    {
-        BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
+    // 抽選されたスキルが入る配列
+    std::vector<BaseSkill*> select_skill;
 
-        // もうすでに取得してたらもう一回
-        if (skill->GetOwner())
+        //ここのfor文はスキルを三つ抽選するところ
+        // スキルを所持できる分だけ繰り返す
+        for (int i = 0; i < skill_capacity;)
         {
-            continue;
-        }
-        SetSkill(skill);
-        i++;
-    }
+            // ランダム抽選
+            BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
 
+            // もうすでに抽選されてたらもう一回
+            if (skill->is_select)
+            {
+                continue;
+            }
+            skill->is_select = true;
+
+            select_skill.emplace_back(skill);
+            i++;
+        }
+        
+        // todo 牟田さん ここで選択によってコンティニュー(もう一回抽選)するか、breakするかの処理を作ってください。お願いします。
+        // もう一回抽選するときはほしいスキルはキープできるような処理もお願いします。is_selectをfalseにしたらまた抽選されます
+        // 今はバグるからbreak
+
+    // 抽選されたスキルの配列をプレイヤーに持たせる。
+    SetSkill(select_skill);
 }
 
 void Player::SkillInit()

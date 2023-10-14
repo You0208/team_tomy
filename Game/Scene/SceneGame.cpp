@@ -639,25 +639,3 @@ void GameScene::QuestClear()
 	}
 
 }
-
-//
-//void GameScene::SetPlayerSkills()
-//{
-//	int all_skill_count = all_skills.size();
-//
-//	_ASSERT_EXPR(player->skill_capacity <= all_skill_count, L"Žæ“¾‰Â”\ƒXƒLƒ‹’´‰ß");
-//
-//	// ŠŽ‚Å‚«‚é•ª‚¾‚¯ŒJ‚è•Ô‚·
-//	for (int i = 0; i < player->skill_capacity;)
-//	{
-//		BaseSkill* skill = all_skills.at(rand() % all_skill_count).get();
-//
-//		// ‚à‚¤‚·‚Å‚ÉŽæ“¾‚µ‚Ä‚½‚ç‚à‚¤ˆê‰ñ
-//		if (skill->GetOwner())
-//		{
-//			continue;
-//		}
-//		player->SetSkill(skill);
-//		i++;
-//	}
-//}

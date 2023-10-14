@@ -32,6 +32,7 @@ public:
     // 名前取得
     std::string GetName()const { return skill_name; }
 
+    // スキル抽選されてるフラグ
     bool is_select = false;
 
     //auto GetIT()
@@ -42,6 +43,7 @@ public:
     // スキルの順番を入れ替えるために使う。
     //順番で性能などが左右されるスキルのみ設定する。
     int priorty = 0;
+
 protected:
     std::string skill_name;
 

@@ -27,9 +27,9 @@ public:
     // フェーズ
     enum Phase
     {
-        Skill,
-        Quest,
-        Gamble,
+        Skill_Lottery,// スキル抽選
+        Quest_Select,// クエスト選択
+        Gamble_Status,// ステータスギャンブル
     };
     int step;
 
@@ -44,6 +44,15 @@ private:
             new PlayerGraphicsComponent()
         );
     }
+
+    // 抽選スキル配列にスキルを抽選してセットする
+    void SetLotterySkills();
+
+    // 抽選されてるスキル
+    std::vector<BaseSkill*> lottery_skills;
+
+    // 抽選可能回数
+    int can_lottery_count = 3;
 
 private:/*---------------- スキル関係 -----------------*/
 

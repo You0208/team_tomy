@@ -128,8 +128,6 @@ private:
     float retention_basicSP;
     // スキル無し防御力
     float retention_basicDP;
-    // スキル無しHP　
-    int retention_basicHP;
     // スキル無しMaxHP
     int retention_basicMHP;
 public:
@@ -184,6 +182,15 @@ public:/*----------------- スキル関係 -----------------*/
         skill->SetOwner(this);
         skills.emplace_back(skill);
     }
+    // プレイヤーにスキルをセット(配列ごとセット)
+    void SetSkill(std::vector<BaseSkill*> skills_)
+    {
+        skills = skills_;
+        for (auto& skill : skills)
+        {
+            skill->SetOwner(this);
+        }
+    }
 
     // 所持スキルのInitを呼ぶ
     void SkillInit();
@@ -204,13 +211,12 @@ public:/*----------------- スキル関係 -----------------*/
         std::sort(skills.begin(), skills.end(), fcomp);
     }
 
-
+    // ゲームに存在する全スキル
+    std::vector<std::unique_ptr<BaseSkill>> all_skills;
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;
 
-    // ゲームに存在する全スキル
-    std::vector<std::unique_ptr<BaseSkill>> all_skills;
 
 private:
     Nero::Component::AI::StateMachine* state_machine = nullptr;

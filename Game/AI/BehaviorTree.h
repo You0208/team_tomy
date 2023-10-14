@@ -74,7 +74,6 @@ private:
 	//常に何か入ってないと全く動作しないことになるのでバグる。
 	NodeBase* active_node;
 
-	// todo テンプレート化
 	// ビヘイビアツリーの使用者(型はCharacterにすべき？)
 	Enemy* owner;
 };
