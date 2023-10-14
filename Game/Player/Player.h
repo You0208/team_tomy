@@ -155,6 +155,7 @@ public:/*---------- 当たり判定系 ----------*/
     int GetInvincibleFrame()const { return invincible_frame; }
 
 public:/*----------------- スキル関係 -----------------*/
+
     // スキルを設定
     template<class Skill>
     void SetSkill()
@@ -217,6 +218,8 @@ public:/*----------------- スキル関係 -----------------*/
 
     // ゲームに存在する全スキル
     std::vector<std::unique_ptr<BaseSkill>> all_skills;
+
+    
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;

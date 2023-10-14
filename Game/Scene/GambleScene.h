@@ -35,6 +35,10 @@ public:
 
     void DebugImGui();
 
+    //void AllIsSelectReset()
+    //{
+    //    
+    //}
 private:
     Player* CreatePlayer()
     {

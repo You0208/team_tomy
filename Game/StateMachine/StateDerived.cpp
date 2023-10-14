@@ -4,6 +4,7 @@
 #include "Lemur/Input/Input.h"
 
 #include "Game/Player/Player.h"
+#include "Game/Scene/ResultScene.h"
 #include "Game/Scene/TitleScene.h"
 #include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Scene/SceneManager.h"
@@ -117,7 +118,7 @@ namespace Nero::Component::AI
         // todo 死亡後の処理どうするか
         if(owner->GetEndAnimation())
         {
-            //owner->animStop = true;
+            owner->animStop = true;
             owner->down_count--;
             if(owner->down_count<0)
             {
@@ -125,7 +126,7 @@ namespace Nero::Component::AI
             }
             else
             {
-                // todo リザルトシーン
+                Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene);
             }
         }
     }

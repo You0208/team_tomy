@@ -68,7 +68,7 @@ void GambleScene::Finalize()
 
 void GambleScene::Update(HWND hwnd, float elapsedTime)
 {
-
+	// todo 俺　抽選フラグリセットする。
 	switch (step)
 	{
 	case Skill_Lottery:

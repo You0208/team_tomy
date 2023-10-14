@@ -24,8 +24,8 @@ void GameObject::AnimationUpdate(float elapsedTime)
         {
             end_animation = false;
             animation_tick += elapsedTime*hitStopCoefficient;
+            keyframe = { animation.sequence.at(frame_index) };
         }
-        keyframe = { animation.sequence.at(frame_index) };
     }
 }
 
