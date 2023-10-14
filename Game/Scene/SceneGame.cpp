@@ -126,18 +126,15 @@ void GameScene::Initialize()
 		// プレイヤーをキャラクターマネージャから持ってくる
 		player = CharacterManager::Instance().GetPlayer();
 		// プレイヤー初期処理
-<<<<<<< HEAD
 		if (!player->is_initialize)
 			player->Initialize();
 
 		player->SkillInit();
-=======
 		player->Initialize();
 		// プレイヤーにシェーダーをセット
 		player->SetPixelShader(Try.Get());
 		// プレイヤーをキャラクターマネージャにセット
 		CharacterManager::Instance().SetPlayer(player);
->>>>>>> muta
 
 		ColliderManager::Instance().SetCollider(player);
 

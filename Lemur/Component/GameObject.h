@@ -210,11 +210,9 @@ public:
     // UŒ‚“–‚½‚è”»’è‚·‚é‚©
     bool attack_collision_flag = false;
 
-<<<<<<< HEAD
     bool animStop = false;
-=======
+
     Microsoft::WRL::ComPtr<ID3D11PixelShader> PS;
->>>>>>> muta
 
 protected:
     DirectX::XMFLOAT4X4 World;

@@ -27,10 +27,9 @@ bool framework::initialize()
 	Lemur::Scene::SceneManager::Instance().ChangeScene(new DemoScene);
 
     //merge前にこれをコメント化
-<<<<<<< HEAD
+
 	Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
-=======
->>>>>>> muta
+
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 
 	return true;
