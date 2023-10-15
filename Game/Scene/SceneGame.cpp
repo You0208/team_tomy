@@ -11,6 +11,8 @@
 #include "Lemur/Effekseer/EffekseerManager.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Quest.h"
+#include "ResultScene.h"
+#include "TitleScene.h"
 #include "Lemur/Scene/SceneManager.h"
 extern QuestPattern quest_pattern;
 
@@ -213,9 +215,11 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 
 	player->Update(elapsedTime);
 
+
 	ColliderManager::Instance().Update();
 
 	QuestClear();
+	QuestFailed();
 
 //---------------------------------------------------------------------------------------
 // Imgui
@@ -590,6 +594,7 @@ void GameScene::DebugImGui()
 {
 	ImGui::Begin("Scene");
 	ImGui::Checkbox("is_update", &is_update);
+	ImGui::DragFloat("bet_rate", &bet_rate);
 	ImGui::End();
 }
 
@@ -602,6 +607,7 @@ void GameScene::CreateEnemy_KARI()
     {
     case QuestPattern::A:
 
+		// todo ここでベットレートの設定
 		for (int i = 0; i < 1; ++i)
 		{
 			Enemy* enemy = CreateEnemy();
@@ -614,7 +620,10 @@ void GameScene::CreateEnemy_KARI()
 
 		break;
     case QuestPattern::B:
-		for (int i = 0; i < 2; ++i)
+
+		bet_rate = 2.0f;
+
+        for (int i = 0; i < 2; ++i)
 		{
 			Enemy* enemy = CreateEnemy();
 			enemy->Initialize();
@@ -635,7 +644,22 @@ void GameScene::QuestClear()
 	if (enemy_count <= 0)
 	{
 		player->SkillFin();
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,true));
 	}
 
+}
+
+void GameScene::QuestFailed()
+{
+	if (player->death_anim_end)
+	{
+		if (player->down_count < 0)
+		{
+			Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+		}
+		else
+		{
+			Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,false));
+		}
+	}
 }
