@@ -61,3 +61,13 @@ void Mouse::Update()
     positionX[0] = (LONG)(cursor.x / static_cast<float>(viewportW) * static_cast<float>(screenW));
     positionY[0] = (LONG)(cursor.y / static_cast<float>(viewportH) * static_cast<float>(screenH));
 }
+
+bool Mouse::IsArea(float posx, float posy, float texX, float texY)
+{
+    if (GetPositionX() > posx && GetPositionX() < posx + texX && GetPositionY() > posy && GetPositionY() < posy + texY)
+    {
+        return true;
+    }
+    return false;
+}
+

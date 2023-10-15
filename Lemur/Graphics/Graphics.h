@@ -31,7 +31,7 @@
 #include <wrl.h>
 #include <dxgi1_6.h>
 
-//#define ENABLE_DIRECT2D
+#define ENABLE_DIRECT2D
 #ifdef ENABLE_DIRECT2D
 #include <d2d1_1.h>
 #include <dwrite.h>
@@ -39,8 +39,8 @@
 
 #include <mutex>
 
-CONST LONG SCREEN_WIDTH{ 1280 };
-CONST LONG SCREEN_HEIGHT{ 720 };
+CONST LONG SCREEN_WIDTH{ 1920 };
+CONST LONG SCREEN_HEIGHT{ 1080 };
 CONST BOOL FULLSCREEN{ FALSE };
 
 namespace Lemur::Graphics
@@ -158,6 +158,9 @@ namespace Lemur::Graphics
         IDWriteTextFormat* g_pTextFormat = nullptr;
         ID2D1RenderTarget* g_pRT = nullptr;
         ID2D1SolidColorBrush* g_pSolidBrush = nullptr;
+
+        IDWriteTextFormat* TextFormat_1 = nullptr;
+        IDWriteTextFormat* TextFormat_2 = nullptr;
 #endif
 
     private:

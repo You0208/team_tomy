@@ -533,7 +533,7 @@ void GameScene::Render(float elapsedTime)
 
 
 	// 2D描画
-#if 0
+#if 1
 	// sprite描画
 	{
 		if (dummy_sprite)
@@ -550,11 +550,11 @@ void GameScene::Render(float elapsedTime)
 
 			// 定数バッファの更新（ディゾルブ）
 			{
-				dissolve_constants dissolve{};
-				dissolve.parameters.x = dissolve_value;
-				immediate_context->UpdateSubresource(dissolve_constant_buffer.Get(), 0, 0, &dissolve, 0, 0);
-				immediate_context->VSSetConstantBuffers(3, 1, dissolve_constant_buffer.GetAddressOf());
-				immediate_context->PSSetConstantBuffers(3, 1, dissolve_constant_buffer.GetAddressOf());
+				//dissolve_constants dissolve{};
+				//dissolve.parameters.x = dissolve_value;
+				//immediate_context->UpdateSubresource(dissolve_constant_buffer.Get(), 0, 0, &dissolve, 0, 0);
+				//immediate_context->VSSetConstantBuffers(3, 1, dissolve_constant_buffer.GetAddressOf());
+				//immediate_context->PSSetConstantBuffers(3, 1, dissolve_constant_buffer.GetAddressOf());
 			}
 			//dummy_sprite->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		}

@@ -47,6 +47,13 @@ namespace Lemur::Scene
         void SetUpRendering();
 
     protected:
+        D3D11_TEXTURE2D_DESC mask_texture2dDesc{};
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mask_texture;
+        std::shared_ptr<sprite> dummy_sprite;
+        Microsoft::WRL::ComPtr<ID3D11VertexShader> sprite_vertex_shader;
+        Microsoft::WRL::ComPtr<ID3D11InputLayout> sprite_input_layout;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> sprite_pixel_shader;
+
         // Zelda_Shader
         Microsoft::WRL::ComPtr<ID3D11PixelShader> zelda_ps;
         Microsoft::WRL::ComPtr<ID3D11PixelShader> Wall;

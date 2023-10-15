@@ -2,6 +2,8 @@
 #include "Game/Player/Player.h"
 #include "Game/Skill/BaseSkill.h"
 #include "Lemur/Scene/BaseScene.h"
+#include "Lemur/Graphics/sprite_d.h"
+#include "Lemur/Font/font.h"
 
 // スキル配布、敵クエスト択、ステータスかける
 //をするシーン
@@ -39,6 +41,22 @@ public:
     //{
     //    
     //}
+
+    struct Card
+    {
+        WCHAR wcText[256];
+        int quest;
+        DirectX::XMFLOAT2 position;
+        DirectX::XMFLOAT2 size;
+    };
+    Card questCard[3];
+    Card skillCard[3];
+    DirectX::XMFLOAT2 Poo = {};
+
+    int selection_card = 1;
+    DirectX::XMFLOAT2 arrow_position[2]{};
+    DirectX::XMFLOAT2 arrow_size = { 95, 145 };
+ 
 private:
     Player* CreatePlayer()
     {
@@ -58,9 +76,16 @@ private:
     // 抽選可能回数
     int can_lottery_count = 3;
 
+    bool IsDirection;
+    bool SelectCard[3] = {};
+    float plusPos[3] = {};
+
 private:/*---------------- スキル関係 -----------------*/
 
     Player* player;
 
+    std::shared_ptr<sprite>  spr_back;
+    std::shared_ptr<sprite_d>  spr_card;
+    std::shared_ptr<sprite_d>  spr_arrow;
 };
 

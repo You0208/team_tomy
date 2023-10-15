@@ -134,12 +134,7 @@ private:// シェーダー関連
     };
     float dissolve_value{ 1.0f };
 
-    D3D11_TEXTURE2D_DESC mask_texture2dDesc{};
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mask_texture;
-    std::shared_ptr<sprite> dummy_sprite;
-    Microsoft::WRL::ComPtr<ID3D11VertexShader> sprite_vertex_shader;
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> sprite_input_layout;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> sprite_pixel_shader;
+
 
     // バッファー＝データを一時的に保持するメモリストレージ領域
     // ・プログラム側で定数バッファに値を格納することで

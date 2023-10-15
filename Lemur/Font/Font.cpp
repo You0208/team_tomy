@@ -7,13 +7,15 @@ namespace Lemur::Graphics
 	void Font::initialize()
 	{
 		HRESULT hr{ S_OK };
-
+#ifdef ENABLE_DIRECT2D
+		//Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 		//g_pD2DFactory = graphics.Getg_pD2DF();
 		//g_pBackBuffer =graphics.Getg_pBackBuffer();
 		//g_pDWriteFactory =graphics.Getg_pDWriteFactory();
 		//g_pTextFormat =graphics.Getg_pTextFormat();
 		//g_pRT =graphics.Getg_pRT();
 		//g_pSolidBrush =graphics.Getg_pSolidBrush();
+#endif
 
 	}
 	void Font::render()
@@ -43,4 +45,17 @@ namespace Lemur::Graphics
 		//--------------------------★追加↑--------------------------
 #endif
 	}
+
+	void Font::render(WCHAR wcText1[],int TextNum,DirectX::XMFLOAT2 pos, float width, float hight)
+	{
+#ifdef ENABLE_DIRECT2D
+		Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
+		// テキストの描画
+		graphics.g_pRT->BeginDraw();
+		graphics.g_pRT->DrawText(wcText1, TextNum - 1, graphics.TextFormat_1, D2D1::RectF(pos.x, pos.y, pos.x + width, pos.y + hight), graphics.g_pSolidBrush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+		graphics.g_pRT->EndDraw();
+#endif
+	}
+
 };
