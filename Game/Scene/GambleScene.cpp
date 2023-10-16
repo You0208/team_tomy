@@ -61,18 +61,27 @@ void GambleScene::Initialize()
 	skillCard[0].position = { 20, 98 };
 	skillCard[1].position = { 658, 98 };
 	skillCard[2].position = { 1288, 98 };
-	skillCard[0].size = { 600, 780 };
-	skillCard[1].size = { 600, 780 };
-	skillCard[2].size = { 600, 780 };
+	skillCard[0].font_position = { 9, 10 };
+	skillCard[1].font_position = { 40, 10 };
+	skillCard[2].font_position = { 72, 10 };
+	wcscpy_s(skillCard[0].wcText, L"skillA");
+	wcscpy_s(skillCard[1].wcText, L"skillB");
+	wcscpy_s(skillCard[2].wcText, L"skillC");
 
+	for (int i = 0; i < 3;i++)
+	{
+		skillCard[i].size = { 600, 780 };
+		font_d[i] = 0;
+	}
 	// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 	CharacterManager::Instance().SetPlayer(player);
 
 	// アセットのロード
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
-	spr_card = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
+	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
 	spr_arrow = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
+	spr_select = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\select.png");
 
 	// シェーダーの読み込み
 	{
@@ -111,26 +120,46 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	switch (step)
 	{
 	case Skill_Lottery:
-
+		// カード
 		for (int i = 0; i < 3; i++)
 		{
+			if (SelectCard[i] && last_num != i)
+			{
+				SelectCard[i] = false;
+				plusPos[i] = 0;
+				font_d[i] = 0;
+			}
+
 			if (mouse.IsArea(skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y) && !IsDirection)
 			{
-				if (!SelectCard[i])
+				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 				{
-					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					if (!SelectCard[i])
 					{
+						last_num = i;
 						SelectCard[i] = true;
 						plusPos[i] = 50;
+						font_d[i] = 4;
 					}
-				}
-				else
-				{
-					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					else
 					{
 						SelectCard[i] = false;
 						plusPos[i] = 0;
+						font_d[i] = 0;
 					}
+				}
+			}
+
+		}
+		// セレクト
+		for (int j = 0; j < 2; j++)
+		{
+			if (mouse.IsArea(select_pos[j].x, select_pos[j].y, 400, 100))
+			{
+				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				{
+					// 決定した時の処理
+					step++;
 				}
 			}
 		}
@@ -294,18 +323,23 @@ void GambleScene::Render(float elapsedTime)
 	{
 	case Skill_Lottery:
 
-		// カード２
-		spr_card->render(immediate_context, 20, 98- plusPos[0], 600, 780);
-		// カード２
-		spr_card->render(immediate_context, 658, 98- plusPos[1], 600, 780);
-		// カード２
-		spr_card->render(immediate_context, 1288, 98- plusPos[2], 600, 780);
+		for (int i = 0; i < 2; i++)spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100);
+
+		for (int i = 0; i < 3; i++)
+		{
+			// カード２
+			spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
+			// テキスト
+			Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y-font_d[i] }, 600, 72);
+		}
 
 		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 		break;
 	case Quest_Select:
 
+		//spr_card->render(immediate_context, Poo.x, Poo.y - plusPos[0], questCard[0].size.x, questCard[0].size.y);
+		spr_card->render(immediate_context, 0, 0 , Poo.x, Poo.y);
 		switch (selection_card)
 		{
 		case 0:
@@ -357,8 +391,6 @@ void GambleScene::Render(float elapsedTime)
 		Lemur::Graphics::Font::Instance().render(L"Quest", 6, { 1,2 }, 600, 72);
 		Lemur::Graphics::Font::Instance().render(L"quest select", 13, { 1,8 }, 600, 72);
 
-		player->DebugImgui();
-		DebugImGui();
 
 		break;
 	case Gamble_Status:
@@ -368,12 +400,15 @@ void GambleScene::Render(float elapsedTime)
 		break;
 	}
 
+	player->DebugImgui();
+	DebugImGui();
 }
 
 void GambleScene::DebugImGui()
 {
 	ImGui::Begin("Scene");
-	ImGui::SliderFloat2("Poo", &Poo.x,0,100);
+	ImGui::SliderFloat2("Poo", &Poo.x,0,1920);
+	ImGui::SliderInt("last_num", &last_num,0,100);
 	ImGui::Checkbox("is_first_set_player", &is_first_set_player);
 	for(auto& skill:lottery_skills)
 	{

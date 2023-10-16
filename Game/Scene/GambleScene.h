@@ -48,15 +48,23 @@ public:
         int quest;
         DirectX::XMFLOAT2 position;
         DirectX::XMFLOAT2 size;
+        DirectX::XMFLOAT2 font_position;
     };
     Card questCard[3];
     Card skillCard[3];
     DirectX::XMFLOAT2 Poo = {};
 
+    float font_d[3];
+
     int selection_card = 1;
     DirectX::XMFLOAT2 arrow_position[2]{};
     DirectX::XMFLOAT2 arrow_size = { 95, 145 };
  
+    DirectX::XMFLOAT2 select_pos[2] = {
+        {448,915},
+    {1065,915}
+    };
+
 private:
     Player* CreatePlayer()
     {
@@ -79,13 +87,15 @@ private:
     bool IsDirection;
     bool SelectCard[3] = {};
     float plusPos[3] = {};
+    int last_num;
 
 private:/*---------------- ƒXƒLƒ‹ŠÖŒW -----------------*/
 
     Player* player;
 
     std::shared_ptr<sprite>  spr_back;
-    std::shared_ptr<sprite_d>  spr_card;
+    std::shared_ptr<sprite>  spr_card;
     std::shared_ptr<sprite_d>  spr_arrow;
+    std::shared_ptr<sprite_d>  spr_select;
 };
 

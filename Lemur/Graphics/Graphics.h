@@ -50,7 +50,7 @@ namespace Lemur::Graphics
     public:
         // fullscreen
         CONST HWND hwnd;
-        BOOL fullscreen_mode{ FALSE };
+        BOOL fullscreen_mode{ TRUE };
         BOOL vsync{ TRUE };
         BOOL tearing_supported{ FALSE };
         SIZE framebuffer_dimensions;
