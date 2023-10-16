@@ -120,14 +120,8 @@ namespace Nero::Component::AI
         {
             owner->animStop = true;
             owner->down_count--;
-            if(owner->down_count<0)
-            {
-                Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
-            }
-            else
-            {
-                Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene);
-            }
+            owner->death_anim_end = true;
+
         }
     }
 

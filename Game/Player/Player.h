@@ -101,6 +101,7 @@ public:
             health = max_health;
     }
 
+
 private:
 
     // 敵を倒した数
@@ -115,6 +116,8 @@ private:
 
     // 旋回の速さ
     float turn_speed = 10.0f;
+
+
 
     /* --------スキルによって影響を受ける前のパラメータを保持する---------
      * --------------スキル解除の時に代入パラメータに代入-----------------*/
@@ -133,8 +136,6 @@ private:
     // スキル無しMaxHP
     int retention_basicMHP;
 
-    // ステータスをかけるポイント量
-    int status__bet_point;
 
 public:
     // 一回初期設定したらtrue。
@@ -144,6 +145,21 @@ public:
     float speed_power = 10.0f;
 
     int down_count = 2;
+
+    // todo ほかのパラメータも作る
+    // かける攻撃力のポイント量
+    float bet_AP;
+    // かける防御力のポイント量
+    float bet_DP;
+    // かけるHPのポイント量
+    float bet_MHP;
+    // かけるスピードのポイント量
+    float bet_SP;
+
+    // 死亡アニメーション終了フラグ
+    // 終了したらシーン側でシーン切り替え。
+    bool death_anim_end;
+
 public:/*---------- 当たり判定系 ----------*/
 
     // ノードとエネミーの衝突処理

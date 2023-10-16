@@ -1,11 +1,15 @@
 #pragma once
+#include "Game/Player/Player.h"
 #include "Lemur/Scene/BaseScene.h"
+
 
 class ResultScene :
     public Lemur::Scene::BaseScene
 {
 public:
-    ResultScene() {}
+    // シーン切り替え時に第一引数にベットのレート、
+    //第二引数にクエストをクリアしたかを設定する。
+    ResultScene(float bet_rate_ ,bool clear_) :bet_rate(bet_rate_),clear(clear_){}
     ~ResultScene() override {}
 
     // 初期化
@@ -20,7 +24,15 @@ public:
     // 描画処理
     void Render(float elapsedTime)override;
 
-
     void DebugImGui();
 
+    // 報酬をプレイヤーに与える
+    void GiveReward();
+private:
+    Player* player;
+
+    float bet_rate;
+
+    // クリアしたか
+    bool clear;
 };

@@ -57,6 +57,9 @@ private:// ゲーム関連
 
     // 敵を全員倒したらシーン切り替え
     void QuestClear();
+
+    void QuestFailed();
+
     // 更新処理止める用
     bool is_update = true;
 

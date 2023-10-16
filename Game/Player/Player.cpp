@@ -67,6 +67,10 @@ void Player::DebugImgui()
         ImGui::DragFloat("defense_power", &defense_power);
         ImGui::DragFloat("speed_power", &speed_power);
 
+        ImGui::DragFloat("bet_AP", &bet_AP);
+        ImGui::DragFloat("bet_DP", &bet_DP);
+        ImGui::DragFloat("bet_SP", &bet_SP);
+        ImGui::DragFloat("bet_MHP", &bet_MHP);
         ImGui::TreePop();
     }
     if(ImGui::TreeNode("Skills"))

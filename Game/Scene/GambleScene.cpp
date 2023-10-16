@@ -14,6 +14,7 @@
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::B;
 
+
 // 一番初めのプレイヤーを生成したか(二週目移行か)
 bool is_first_set_player = false;
 void GambleScene::Initialize()
@@ -110,7 +111,6 @@ void GambleScene::Finalize()
 {
 	// ここではまだプレイヤーを消去しない
 	//ゲームが完全に終了するタイミングで消す
-
 }
 
 void GambleScene::Update(HWND hwnd, float elapsedTime)
@@ -287,7 +287,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 	case Gamble_Status:
 
-		
+		// todo 牟田さん ここでギャンブルのベットの処理を作ってほしいです。お願いします
+		// プレイヤーのbet_○○にプレイヤーのかける値を入れて、その同じ量をパラメータから引く処理を作って欲しいです。
+		//例えば攻撃力に10ポイントベットするなら下の処理みたいになります。今は処理がないからマジックナンバーでattack_powerを設定してるけど
+		//そこの処理も作ってくれたらうれしいぽよ。
+		player->bet_AP = 10;
+		player->attack_power = 40;
 
 		break;
 	}
