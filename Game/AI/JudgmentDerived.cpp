@@ -7,7 +7,7 @@
 bool WanderJudgment::Judgment()
 {
     // œpœj‚µ‚És‚­ˆÊ’u‚É“ž’B‚µ‚Ä‚È‚©‚Á‚½‚çœpœj‚µ‚És‚­
-    if (!owner->ReachTargetJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
+    if (!owner->DistanceJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
     {
         return true;
     }
@@ -36,10 +36,22 @@ bool DeathJudgment::Judgment()
     return false;
 }
 
-bool AttackJudgment::Judgment()
+bool MiddleJudgment::Judgment()
 {
     DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
-    return owner->ReachTargetJudge(owner->GetPosition(), player_pos, owner->GetNearAttackRange());
+    return owner->DistanceJudge(owner->GetPosition(), player_pos, owner->GetMiddleAttackRange());
+
+}
+
+bool NearJudgment::Judgment()
+{
+    DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+    return owner->DistanceJudge(owner->GetPosition(), player_pos, owner->GetNearAttackRange());
+}
+
+bool FearJudgment::Judgment()
+{
+    return owner->fear_frag;
 }
 
 bool ClawAttackJudgment::Judgment()

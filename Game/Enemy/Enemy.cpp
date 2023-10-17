@@ -84,7 +84,7 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
 //            // 追跡
 //            ai_tree->AddNode("Battle", "Pursue", 2, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
 //            // 攻撃
-//            ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new AttackJudgment(this), nullptr);
+//            ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
 //            {
 //                ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
 //            }
@@ -115,16 +115,18 @@ void Enemy::BehaviorTreeUpdate()
 }
 
 // todo これモジュール化してNeroに入れる。
-bool Enemy::ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range)
+bool Enemy::DistanceJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range)
 {
-    float vx = target_pos.x - pos.x;
-    float vz = target_pos.z - pos.z;
+    //float vx = target_pos.x - pos.x;
+    //float vz = target_pos.z - pos.z;
 
-    // ターゲット位置までの距離(二乗)
-    float dist_sq = ((vx * vx) + (vz * vz));
-    judge_range *= 2.0f;
+    //// ターゲット位置までの距離(二乗)
+    //float dist_sq = ((vx * vx) + (vz * vz));
+    //judge_range *= 2.0f;
 
-    if (dist_sq < judge_range)
+    float dist = Length(pos, target_pos);
+
+    if (dist < judge_range)
     {
         return true;
     }

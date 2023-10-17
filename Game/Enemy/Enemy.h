@@ -52,7 +52,11 @@ public:
     {
         Walk_Anim,
         NearAttack_Anim,
-        Death_Anim,
+        ShotAttack_Anim,
+        BackStep_Anim,
+        Fear_Anim,
+        JumpAttack_Anim,
+        //Death_Anim,
 
         Max_Anim,
     };
@@ -78,6 +82,9 @@ public:
         attack_power = 1;
         attack_collision_range = 0.3f;
 
+        near_attack_range = 1.5f;
+        middle_attack_range = 5.0f;
+
     }
 
     // 攻撃当たり判定で使う
@@ -89,8 +96,8 @@ public:
     void BehaviorTreeUpdate();
 
 
-    // ターゲットに到達したか判定する(第三引数には到達したって判定する半径)
-    bool ReachTargetJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range);
+    // 距離を判定する関数(第三引数には到達したって判定する半径)
+    bool DistanceJudge(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target_pos, float judge_range);
 
     // プレイヤー索敵(found_rangeは見つかる範囲、内積で比較)
     // 距離判定と角度判定別々にするより一緒にしたほうがいい？
@@ -109,6 +116,7 @@ public:
     float GetTerritoryRange()const { return territory_range; }
     float GetVisionLength()const { return vision_length; }
     float GetNearAttackRange()const { return near_attack_range; }
+    float GetMiddleAttackRange()const { return middle_attack_range; }
 
     // ターゲット位置を設定
     void SetTargetPosition(DirectX::XMFLOAT3 position) { target_position = position; };
@@ -123,7 +131,9 @@ public:
     // 多段ヒットしないように攻撃喰らったらtrue
     bool is_hit = false;
 
-private:
+    // 怯みフラグ
+    bool fear_frag;
+protected:
 
     // todo ここら辺の変数と値は企画が決まってないから仮です
 
@@ -135,12 +145,13 @@ private:
     // 縄張りの半径
     float territory_range = 30;
     // 視野範囲(索敵用)
-    float vision_length = 10.0f;
+    float vision_length = 30.0f;
 
     // 近攻撃可能範囲
-    float near_attack_range = 3.0f;
+    float near_attack_range = 0.0f;
+    float middle_attack_range = 0.0f;
 
-protected:
+
     BehaviorTree* ai_tree = nullptr;
     NodeBase* activeNode = nullptr;
     BehaviorData* behaviorData = nullptr;

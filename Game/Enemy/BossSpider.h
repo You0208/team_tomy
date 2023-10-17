@@ -12,6 +12,8 @@ public:
         max_health = 5000;
         health = max_health;
 
+        near_attack_range = 3.0f;
+
     }
 
     virtual void DrawDebugPrimitive() override;

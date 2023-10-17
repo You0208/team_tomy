@@ -26,10 +26,26 @@ public:
 	bool Judgment() override;
 };
 
-class AttackJudgment:public JudgmentBase
+class MiddleJudgment:public JudgmentBase
 {
 public:
-	AttackJudgment(Enemy* enemy):JudgmentBase(enemy){}
+	MiddleJudgment(Enemy* enemy):JudgmentBase(enemy){}
+	// ”»’è
+	bool Judgment() override;
+};
+
+class NearJudgment:public JudgmentBase
+{
+public:
+	NearJudgment(Enemy* enemy):JudgmentBase(enemy){}
+	// ”»’è
+	bool Judgment() override;
+};
+
+class FearJudgment:public JudgmentBase
+{
+public:
+	FearJudgment(Enemy* enemy):JudgmentBase(enemy){}
 	// ”»’è
 	bool Judgment() override;
 };

@@ -26,6 +26,17 @@ public:
 	float idleing_time;
 };
 
+// 軸合わせ
+class TuraAction : public ActionBase
+{
+public:
+	TuraAction(Enemy* enemy) :ActionBase(enemy) {}
+	ActionBase::State Run(float elapsedTime)override;
+
+	float target_vec_x;
+	float target_vec_z;
+};
+
 //追跡
 class PursueAction:public ActionBase
 {
@@ -39,13 +50,13 @@ public:
 class NearAttackAction:public ActionBase
 {
 public:
-	NearAttackAction(Enemy* enemy):ActionBase(enemy){}
+	NearAttackAction(Enemy* enemy):ActionBase(enemy)
+	{
+		start_collision__frame = 60;
+		end_collision__frame = 100;
+	}
 	ActionBase::State Run(float elapsedTime) override;
 
-	// 当たり判定開始フレーム
-	int start_collision__frame = 30;
-	// 当たり判定終了フレーム
-	int end_collision__frame = 60;
 
 };
 
@@ -58,12 +69,74 @@ public:
 
 };
 
-// 爪攻撃
-class ClawAttackAction : public ActionBase
+// 飛びつき攻撃
+class JumpAttackAction : public ActionBase
 {
 public:
-	ClawAttackAction(Enemy* enemy) :ActionBase(enemy) {}
+	JumpAttackAction(Enemy* enemy) :ActionBase(enemy)
+	{
+		start_collision__frame = 60;
+		end_collision__frame = 100;
+
+	}
 	ActionBase::State Run(float elapsedTime)override;
 
-	float wander_speed_facter = 1.0f;
+};
+
+// 二段攻撃
+class DoubleAttackAction : public ActionBase
+{
+public:
+	DoubleAttackAction(Enemy* enemy) :ActionBase(enemy)
+	{
+		start_collision__frame = 60;
+		end_collision__frame = 100;
+
+	}
+	ActionBase::State Run(float elapsedTime)override;
+
+};
+
+// 両腕攻撃
+class TwinArmsAttackAction : public ActionBase
+{
+public:
+	TwinArmsAttackAction(Enemy* enemy) :ActionBase(enemy)
+	{
+		start_collision__frame = 60;
+		end_collision__frame = 100;
+	}
+	ActionBase::State Run(float elapsedTime)override;
+
+};
+
+// バックステップ
+class BackStepAction : public ActionBase
+{
+public:
+	BackStepAction(Enemy* enemy) :ActionBase(enemy){}
+	ActionBase::State Run(float elapsedTime)override;
+
+	// 下がる距離
+	float length = 10.0f;
+
+	float easing_time = 1.0;
+	float easing_timer;
+
+	// バックステップ開始座標
+	DirectX::XMFLOAT3 start_pos;
+
+	// バックステップ終了地点
+	DirectX::XMFLOAT3 end_pos;
+
+};
+
+// 怯み
+class FearAction : public ActionBase
+{
+public:
+	FearAction(Enemy* enemy) :ActionBase(enemy){}
+	ActionBase::State Run(float elapsedTime)override;
+
+
 };
