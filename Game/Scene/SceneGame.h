@@ -1,6 +1,7 @@
 #pragma once
 #include <xaudio2.h>
 
+#include "Game/Enemy/BossSpider.h"
 #include "Game/Enemy/Enemy.h"
 #include "Game/Player/Player.h"
 #include "Lemur/Audio/audio.h"
@@ -39,9 +40,18 @@ public:
         );
     }
 
-    Enemy* CreateEnemy()
+    Enemy* CreateEnemy(Enemy::EnemyType enemy_type)
     {
         return new Enemy(
+            new EnemyInputComponent(),
+            new EnemyPhysicsComponent(),
+            new EnemyGraphicsComponent(),
+            enemy_type
+        );
+    }
+    BossSpider* CreateBossSpider()
+    {
+        return new BossSpider(
             new EnemyInputComponent(),
             new EnemyPhysicsComponent(),
             new EnemyGraphicsComponent()

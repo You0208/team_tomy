@@ -13,6 +13,7 @@
 #include "Quest.h"
 #include "ResultScene.h"
 #include "TitleScene.h"
+#include "Game/Enemy/BossSpider.h"
 #include "Lemur/Scene/SceneManager.h"
 extern QuestPattern quest_pattern;
 
@@ -614,7 +615,7 @@ void GameScene::CreateEnemy_KARI()
 		// todo ここでベットレートの設定
 		for (int i = 0; i < 1; ++i)
 		{
-			Enemy* enemy = CreateEnemy();
+			Enemy* enemy = CreateEnemy(Enemy::SmallSpider);
 			enemy->Initialize();
 			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
 			enemyManager.Register(enemy);
@@ -627,9 +628,9 @@ void GameScene::CreateEnemy_KARI()
 
 		bet_rate = 2.0f;
 
-        for (int i = 0; i < 2; ++i)
+        for (int i = 0; i < 1; ++i)
 		{
-			Enemy* enemy = CreateEnemy();
+			BossSpider* enemy = CreateBossSpider();
 			enemy->Initialize();
 			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
 			enemyManager.Register(enemy);
@@ -637,7 +638,7 @@ void GameScene::CreateEnemy_KARI()
 			ColliderManager::Instance().SetCollider(enemy);
 		}
 
-
+		break;
     }
 }
 

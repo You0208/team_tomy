@@ -32,6 +32,22 @@ private:
 class Enemy :public GameObject
 {
 public:
+    enum EnemyType
+    {
+        SmallSpider,
+
+        A_Spider,
+        B_Spider,
+        C_Spider,
+        D_Spider,
+        E_Spider,
+        F_Spider,
+        G_Spider,
+        H_Spider,
+
+        BossSpider,
+    }enemy_type;
+
     enum AnimIndex
     {
         Walk_Anim,
@@ -44,7 +60,8 @@ public:
     Enemy(){}
     Enemy(InputComponent* input_,
         PhysicsComponent* physics_,
-        GraphicsComponent* graphics_) :GameObject(input_, physics_, graphics_)
+        GraphicsComponent* graphics_,
+        EnemyType type):enemy_type(type),GameObject(input_, physics_, graphics_)
     {
         // todo 調整
 
@@ -60,13 +77,14 @@ public:
 
         attack_power = 1;
         attack_collision_range = 0.3f;
+
     }
 
-    virtual void DrawDebugPrimitive() override;
-
+    // 攻撃当たり判定で使う
+    std::string meshName;
 
     // ビヘイビアツリーの初期化
-    void BehaviorTreeInitialize();
+    virtual void BehaviorTreeInitialize(){};
     // ビヘイビアツリーの更新処理
     void BehaviorTreeUpdate();
 
@@ -122,7 +140,7 @@ private:
     // 近攻撃可能範囲
     float near_attack_range = 3.0f;
 
-
+protected:
     BehaviorTree* ai_tree = nullptr;
     NodeBase* activeNode = nullptr;
     BehaviorData* behaviorData = nullptr;

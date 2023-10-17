@@ -151,7 +151,7 @@ ActionBase::State NearAttackAction::Run(float elapsedTime)
 		{
 			Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer("polySurface1", "J_leg_A_03_L", owner->GetAttackCollisionRange());
+			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_leg_A_03_L", owner->GetAttackCollisionRange());
 		}
 
 

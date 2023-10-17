@@ -17,9 +17,21 @@
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
-    Enemy* demoPlayer = dynamic_cast<Enemy*> (gameobj);
+    Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    demoPlayer->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
+    switch (enemy->enemy_type)
+    {
+    case Enemy::SmallSpider:
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
+        enemy->meshName = "polySurface";
+
+        break;
+    case Enemy::BossSpider:
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v003.fbx"));
+
+        enemy->meshName = "spider_boss_spider_boss";
+        break;
+    }
 }
 
 void EnemyGraphicsComponent::Update(GameObject* gameobj)
@@ -38,52 +50,52 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     enemy->DebugImgui();
 }
 
-void Enemy::DrawDebugPrimitive()
-{
-    DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
-    DirectX::XMFLOAT3 position = Model->joint_position("polySurface1","J_root" , &keyframe, world);
-    debug_renderer->DrawSphere(position, radius,  DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
+//void Enemy::DrawDebugPrimitive()
+//{
+//    //DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
+//    //DirectX::XMFLOAT3 position = Model->joint_position("polySurface1","J_root" , &keyframe, world);
+//    //debug_renderer->DrawSphere(position, radius,  DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
+//
+//    //if(attack_collision_flag)
+//    //{
+//    //    position = Model->joint_position("polySurface1", "J_leg_A_03_L", &keyframe, world);
+//    //    debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
+//    //}
+//}
 
-    if(attack_collision_flag)
-    {
-        position = Model->joint_position("polySurface1", "J_leg_A_03_L", &keyframe, world);
-        debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
-    }
-}
-
-void Enemy::BehaviorTreeInitialize()
-{
-    behaviorData = new BehaviorData();
-    ai_tree = new BehaviorTree(this);
-
-    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
-    {
-        // ”ñí“¬
-        ai_tree->AddNode("Root", "NonBattle", 2, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
-        {
-            // œpœj
-            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
-            // ‘Ò‹@
-            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
-        }
-        // í“¬
-        ai_tree->AddNode("Root", "Battle", 1, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
-        {
-            // ’ÇÕ
-            ai_tree->AddNode("Battle", "Pursue", 2, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
-            // UŒ‚
-            ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new AttackJudgment(this), nullptr);
-            {
-                ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
-            }
-        }
-        // Ž€–S
-        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
-
-    }
-
-
-}
+//void Enemy::BehaviorTreeInitialize()
+//{
+//    behaviorData = new BehaviorData();
+//    ai_tree = new BehaviorTree(this);
+//
+//    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+//    {
+//        // ”ñí“¬
+//        ai_tree->AddNode("Root", "NonBattle", 2, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+//        {
+//            // œpœj
+//            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+//            // ‘Ò‹@
+//            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+//        }
+//        // í“¬
+//        ai_tree->AddNode("Root", "Battle", 1, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
+//        {
+//            // ’ÇÕ
+//            ai_tree->AddNode("Battle", "Pursue", 2, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+//            // UŒ‚
+//            ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new AttackJudgment(this), nullptr);
+//            {
+//                ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
+//            }
+//        }
+//        // Ž€–S
+//        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+//
+//    }
+//
+//
+//}
 
 void Enemy::BehaviorTreeUpdate()
 {
