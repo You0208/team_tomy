@@ -178,14 +178,39 @@ void sprite::render(ID3D11DeviceContext* immediate_context, float dx, float dy, 
         0.0f, 0.0f, static_cast<float>(texture2d_desc.Width), static_cast<float>(texture2d_desc.Height));
 }
 
+
 void sprite::textout(ID3D11DeviceContext* immediate_context, std::string s, float x, float y, float w, float h, float r, float g, float b, float a)
 {
-    float sw = static_cast<float>(texture2d_desc.Width / 16);
-    float sh = static_cast<float>(texture2d_desc.Height / 16);
+    float sw = static_cast<float>(texture2d_desc.Width / 10);
+    float sh = static_cast<float>(texture2d_desc.Height);
     float carriage = 0;
     for (const char c : s)
     {
-        render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), sh * (c >> 4), sw, sh);
+        render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), 0, sw, sh);
         carriage += w;
     }
 }
+
+void sprite::textout(ID3D11DeviceContext* immediate_context, int n, float x, float y, float w, float h, float r, float g, float b, float a)
+{
+    float sw = static_cast<float>(texture2d_desc.Width / 10);
+    float sh = static_cast<float>(texture2d_desc.Height);
+    float carriage = 0;
+    for (int i = n; i > 0; i / 10)
+    {
+        render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * i, 0, sw, sh);
+        carriage += w;
+    }
+}
+
+//void sprite::textout(ID3D11DeviceContext* immediate_context, std::string s, float x, float y, float w, float h, float r, float g, float b, float a)
+//{
+//    float sw = static_cast<float>(texture2d_desc.Width / 16);
+//    float sh = static_cast<float>(texture2d_desc.Height / 16);
+//    float carriage = 0;
+//    for (const char c : s)
+//    {
+//        render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), sh * (c >> 4), sw, sh);
+//        carriage += w;
+//    }
+//}
