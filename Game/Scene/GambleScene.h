@@ -54,6 +54,10 @@ public:
     Card skillCard[3];
     DirectX::XMFLOAT2 Poo = {};
 
+    DirectX::XMFLOAT2 bet_boxpos[3];
+    DirectX::XMFLOAT2 bet_boxsize = { 400,100 };
+
+
     float font_d[3];
 
     int selection_card = 1;
@@ -62,9 +66,18 @@ public:
  
     DirectX::XMFLOAT2 select_pos[2] = {
         {448,915},
-    {1065,915}
+        {1065,915}
     };
 
+    DirectX::XMFLOAT2 select_decision_pos;
+
+    DirectX::XMFLOAT2 small_arrow_up_pos[3];
+    DirectX::XMFLOAT2 small_arrow_down_pos[3];
+    DirectX::XMFLOAT2 char_bet_pos[3];
+
+    DirectX::XMFLOAT2 num_bet_pos[3];
+
+    int bet_num[3];
 private:
     Player* CreatePlayer()
     {
@@ -97,5 +110,12 @@ private:/*---------------- ƒXƒLƒ‹ŠÖŒW -----------------*/
     std::shared_ptr<sprite>  spr_card;
     std::shared_ptr<sprite_d>  spr_arrow;
     std::shared_ptr<sprite_d>  spr_select;
+
+    std::shared_ptr<sprite> spr_betbox;
+    std::shared_ptr<sprite> spr_coin;
+    std::shared_ptr<sprite> spr_OK;
+    std::shared_ptr<sprite> spr_betback;
+    std::shared_ptr<sprite> spr_small_arrow;
+    std::shared_ptr<sprite> spr_number;
 };
 

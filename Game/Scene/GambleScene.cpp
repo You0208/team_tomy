@@ -69,10 +69,26 @@ void GambleScene::Initialize()
 	wcscpy_s(skillCard[1].wcText, L"skillB");
 	wcscpy_s(skillCard[2].wcText, L"skillC");
 
+	// ベット情報
+	bet_boxsize = { 400,200 };
+	bet_boxpos[0] = { 100,800 };
+	bet_boxpos[1] = { 600,800 };
+	bet_boxpos[2] = { 1100,800 };
+
+	select_decision_pos = { 1600,900 };
+
 	for (int i = 0; i < 3;i++)
 	{
 		skillCard[i].size = { 600, 780 };
 		font_d[i] = 0;
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		small_arrow_up_pos[i] = { 425 + float(i *500),830 };
+		small_arrow_down_pos[i] = { 425 + float(i *500),930 };
+		char_bet_pos[i] = { 6 + float(i * 25),71 };
+		num_bet_pos[i] = { 300 + float(i * 500),1000 };
 	}
 	// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 	CharacterManager::Instance().SetPlayer(player);
@@ -84,6 +100,12 @@ void GambleScene::Initialize()
 	spr_arrow = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
 	spr_select = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\select.png");
 
+	spr_betbox = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_space.png");
+	spr_coin = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\coin.png");
+	spr_OK = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\OK.png");
+	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
+	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
+	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
 	// シェーダーの読み込み
 	{
 		// sprite用デフォルト描画シェーダー（ディゾルブ）
@@ -196,7 +218,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
 			player->SkillSort();
 
-			//step++;
+			step++;
 		}
 
 
@@ -282,7 +304,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 
 
-		//step++;
+		step++;
 		break;
 
 	case Gamble_Status:
@@ -293,7 +315,28 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//そこの処理も作ってくれたらうれしいぽよ。
 		player->bet_AP = 10;
 		player->attack_power = 40;
+		//small_arrow_up_pos[0] = Poo;
+		// 上下
+		for (int i = 0; i < 3; i++)
+		{
+			if (mouse.IsArea(small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50))
+			{
+				bet_num[i]++;
+			}
+			if (mouse.IsArea(small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50))
+			{
+				bet_num[i]--;
+			}
+		}
 
+		//OKボタン
+		if (mouse.IsArea(select_decision_pos.x, select_decision_pos.y, 200, 100) )
+		{
+			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+			{
+				step++;
+			}
+		}
 		break;
 	}
 
@@ -400,8 +443,23 @@ void GambleScene::Render(float elapsedTime)
 		break;
 	case Gamble_Status:
 
+		//spr_number->render(immediate_context,0, 0, 50, 50,1,1,1,1,0,0,0,50,50);
 
+		for (int i = 0; i < 3; i++)
+		{
+			//TODO　小林 ここみて
+			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y,50, 50, 1, 1, 1, 1);
+			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
+			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50,1,1,1,1,180);
+			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
+		}
+		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
 
+		spr_betback->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+		Lemur::Graphics::Font::Instance().render(L"HP", 3, { char_bet_pos[0].x,char_bet_pos[0].y }, 600, 72);
+		Lemur::Graphics::Font::Instance().render(L"AP", 3, { char_bet_pos[1].x,char_bet_pos[1].y }, 600, 72);
+		Lemur::Graphics::Font::Instance().render(L"SP", 3, { char_bet_pos[2].x,char_bet_pos[2].y }, 600, 72);
 		break;
 	}
 
@@ -412,7 +470,7 @@ void GambleScene::Render(float elapsedTime)
 void GambleScene::DebugImGui()
 {
 	ImGui::Begin("Scene");
-	ImGui::SliderFloat2("Poo", &Poo.x,0,1920);
+	ImGui::SliderFloat2("Poo", &Poo.x,0,100);
 	ImGui::SliderInt("last_num", &last_num,0,100);
 	ImGui::Checkbox("is_first_set_player", &is_first_set_player);
 	for(auto& skill:lottery_skills)

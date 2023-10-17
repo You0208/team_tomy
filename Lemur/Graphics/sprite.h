@@ -46,4 +46,5 @@ public:
         float sx, float sy, float sw, float sh);
     void render(ID3D11DeviceContext* immediate_context, float dx, float dy, float dw, float dh);
     void textout(ID3D11DeviceContext* immediate_context, std::string s, float x, float y, float w, float h, float r, float g, float b, float a);
+    void textout(ID3D11DeviceContext* immediate_context, int n, float x, float y, float w, float h, float r, float g, float b, float a);
 };
