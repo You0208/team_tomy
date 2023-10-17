@@ -135,7 +135,7 @@
 			}
 		}
 
-		_ASSERT_EXPR(result, L"ノードが決まらなかった。うんち");
+		//_ASSERT_EXPR(result, L"ノードが決まらなかった。うんち");
 
 		return result;
 	}

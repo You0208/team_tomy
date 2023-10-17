@@ -271,6 +271,8 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 // ‚à‚µ“|‚µ‚½‚çŒ‚”j”‚ğ‘‚â‚·B
                 if (enemy->death)
                     kill_count++;
+                if (is_counter)
+                    enemy->fear_frag = true;
             }
         }
 

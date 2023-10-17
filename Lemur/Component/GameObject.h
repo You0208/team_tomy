@@ -74,6 +74,8 @@ public:
 
     // 位置更新
     void SetPosition(const DirectX::XMFLOAT3& position) { this->position = position; }
+    // 位置更新
+    void SetPosition(const float pos_x, const float pos_y, const float pos_z) { position.x = pos_x, position.y = pos_y, position.z = pos_z; }
 
     // 回転取得
     const DirectX::XMFLOAT3& GetAngle() const { return rotation; }
