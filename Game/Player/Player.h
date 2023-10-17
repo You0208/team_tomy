@@ -1,6 +1,7 @@
 #pragma once
 #include "Lemur/Input/Input.h"
 #include "..\Skill\BaseSkill.h"
+#include "Game/Enemy/Enemy.h"
 #include "Game/StateMachine/StateDerived.h"
 #include "Lemur/Component/GameObject.h"
 //#include "Game/StateMachine/StateMachine.h"
@@ -25,6 +26,8 @@ public:
         Death_Anim,
         Fear_Anim,
 
+        Counter_Anim,
+        CounterAttack_Anim,
         Max_Anim
     };
 
@@ -36,6 +39,7 @@ public:
         Attack_State,
         Death_State,
         Fear_State,
+        SPAttack_State,
 
         Max_State,
     };
@@ -85,6 +89,18 @@ public:
 
         return false;
     }
+    bool GetButtonDownY_AND_MouseRight()
+    {
+        GamePad& game_pad = Input::Instance().GetGamePad();
+        if (game_pad.GetButtonDown() & GamePad::BTN_Y)
+            return true;
+
+        Mouse& mouse = Input::Instance().GetMouse();
+        if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
+            return true;
+
+        return false;
+    }
 
     // 敵撃破数取得
     int GetKillCount()const { return kill_count; }
@@ -101,8 +117,26 @@ public:
             health = max_health;
     }
 
+    void CalcSPAttackTime();
+    bool can_SP_attack = false;
+
+    
+    void SetIsCounter(const bool is_counter_) { is_counter = is_counter_; }
+    bool GetIsCounter()const { return is_counter; }
+
+    void SetCanCounter(const bool can_counter_) { can_counter = can_counter_; }
+    // カウンター成功
+    bool GetCanCounter()const { return can_counter; }
+
+    bool CounterJudge(Enemy* enemy);
 
 private:
+    //特殊攻撃のクールタイム(秒)
+    // タイマーがこれを超えないと特殊攻撃は使えない
+    float SP_attack_cool_time_ms;
+
+    // 特殊攻撃用の計測して値が動くタイマー(秒)
+    float SP_attack_cool_timer_ms;
 
     // 敵を倒した数
     int kill_count = 0;
@@ -117,8 +151,11 @@ private:
     // 旋回の速さ
     float turn_speed = 10.0f;
 
+    // カウンター成功したか
+    bool is_counter;
 
-
+    // 特殊攻撃でカウンターを受付してるか
+    bool can_counter;
     /* --------スキルによって影響を受ける前のパラメータを保持する---------
      * --------------スキル解除の時に代入パラメータに代入-----------------*/
 

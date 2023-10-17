@@ -28,15 +28,20 @@ namespace Nero::Component::AI
         // 死んだら死亡ステートに移行する
         ChangeJudgeDeathState();
 
-
+        // 入力があれば移動ステート
         if(owner->InputMove())
         {
             owner->GetStateMachine()->SetNextState(owner->Run_State);
         }
-
-        if(owner->GetButtonDownB_AND_MouseLeft())
+        // 攻撃ボタン押されたら攻撃ステート
+        if (owner->GetButtonDownB_AND_MouseLeft())
         {
             owner->GetStateMachine()->SetNextState(owner->Attack_State);
+        }
+        // 特殊攻撃ボタン押されたら特殊攻撃ステート
+        if (owner->GetButtonDownY_AND_MouseRight())
+        {
+            owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
         }
     }
 
@@ -62,13 +67,20 @@ namespace Nero::Component::AI
         // 死んだら死亡ステートに移行する
         ChangeJudgeDeathState();
 
+        // 止まってたら待機ステート
         if (!owner->InputMove())
         {
             owner->GetStateMachine()->SetNextState(owner->Idle_State);
         }
+        // 攻撃ボタン押されたら攻撃ステート
         if (owner->GetButtonDownB_AND_MouseLeft())
         {
             owner->GetStateMachine()->SetNextState(owner->Attack_State);
+        }
+        // 特殊攻撃ボタン押されたら特殊攻撃ステート
+        if (owner->GetButtonDownY_AND_MouseRight())
+        {
+            owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
         }
 
     }
@@ -110,7 +122,7 @@ namespace Nero::Component::AI
     void DeathState::Begin()
     {
         owner->invincible = true;
-        owner->SetAnimationIndex(owner->Death_Anim,false);
+        owner->SetAnimationIndex(owner->Death_Anim);
     }
 
     void DeathState::Update()
@@ -274,5 +286,66 @@ namespace Nero::Component::AI
         // 先行入力フラグ解除
         buffered_input = false;
 
+    }
+
+    void SPAttackState::Begin()
+    {
+        EnemyManager::Instance().HitClear();
+
+        owner->SetAnimationIndex(owner->Counter_Anim);
+    }
+
+    void SPAttackState::Update()
+    {
+
+        switch (step)
+        {
+        case Waiting:
+            if (owner->GetFrameIndex() <= can_counter_frame)
+            {
+                //カウンター受付開始
+                owner->SetCanCounter(true);
+            }
+            else
+            {
+                //カウンター受付終了
+                owner->SetCanCounter(false);
+            }
+
+            // カウンター成功したらステップを進める
+            if (owner->GetIsCounter())
+            {
+                owner->SetCanCounter(false);
+                owner->SetAnimationIndex(owner->CounterAttack_Anim);
+                step = Attack;
+
+                // カウンター中は無敵にする
+                owner->invincible = true;
+                break;
+            }
+
+            if (owner->GetEndAnimation())
+                owner->GetStateMachine()->SetNextState(owner->Idle_State);
+
+            break;
+        case Attack:
+
+            owner->motion_value = motion_value;
+            owner->CollisionNodeVsEnemies("wepon", "J_wepon", owner->GetAttackCollisionRange());
+
+            if (owner->GetEndAnimation())
+                owner->GetStateMachine()->SetNextState(owner->Idle_State);
+            break;
+        }
+    }
+
+    void SPAttackState::End()
+    {
+        EnemyManager::Instance().HitClear();
+
+        step = Waiting;
+        owner->SetIsCounter(false);
+        owner->SetCanCounter(false);
+        owner->invincible = false;
     }
 }

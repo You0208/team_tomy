@@ -193,7 +193,9 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        if (player->ApplyDamage(attack_power))
+        // todo このif分の前に内積判定してカウンター成功か判定する
+        if (player->CounterJudge(this)){}
+        else if (player->ApplyDamage(attack_power))
         {
             // 豆腐スキル持ってたら強制的にHP0にする
             if (player->HaveSkill("Tofu"))

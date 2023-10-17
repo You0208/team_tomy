@@ -132,7 +132,6 @@ void GameScene::Initialize()
 			player->Initialize();
 
 		player->SkillInit();
-		player->Initialize();
 		// プレイヤーにシェーダーをセット
 		player->SetPixelShader(Try.Get());
 		// プレイヤーをキャラクターマネージャにセット

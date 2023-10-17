@@ -119,4 +119,27 @@ namespace Nero::Component::AI
         void NextStep(int next_attack_step, int next_attack_anim);
     
     };
+
+    class SPAttackState :public StateBase
+    {
+    public:
+        SPAttackState(Player* player) :StateBase(player, "FearState") {}
+
+        void Begin() override;
+        void Update() override;
+        void End() override;
+
+        // 180フレームまでカウンター判定受け付ける
+        int can_counter_frame = 180;
+
+        enum Step
+        {
+            Waiting,// カウンター待ち
+            Attack,// カウンター攻撃
+        };
+
+        float motion_value = 2.5f;
+        int step = Waiting;
+    };
+
 }

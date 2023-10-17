@@ -15,7 +15,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v008.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v009.fbx"));
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -99,9 +99,9 @@ void Player::DebugImgui()
     {
         ImGui::InputInt("animation_index", &animation_index);
         ImGui::InputFloat("animation_tick", &animation_tick);
-        ImGui::InputInt("frame_index", &frame_index);
+        ImGui::DragInt("frame_index", &frame_index);
         ImGui::Checkbox("end_animation", &end_animation);
-        ImGui::Checkbox("loop_animation", &loop_animation);
+        ImGui::Checkbox("animStop", &animStop);
         ImGui::TreePop();
     }
     ImGui::End();
@@ -134,6 +134,7 @@ void Player::StateMachineInitialize()
     state_machine->SetUpState<Nero::Component::AI::AttackState>(this);
     state_machine->SetUpState<Nero::Component::AI::DeathState>(this);
     state_machine->SetUpState<Nero::Component::AI::FearState>(this);
+    state_machine->SetUpState<Nero::Component::AI::SPAttackState>(this);
 }
 
 void Player::StateMachineUpdate()
@@ -165,6 +166,49 @@ bool Player::HaveSkill(const char* search_skill_name)
     {
         if (skill->GetName() == search_skill_name)
             return true;
+    }
+    return false;
+}
+
+void Player::CalcSPAttackTime()
+{
+    if (SP_attack_cool_timer_ms >= SP_attack_cool_time_ms)
+    {
+        can_SP_attack = true;
+    }
+    else
+    {
+        SP_attack_cool_timer_ms += high_resolution_timer::Instance().time_interval();
+    }
+}
+
+bool Player::CounterJudge(Enemy* enemy)
+{
+    if (!can_counter)return false;
+
+    // 回転行列の作成
+    DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+    // 前方向ベクトル取得
+    DirectX::XMVECTOR Forward = rotation_matrix.r[2];
+
+    //プレイヤーの位置
+    DirectX::XMVECTOR Player_pos = DirectX::XMLoadFloat3(&position);
+    // 敵の位置
+    DirectX::XMVECTOR Enemy_pos = DirectX::XMLoadFloat3(&enemy->GetPosition());
+    // プレイヤーから敵までのベクトル
+    DirectX::XMVECTOR Player_to_Enemy = DirectX::XMVectorSubtract(Enemy_pos, Player_pos);
+
+    // 正規化
+    Forward = DirectX::XMVector3Normalize(Forward);
+    Player_to_Enemy = DirectX::XMVector3Normalize(Player_to_Enemy);
+
+    // 内積で角度取得
+    float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(Forward, Player_to_Enemy));
+
+    if (dot > 0) 
+    {
+        is_counter = true;
+        return true;
     }
     return false;
 }
@@ -344,6 +388,7 @@ void PlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
     Player* player = dynamic_cast<Player*> (gameobj);
     player->SkillUpdate();
     player->ResetAddDamage();
+    player->CalcSPAttackTime();
     player->StateMachineUpdate();
     player->UpdateVelocity(elapsedTime);
 

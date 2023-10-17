@@ -43,7 +43,7 @@ void GambleScene::Initialize()
 		player->SetSkill<Gale>();
 		player->SetSkill<Obesity>();
 
-		player->SetSkill<Tofu>();
+		//player->SetSkill<Tofu>();
 
 		is_first_set_player = true;
 	}
