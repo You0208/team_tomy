@@ -77,6 +77,9 @@ public:
 
     DirectX::XMFLOAT2 num_bet_pos[3];
 
+    DirectX::XMFLOAT2 coin_bet_pos[3];
+
+
     int bet_num[3];
 private:
     Player* CreatePlayer()

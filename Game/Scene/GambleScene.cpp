@@ -88,7 +88,8 @@ void GambleScene::Initialize()
 		small_arrow_up_pos[i] = { 425 + float(i *500),830 };
 		small_arrow_down_pos[i] = { 425 + float(i *500),930 };
 		char_bet_pos[i] = { 6 + float(i * 25),71 };
-		num_bet_pos[i] = { 300 + float(i * 500),1000 };
+		num_bet_pos[i] = { 300 + float(i * 500),900 };
+		coin_bet_pos[i] = { 300 + float(i * 500),700 };
 	}
 	// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 	CharacterManager::Instance().SetPlayer(player);
@@ -321,11 +322,17 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		{
 			if (mouse.IsArea(small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50))
 			{
-				bet_num[i]++;
+				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				{
+					bet_num[i]++;
+				}
 			}
 			if (mouse.IsArea(small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50))
 			{
-				bet_num[i]--;
+				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				{
+					if(bet_num[i]>0)bet_num[i]--;
+				}
 			}
 		}
 
@@ -445,9 +452,17 @@ void GambleScene::Render(float elapsedTime)
 
 		//spr_number->render(immediate_context,0, 0, 50, 50,1,1,1,1,0,0,0,50,50);
 
+
 		for (int i = 0; i < 3; i++)
 		{
 			//TODO　小林 ここみて
+			if (bet_num[i] > 0)
+			{
+				for (int j = bet_num[i]; j >0 ; j--)
+				{
+					spr_coin->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y-5*j, 200, 100);
+				}
+			}
 			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y,50, 50, 1, 1, 1, 1);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50,1,1,1,1,180);
