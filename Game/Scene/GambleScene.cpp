@@ -17,6 +17,7 @@ QuestPattern quest_pattern = QuestPattern::B;
 
 // 一番初めのプレイヤーを生成したか(二週目移行か)
 bool is_first_set_player = false;
+
 void GambleScene::Initialize()
 {
     // todo 牟田さん　アセットロードして背景などの描画をお願いします。
