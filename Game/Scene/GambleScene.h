@@ -5,6 +5,8 @@
 #include "Lemur/Graphics/sprite_d.h"
 #include "Lemur/Font/font.h"
 
+
+
 // スキル配布、敵クエスト択、ステータスかける
 //をするシーン
 class GambleScene :
@@ -37,15 +39,39 @@ public:
 
     void DebugImGui();
 
+
+
+    struct sentence
+    {
+        WCHAR title[256];
+        WCHAR contents[256];
+    };
+
+    sentence skill_sentence[3];
+    sentence quest_sentence[3];
+
+    struct data
+    {
+        QuestPattern pattern;
+        float magnification;
+    };
+
+    data quest_data[3];
+
+    void set_sentence();
+    void set_quest_data();
     //void AllIsSelectReset()
     //{
     //    
     //}
 
+    int skill_num_max = 3;
+
+
     struct Card
     {
         WCHAR wcText[256];
-        int quest;
+        int category;
         DirectX::XMFLOAT2 position;
         DirectX::XMFLOAT2 size;
         DirectX::XMFLOAT2 font_position;

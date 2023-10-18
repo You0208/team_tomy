@@ -14,6 +14,27 @@
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::B;
 
+void GambleScene::set_sentence()
+{
+	wcscpy_s(quest_sentence[0].title, L"QuestA");
+	wcscpy_s(quest_sentence[0].contents, L"Quest_ContentsA");
+	wcscpy_s(quest_sentence[1].title, L"QuestB");
+	wcscpy_s(quest_sentence[1].contents, L"Quest_ContentsB");
+	wcscpy_s(quest_sentence[2].title, L"QuestC");
+	wcscpy_s(quest_sentence[2].contents, L"Quest_ContentsC");
+
+	wcscpy_s(skill_sentence[0].title, L"SkillA");
+	wcscpy_s(skill_sentence[0].contents, L"Skill_ContentsA");
+	wcscpy_s(skill_sentence[1].title, L"SkillB");
+	wcscpy_s(skill_sentence[1].contents, L"Skill_ContentsB");
+	wcscpy_s(skill_sentence[2].title, L"SkillC");
+	wcscpy_s(skill_sentence[2].contents, L"Skill_ContentsC");
+}
+
+void GambleScene::set_quest_data()
+{
+
+}
 
 // 一番初めのプレイヤーを生成したか(二週目移行か)
 bool is_first_set_player = false;
@@ -21,7 +42,7 @@ void GambleScene::Initialize()
 {
     // todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
-
+	set_sentence();
 	if(!is_first_set_player)
 	{
 		// プレイヤーの生成
@@ -53,38 +74,36 @@ void GambleScene::Initialize()
 		player = CharacterManager::Instance().GetPlayer();
 	}
 
-	// クエストカード情報
-	wcscpy_s(questCard[0].wcText, L"questA");
-	wcscpy_s(questCard[1].wcText, L"questB");
-	wcscpy_s(questCard[2].wcText, L"questC");
-
-	// スキルカード情報
-	skillCard[0].position = { 20, 98 };
-	skillCard[1].position = { 658, 98 };
-	skillCard[2].position = { 1288, 98 };
-	skillCard[0].font_position = { 9, 10 };
-	skillCard[1].font_position = { 40, 10 };
-	skillCard[2].font_position = { 72, 10 };
-	wcscpy_s(skillCard[0].wcText, L"skillA");
-	wcscpy_s(skillCard[1].wcText, L"skillB");
-	wcscpy_s(skillCard[2].wcText, L"skillC");
 
 	// ベット情報
 	bet_boxsize = { 400,200 };
-	bet_boxpos[0] = { 100,800 };
-	bet_boxpos[1] = { 600,800 };
-	bet_boxpos[2] = { 1100,800 };
 
 	select_decision_pos = { 1600,900 };
 
-	for (int i = 0; i < 3;i++)
-	{
-		skillCard[i].size = { 600, 780 };
-		font_d[i] = 0;
-	}
-
 	for (int i = 0; i < 3; ++i)
 	{
+		// スキルカード設定
+		{
+			// どのスキルカードを配布したかをランダムで
+			skillCard[i].category = rand() % 3;
+			// 位置
+			skillCard[i].position = { 20 + float(i * 630), 98 };
+			skillCard[i].font_position = { 10 + float(i * 30), 10 };
+			// サイズ
+			skillCard[i].size = { 600, 780 };
+			// 配布された番号に合わせた文
+			wcscpy_s(skillCard[i].wcText, skill_sentence[skillCard[i].category].title);
+		}
+
+		// クエストカード設定
+		{
+			//TODO 配り方考える（ひとまず順番で）
+			questCard[i].category = i;
+			// 配布された番号に合わせた文
+			wcscpy_s(questCard[i].wcText, quest_sentence[questCard[i].category].title);
+		}
+
+		bet_boxpos[i] = { 100 + float(i * 500),800 };
 		small_arrow_up_pos[i] = { 425 + float(i *500),830 };
 		small_arrow_down_pos[i] = { 425 + float(i *500),930 };
 		char_bet_pos[i] = { 6 + float(i * 25),71 };
@@ -175,17 +194,36 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 		}
 		// セレクト
-		for (int j = 0; j < 2; j++)
+		if (mouse.IsArea(select_pos[1].x, select_pos[1].y, 400, 100))
 		{
-			if (mouse.IsArea(select_pos[j].x, select_pos[j].y, 400, 100))
+			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
-				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				for (int i = 0; i < 3; i++)
 				{
-					// 決定した時の処理
-					step++;
+					// スキルカードを再び配り直し
+					if (SelectCard[i])
+					{
+						skillCard[i].category = rand() % skill_num_max;
+						wcscpy_s(skillCard[i].wcText, skill_sentence[skillCard[i].category].title);
+						// カードを元に
+						SelectCard[i] = false;
+						plusPos[i] = 0;
+						font_d[i] = 0;
+						// 抽選回数を減算
+						can_lottery_count--;
+					}
 				}
 			}
 		}
+		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 400, 100))
+		{
+			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+			{
+				// 決定した時の処理
+				step++;
+			}
+		}
+		
 		
 		// 抽選できる数だけ繰り返す
 		if(can_lottery_count>0)
@@ -219,7 +257,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
 			player->SkillSort();
 
-			step++;
+			//step++;
 		}
 
 
@@ -231,9 +269,9 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 		switch (selection_card)
 		{
-		case 0:
+		case 0:// 右側選択時
 			IsDirection = false;
-			// カード情報
+			// 位置の再設定
 			questCard[0].position = { 200,98 };
 			questCard[1].position = { 740,430 };
 			questCard[2].position = { 1280,430 };
@@ -241,6 +279,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			questCard[1].size = { 440,565 };
 			questCard[2].size = { 440,565 };
 
+			// 矢印の位置変更
 			arrow_position[0] = { 820,410 };
 
 			if (mouse.IsArea(arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y) && !IsDirection)
@@ -291,7 +330,6 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			questCard[1].size = { 440,565 };
 			questCard[2].size = { 600,780 };
 
-
 			arrow_position[1] = { 1000,410 };
 			if (mouse.IsArea(arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y) && !IsDirection)
 			{
@@ -305,7 +343,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 
 
-		step++;
+		//step++;
 		break;
 
 	case Gamble_Status:
@@ -353,10 +391,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
     {
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
     }
-	if(mouse.GetButtonDown()& Mouse::BTN_RIGHT)
-	{
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
-	}
+	//if(mouse.GetButtonDown()& Mouse::BTN_RIGHT)
+	//{
+	//	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	//}
 }
 
 void GambleScene::Render(float elapsedTime)
@@ -495,6 +533,7 @@ void GambleScene::DebugImGui()
 	ImGui::End();
 
 }
+
 
 void GambleScene::SetLotterySkills()
 {
