@@ -39,26 +39,20 @@ public:
 
     void DebugImGui();
 
-
-
-    struct sentence
+    // データ
+    struct data
     {
         WCHAR title[256];
         WCHAR contents[256];
-    };
-
-    sentence skill_sentence[3];
-    sentence quest_sentence[3];
-
-    struct data
-    {
-        QuestPattern pattern;
-        float magnification;
+        int pattern;
+        float min_magnification;
+        float max_magnification;
     };
 
     data quest_data[3];
+    data skill_data[3];
 
-    void set_sentence();
+    void set_skill_data();
     void set_quest_data();
     //void AllIsSelectReset()
     //{
@@ -105,8 +99,10 @@ public:
 
     DirectX::XMFLOAT2 coin_bet_pos[3];
 
-
     int bet_num[3];
+    int total_point;
+
+
 private:
     Player* CreatePlayer()
     {
@@ -130,6 +126,14 @@ private:
     bool SelectCard[3] = {};
     float plusPos[3] = {};
     int last_num;
+
+    // ポイント倍率
+    float magnification;
+    float min_magnification;
+    float max_magnification;
+
+    float player_status[3];
+    float player_status_max[3];
 
 private:/*---------------- スキル関係 -----------------*/
 

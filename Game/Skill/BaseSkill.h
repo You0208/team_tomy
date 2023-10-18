@@ -48,6 +48,7 @@ protected:
     std::string skill_name;
 
     Player* owner;
+
 };
 
 // 6.狂乱(与えるダメージが上がるが受けるダメージも上がる)

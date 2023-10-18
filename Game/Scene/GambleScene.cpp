@@ -14,26 +14,37 @@
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::B;
 
-void GambleScene::set_sentence()
+void GambleScene::set_skill_data()
 {
-	wcscpy_s(quest_sentence[0].title, L"QuestA");
-	wcscpy_s(quest_sentence[0].contents, L"Quest_ContentsA");
-	wcscpy_s(quest_sentence[1].title, L"QuestB");
-	wcscpy_s(quest_sentence[1].contents, L"Quest_ContentsB");
-	wcscpy_s(quest_sentence[2].title, L"QuestC");
-	wcscpy_s(quest_sentence[2].contents, L"Quest_ContentsC");
-
-	wcscpy_s(skill_sentence[0].title, L"SkillA");
-	wcscpy_s(skill_sentence[0].contents, L"Skill_ContentsA");
-	wcscpy_s(skill_sentence[1].title, L"SkillB");
-	wcscpy_s(skill_sentence[1].contents, L"Skill_ContentsB");
-	wcscpy_s(skill_sentence[2].title, L"SkillC");
-	wcscpy_s(skill_sentence[2].contents, L"Skill_ContentsC");
+	wcscpy_s(skill_data[0].title, L"SkillA");
+	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
+	wcscpy_s(skill_data[1].title, L"SkillB");
+	wcscpy_s(skill_data[1].contents, L"Skill_ContentsB");
+	wcscpy_s(skill_data[2].title, L"SkillC");
+	wcscpy_s(skill_data[2].contents, L"Skill_ContentsC");
 }
 
 void GambleScene::set_quest_data()
 {
+	wcscpy_s(quest_data[0].title, L"QuestA");
+	wcscpy_s(quest_data[0].contents, L"Quest_ContentsA");
+	wcscpy_s(quest_data[1].title, L"QuestB");
+	wcscpy_s(quest_data[1].contents, L"Quest_ContentsB");
+	wcscpy_s(quest_data[2].title, L"QuestC");
+	wcscpy_s(quest_data[2].contents, L"Quest_ContentsC");
 
+	quest_data[0].min_magnification = 1.2f;
+	quest_data[1].min_magnification = 1.5f;
+	quest_data[2].min_magnification = 2.0f;
+
+	quest_data[0].max_magnification = 1.5f;
+	quest_data[1].max_magnification = 2.5f;
+	quest_data[2].max_magnification = 3.5f;
+
+
+	quest_data[0].pattern = QuestPattern::A;
+	quest_data[1].pattern = QuestPattern::B;
+	quest_data[2].pattern = QuestPattern::C;
 }
 
 // 一番初めのプレイヤーを生成したか(二週目移行か)
@@ -42,7 +53,8 @@ void GambleScene::Initialize()
 {
     // todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
-	set_sentence();
+	set_skill_data();
+	set_quest_data();
 	if(!is_first_set_player)
 	{
 		// プレイヤーの生成
@@ -74,6 +86,15 @@ void GambleScene::Initialize()
 		player = CharacterManager::Instance().GetPlayer();
 	}
 
+	// プレイヤーのステータスを一時保存
+	{
+		player_status[0] = player->health;
+		player_status[1] = player->attack_power;
+		player_status[2] = player->speed_power;
+		player_status_max[0] = player->health;
+		player_status_max[1] = player->attack_power;
+		player_status_max[2] = player->speed_power;
+	}
 
 	// ベット情報
 	bet_boxsize = { 400,200 };
@@ -92,7 +113,7 @@ void GambleScene::Initialize()
 			// サイズ
 			skillCard[i].size = { 600, 780 };
 			// 配布された番号に合わせた文
-			wcscpy_s(skillCard[i].wcText, skill_sentence[skillCard[i].category].title);
+			wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
 		}
 
 		// クエストカード設定
@@ -100,7 +121,7 @@ void GambleScene::Initialize()
 			//TODO 配り方考える（ひとまず順番で）
 			questCard[i].category = i;
 			// 配布された番号に合わせた文
-			wcscpy_s(questCard[i].wcText, quest_sentence[questCard[i].category].title);
+			wcscpy_s(questCard[i].wcText, quest_data[questCard[i].category].title);
 		}
 
 		bet_boxpos[i] = { 100 + float(i * 500),800 };
@@ -193,32 +214,50 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			}
 
 		}
-		// セレクト
-		if (mouse.IsArea(select_pos[1].x, select_pos[1].y, 400, 100))
+
+		if (can_lottery_count > 0)
 		{
-			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+			// セレクト
+			if (mouse.IsArea(select_pos[1].x, select_pos[1].y, 400, 100))
 			{
-				for (int i = 0; i < 3; i++)
+				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 				{
-					// スキルカードを再び配り直し
-					if (SelectCard[i])
+					for (int i = 0; i < 3; i++)
 					{
-						skillCard[i].category = rand() % skill_num_max;
-						wcscpy_s(skillCard[i].wcText, skill_sentence[skillCard[i].category].title);
-						// カードを元に
-						SelectCard[i] = false;
-						plusPos[i] = 0;
-						font_d[i] = 0;
-						// 抽選回数を減算
-						can_lottery_count--;
+						// スキルカードを再び配り直し
+						if (SelectCard[i])
+						{
+							skillCard[i].category = rand() % skill_num_max;
+							wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
+							// カードを元に
+							SelectCard[i] = false;
+							plusPos[i] = 0;
+							font_d[i] = 0;
+							// 抽選回数を減算
+							can_lottery_count--;
+						}
 					}
 				}
 			}
 		}
+
+		// 決定
 		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 400, 100))
 		{
 			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
+				int n = 0;//　対応する順番のスキルを入れる
+				for (const auto& skill : player->all_skills) {
+					if (n == skillCard[0].category || n == skillCard[1].category || n == skillCard[2].category)
+					{
+						lottery_skills.emplace_back(skill.get());
+					}
+					n++;
+				}
+				// 抽選されたスキルの配列をプレイヤーに持たせる。
+				player->SetSkill(lottery_skills);
+				// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
+				player->SkillSort();
 				// 決定した時の処理
 				step++;
 			}
@@ -282,6 +321,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			// 矢印の位置変更
 			arrow_position[0] = { 820,410 };
 
+			// 矢印をクリック
 			if (mouse.IsArea(arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y) && !IsDirection)
 			{
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -342,6 +382,15 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			break;
 		}
 
+		if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
+		{
+			quest_pattern = QuestPattern(quest_data[selection_card].pattern);
+			magnification = quest_data[selection_card].min_magnification;
+			min_magnification = quest_data[selection_card].min_magnification;
+			max_magnification = quest_data[selection_card].max_magnification;
+			step++;
+		}
+
 
 		//step++;
 		break;
@@ -356,29 +405,61 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		player->attack_power = 40;
 		//small_arrow_up_pos[0] = Poo;
 		// 上下
-		for (int i = 0; i < 3; i++)
+
+		if (magnification <= max_magnification && magnification >= min_magnification)// 倍率が範囲内の時に動く
 		{
-			if (mouse.IsArea(small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50))
+			for (int i = 0; i < 3; i++)
 			{
-				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				if (mouse.IsArea(small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50))
 				{
-					bet_num[i]++;
+					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					{
+						if (player_status[i] > 1)
+						{
+							bet_num[i]++;
+							player_status[i]--;
+							total_point = bet_num[0] + bet_num[1] + bet_num[2];
+							if (total_point % 10 == 0 && total_point >= 10 && magnification <= max_magnification)
+							{
+								magnification += 0.1f;
+							}
+						}
+					}
 				}
-			}
-			if (mouse.IsArea(small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50))
-			{
-				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				if (mouse.IsArea(small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50))
 				{
-					if(bet_num[i]>0)bet_num[i]--;
+					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					{
+						if (player_status[i] < player_status_max[i])
+						{
+							if (bet_num[i] > 0)bet_num[i]--;
+							player_status[i]++;
+							total_point = bet_num[0] + bet_num[1] + bet_num[2];
+							if (total_point % 10 == 0 && total_point >= 10 && magnification >= min_magnification)
+							{
+								magnification -= 0.1f;
+							}
+						}
+					}
 				}
+
 			}
+
+			total_point = bet_num[0] + bet_num[1] + bet_num[2];
 		}
+
 
 		//OKボタン
 		if (mouse.IsArea(select_decision_pos.x, select_decision_pos.y, 200, 100) )
 		{
 			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
+				// ポイントを倍率分かけておく
+				total_point *= magnification;
+				// 元のステータスを減らす
+				player->health = player_status[0];
+				player->attack_power = player_status[1];
+				player->speed_power = player_status[2];
 				step++;
 			}
 		}
@@ -493,6 +574,8 @@ void GambleScene::Render(float elapsedTime)
 
 		for (int i = 0; i < 3; i++)
 		{
+			spr_number->textout(immediate_context, std::to_string(player_status[i]), num_bet_pos[i].x, 100,50, 50, 1, 1, 1, 1);
+
 			//TODO　小林 ここみて
 			if (bet_num[i] > 0)
 			{
@@ -506,7 +589,10 @@ void GambleScene::Render(float elapsedTime)
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50,1,1,1,1,180);
 			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
 		}
+		spr_number->textout(immediate_context, std::to_string(total_point), select_decision_pos.x, select_decision_pos.y-70.0f, 50, 50, 1, 1, 1, 1);
 		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
+
+		spr_number->textout(immediate_context, std::to_string(magnification), select_decision_pos.x, 50.0f, 50, 50, 1, 1, 1, 1);
 
 		spr_betback->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
