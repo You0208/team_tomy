@@ -267,7 +267,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
             {
                 HitStopON(0.15f);
                 // ‚±‚ÌƒtƒŒ[ƒ€‚Å—^‚¦‚½ƒ_ƒ[ƒW‚ğ•Û
-                add_damage += attack_power * motion_value - enemy->defense_power;
+                add_damage += attack_power * motion_value;
                 // ‚à‚µ“|‚µ‚½‚çŒ‚”j”‚ğ‘‚â‚·B
                 if (enemy->death)
                     kill_count++;

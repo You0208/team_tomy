@@ -188,10 +188,15 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     mouse.SetPositionY(1080 / 2);
 #endif
 
-    //target = CharacterManager::Instance().GetPlayer()->GetPosition();
-    //target.y += target_y_offset;
-    if(CharacterManager::Instance().GetPlayer()!=nullptr)target = CharacterManager::Instance().GetPlayer()->GetPosition();
-
+    if (CharacterManager::Instance().GetPlayer() != nullptr)
+    {
+        DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+        target = {
+            player_pos.x,
+            player_pos.y + target_y_offset,
+            player_pos.z
+        };
+    }
     // ƒJƒƒ‰‚Ì‰ñ“]’l‚ğ‰ñ“]s—ñ‚É•ÏŠ·
     DirectX::XMMATRIX Transform = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 

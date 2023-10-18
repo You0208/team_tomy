@@ -23,7 +23,7 @@ void GameObject::AnimationUpdate(float elapsedTime)
         else
         {
             end_animation = false;
-            animation_tick += elapsedTime*hitStopCoefficient;
+            animation_tick += elapsedTime * hit_stop_rate * anim_calc_rate;
             keyframe = { animation.sequence.at(frame_index) };
         }
     }
@@ -31,10 +31,10 @@ void GameObject::AnimationUpdate(float elapsedTime)
 
 bool GameObject::ApplyDamage(int damage)
 {
-    if (damage <= defense_power)
-        damage = 1;
-    else
-        damage -= static_cast<int>(defense_power);
+    //if (damage <= defense_power)
+    //    damage = 1;
+    //else
+    //    damage -= static_cast<int>(defense_power);
 
     //// ダメージが０の場合は健康状態を変更する必要がない
     //if (damage <= 0)return false;
@@ -313,13 +313,13 @@ void GameObject::HitStopCalc()
 
     if (hit_stop_timer > hit_stop_time)
     {
-        hitStopCoefficient = 1.0f;
+        hit_stop_rate = 1.0f;
         is_hit_stop = false;
 
         return;
     }
 
-    hitStopCoefficient = Easing::InSine(hit_stop_timer, hit_stop_time, 1.0f, 0.0f);
+    hit_stop_rate = Easing::InSine(hit_stop_timer, hit_stop_time, 1.0f, 0.0f);
 
     hit_stop_timer += high_resolution_timer::Instance().time_interval();
 #endif

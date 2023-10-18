@@ -156,6 +156,7 @@ public:
     // ヒットストップする(秒)
     void HitStopON(float hit_stop_time_);
 
+    void SetAnimCalcRate(const float calc_rate_) { anim_calc_rate = calc_rate_; }
 protected:
 
 
@@ -207,6 +208,9 @@ public:
 
     // 基礎防御力
     float defense_power = 0;
+
+    // スピードパラメータ
+    float speed_power = 10.0f;
 
     // 攻撃当たり判定するか
     bool attack_collision_flag = false;
@@ -267,8 +271,11 @@ protected:
     float hit_stop_timer;
     // ヒットストップしてるか
     bool is_hit_stop = false;
-    //これをアニメーション再生速度に掛けてヒットストップを表現する
-    float hitStopCoefficient = 1.0f;
+
+    // この値をいじればヒットストップできる
+    float hit_stop_rate = 1.0f;
+    // アニメーションの再生速度を制御していろいろな表現をする奴
+    float anim_calc_rate = 1.0f;
 
 
     Mouse* mouse;

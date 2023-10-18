@@ -12,8 +12,11 @@ public:
         max_health = 5000;
         health = max_health;
 
-        near_attack_range = 3.0f;
-
+        walk_speed = 1.0f;
+        speed_power = 5.0f;
+        near_attack_range = 6.0f;
+        middle_attack_range = 10.0f;
+        scaleFactor = 3.0f;
     }
 
     virtual void DrawDebugPrimitive() override;

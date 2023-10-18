@@ -185,7 +185,7 @@ void Enemy::Move_to_Target(float elapsedTime, float move_speed_rate, float turn_
     vz /= dist;
 
     // todo ここら辺も今はテキトー
-    Move(vx, vz, walk_speed);
+    Move(vx, vz, walk_speed *speed_power* move_speed_rate);
     Turn(vx, vz, 5.0f);
 
 }
@@ -281,6 +281,7 @@ void Enemy::DebugImgui()
         }
         ImGui::DragFloat("attack_power", &attack_power);
         ImGui::DragFloat("defense_power", &defense_power);
+        ImGui::DragFloat("speed_power", &speed_power);
         ImGui::TreePop();
     }
     ImGui::Checkbox("is_hit", &is_hit);

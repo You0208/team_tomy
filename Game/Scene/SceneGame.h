@@ -4,6 +4,7 @@
 #include "Game/Enemy/BossSpider.h"
 #include "Game/Enemy/Enemy.h"
 #include "Game/Player/Player.h"
+#include "Game/Stage/Stage.h"
 #include "Lemur/Audio/audio.h"
 #include "Lemur/Component/DemoEnemy.h"
 #include "Lemur/Component/DemoPlayer.h"
@@ -90,6 +91,8 @@ private:// ÉQÅ[ÉÄä÷òA
     //DemoPlayer
     Player* player = nullptr;
     DemoEnemy* enemy = nullptr;
+
+    std::unique_ptr<Stage> stage;
 
     // Audio
     Microsoft::WRL::ComPtr<IXAudio2> xaudio2;

@@ -17,12 +17,39 @@ bool WanderJudgment::Judgment()
 
 bool BattleJudgment::Judgment()
 {
+    // 交戦状態ならtrue
+    if (owner->belligerency)return true;
+
     if(owner->SearchPlayer(owner->GetVisionLength()))
     {
+        owner->belligerency = true;
         return true;
     }
 
     return false;
+}
+
+bool TurnJudgment::Judgment()
+{
+    // 限りなく正面に近い角度なら軸合わせしない。
+    if (owner->SearchPlayer(FLT_MAX, 0.995f))
+    {
+        // 一回軸合わせしなかったら次の行動からは軸合わせできる。
+        owner->turned = false;
+        return false;
+    }
+
+    // すでに軸合わせをしてたらfalse(永遠に軸合わせしないために)
+    if (owner->turned == true)
+    {
+        // 一回軸合わせしなかったら次の行動からは軸合わせできる。
+        owner->turned = false;
+        return false;
+    }
+
+    owner->turned = true;
+    return true;
+
 }
 
 bool DeathJudgment::Judgment()

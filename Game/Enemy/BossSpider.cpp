@@ -34,14 +34,16 @@ void BossSpider::BehaviorTreeInitialize()
         // 戦闘
         ai_tree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
         {
+            // 軸合わせ
+            ai_tree->AddNode("Battle", "Turn", 0, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
             // 近接戦闘
-            ai_tree->AddNode("Battle", "Near", 0, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+            ai_tree->AddNode("Battle", "Near", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
             {
-                //// 飛びつき→二段攻撃のコンボ
-                //ai_tree->AddNode("Near", "Combo_A", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
-                //{
-                //    ai_tree->AddNode("Combo_A", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
-                //}
+                // 飛びつき→二段攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_A", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    ai_tree->AddNode("Combo_A", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                }
                 // 待機or軸合わせ→二段攻撃or両腕攻撃or飛びつき攻撃のコンボ
                 ai_tree->AddNode("Near", "Combo_B", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
                 {
@@ -59,19 +61,30 @@ void BossSpider::BehaviorTreeInitialize()
                         ai_tree->AddNode("DA_or_TA_or_JA", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
                     }
                 }
-                //// バックステップ
-                //ai_tree->AddNode("Near", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
-                //// 攻撃
-                //ai_tree->AddNode("Near", "Attack", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
-                //{
-                //    ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
-                //}
+                // バックステップ
+                ai_tree->AddNode("Near", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+                // 攻撃
+                ai_tree->AddNode("Near", "Attack", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+                {
+                    ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
+                }
             }
             // 中距離戦闘
-            ai_tree->AddNode("Battle", "Middle", 1, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
+            ai_tree->AddNode("Battle", "Middle", 2, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
             {
                 // 追跡
                 ai_tree->AddNode("Middle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+                // 毒ブレス
+                ai_tree->AddNode("Middle", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+
+            }
+            // 遠距離戦闘
+            ai_tree->AddNode("Battle", "Far", 3, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+            {
+                // 突進攻撃
+                ai_tree->AddNode("Far", "Rush", 0, BehaviorTree::SelectRule::Non, nullptr, new RushAttackAction(this));
+                    // 毒ブレス
+                ai_tree->AddNode("Far", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
             }
         }
         // 怯み

@@ -178,8 +178,6 @@ public:
     // 一回初期設定したらtrue。
     bool is_initialize = false;
 
-    // スピードパラメータ
-    float speed_power = 10.0f;
 
     int down_count = 2;
 

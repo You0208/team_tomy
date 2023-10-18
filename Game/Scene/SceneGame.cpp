@@ -140,8 +140,11 @@ void GameScene::Initialize()
 
 		ColliderManager::Instance().SetCollider(player);
 
+
 		CreateEnemy_KARI();
 
+		stage = std::make_unique<Stage>();
+		stage->Init();
 	}
 
 	// ライト
@@ -495,6 +498,7 @@ void GameScene::Render(float elapsedTime)
 			// プレイヤー描画
 			player->Render(elapsedTime);
 			EnemyManager::Instance().Render(elapsedTime);
+			stage->Render();
 	}
 
 	
@@ -590,6 +594,7 @@ void GameScene::Render(float elapsedTime)
 	// 2Dデバッグ描画　
 	{
 		DebugImGui();
+		stage->DrawImGui();
 		camera.DrawDebug();
 	}
 

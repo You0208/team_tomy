@@ -133,6 +133,14 @@ public:
 
     // 怯みフラグ
     bool fear_frag;
+
+    // 交戦状態
+    bool belligerency = false;
+
+    // 軸合わせしたか(永遠に軸合わせしないために)
+    //めんどいからパブリック
+    bool turned = false;
+
 protected:
 
     // todo ここら辺の変数と値は企画が決まってないから仮です
@@ -149,6 +157,7 @@ protected:
 
     // 近攻撃可能範囲
     float near_attack_range = 0.0f;
+    // 近攻撃可能範囲
     float middle_attack_range = 0.0f;
 
 

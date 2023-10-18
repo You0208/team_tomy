@@ -189,6 +189,16 @@ ActionBase::State PursueAction::Run(float elapsedTime)
 
 ActionBase::State NearAttackAction::Run(float elapsedTime)
 {
+	// 死亡してたら死亡アクションに移行
+	if (owner->death)
+		return ActionBase::State::Failed;
+
+	// 怯んだら終了
+	if (owner->fear_frag) {
+		step = 0;
+		return ActionBase::State::Failed;
+	}
+
     switch (step)
     {
     case 0:
@@ -197,15 +207,6 @@ ActionBase::State NearAttackAction::Run(float elapsedTime)
 
 		break;
     case 1:
-		// 死亡してたら死亡アクションに移行
-		if (owner->death)
-			return ActionBase::State::Failed;
-
-		// 怯んだら終了
-		if (owner->fear_frag) {
-			step = 0;
-		    return ActionBase::State::Failed;
-		}
 		// 限定フレームの間だけ攻撃判定可能
 		CollisionFragJudge();
 
@@ -376,6 +377,136 @@ ActionBase::State TwinArmsAttackAction::Run(float elapsedTime)
 	}
 
 	return ActionBase::State::Run;
+}
+
+ActionBase::State PoisonAttackAction::Run(float elapsedTime)
+{
+	// 怯んだら終了
+	if (owner->fear_frag) {
+		step = 0;
+		return ActionBase::State::Failed;
+	}
+	// 死亡してたら死亡アクションに移行
+	if (owner->death)
+		return ActionBase::State::Failed;
+
+
+	switch (step)
+	{
+	case 0:
+		// todo アニメーション再生
+		owner->SetAnimationIndex(owner->ShotAttack_Anim);
+		step++;
+		break;
+	case 1:
+
+		// 限定フレームの間だけ攻撃判定可能
+		CollisionFragJudge();
+
+		if (owner->GetEndAnimation())
+		{
+			step = 0;
+			return ActionBase::State::Complete;
+		}
+
+		// 当たり判定
+		if (owner->attack_collision_flag)
+		{
+			Player* player = CharacterManager::Instance().GetPlayer();
+
+			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+		}
+	}
+
+	return ActionBase::State::Run;
+
+}
+
+ActionBase::State RushAttackAction::Run(float elapsedTime)
+{
+	// 怯んだら終了
+	if (owner->fear_frag) {
+		step = 0;
+		owner->SetAnimCalcRate(1.0f);
+
+		return ActionBase::State::Failed;
+	}
+	// 死亡してたら死亡アクションに移行
+	if (owner->death)
+	{
+		owner->SetAnimCalcRate(1.0f);
+		return ActionBase::State::Failed;
+	}
+
+
+	switch (step)
+	{
+	case 0:
+		// todo アニメーション再生
+		owner->SetAnimationIndex(owner->Walk_Anim);
+
+	    owner->SetAnimCalcRate(3.0f);
+
+		// ターゲット位置設定する
+		CalcTargetPos();
+
+		step++;
+		break;
+	case 1:
+
+		// 限定フレームの間だけ攻撃判定可能
+		CollisionFragJudge();
+
+		if (owner->GetEndAnimation())
+		{
+			if (owner->DistanceJudge(owner->GetPosition(), owner->GetTargetPosition(), owner->GetNearAttackRange()))
+			{
+				step = 0;
+				owner->SetAnimCalcRate(1.0f);
+
+				return ActionBase::State::Complete;
+			}
+			else owner->SetAnimationIndex(owner->Walk_Anim);
+
+		}
+
+		owner->Move_to_Target(elapsedTime, 4.0f);
+		// 当たり判定
+		if (owner->attack_collision_flag)
+		{
+			Player* player = CharacterManager::Instance().GetPlayer();
+
+			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+		}
+	}
+
+	return ActionBase::State::Run;
+
+
+}
+
+void RushAttackAction::CalcTargetPos()
+{
+	// ターゲット位置設定する
+
+    // プレイヤーの位置
+	DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
+	DirectX::XMVECTOR Player_pos = DirectX::XMLoadFloat3(&player_pos);
+
+	// 敵(こいつ)の位置
+	DirectX::XMFLOAT3 enemy_pos = owner->GetPosition();
+	DirectX::XMVECTOR Enemy_pos = DirectX::XMLoadFloat3(&enemy_pos);
+
+	// プレイヤーから敵までの方向ベクトル(正規化)
+	DirectX::XMVECTOR Vec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(Player_pos, Enemy_pos));
+
+	// 方向ベクトルに過ぎ去る距離をかけて、ハンターの位置を足したらターゲット位置の出来上がり
+	DirectX::XMVECTOR Target_pos = DirectX::XMVectorScale(Vec, run_over_length);
+	Target_pos = DirectX::XMVectorAdd(Target_pos, Player_pos);
+	DirectX::XMFLOAT3 target_pos;
+	DirectX::XMStoreFloat3(&target_pos, Target_pos);
+	owner->SetTargetPosition(target_pos);
+
 }
 
 ActionBase::State BackStepAction::Run(float elapsedTime)

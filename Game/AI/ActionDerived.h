@@ -110,6 +110,36 @@ public:
 
 };
 
+// 毒ブレス攻撃
+class PoisonAttackAction : public ActionBase
+{
+public:
+	PoisonAttackAction(Enemy* enemy) :ActionBase(enemy)
+	{
+		start_collision__frame = 60;
+		end_collision__frame = 100;
+	}
+	ActionBase::State Run(float elapsedTime)override;
+
+};
+
+// 毒ブレス攻撃
+class RushAttackAction : public ActionBase
+{
+public:
+	RushAttackAction(Enemy* enemy) :ActionBase(enemy)
+	{
+		start_collision__frame = 60;
+		end_collision__frame = 100;
+	}
+	ActionBase::State Run(float elapsedTime)override;
+
+	void CalcTargetPos();
+
+	// 走り去る距離
+	float run_over_length = 3.0f;
+};
+
 // バックステップ
 class BackStepAction : public ActionBase
 {
