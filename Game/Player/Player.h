@@ -52,11 +52,16 @@ public:
         height = 1.7f;
         radius = 0.4f;
 
-        // 歩きの速さ(スピードパラメータがあるからベースの速度は激おそ)
+        // プレイヤーはスピードの補正を変える
         walk_speed = 0.1f;
 
-        attack_power = 50;
+        //max_health = 20;
+        max_health = 1000000;
+        health = max_health;
 
+        attack_power = 20;
+
+        speed_power = 30;
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);

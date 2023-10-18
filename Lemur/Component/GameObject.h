@@ -156,6 +156,7 @@ public:
     // ヒットストップする(秒)
     void HitStopON(float hit_stop_time_);
 
+    // アニメーションの再生速度倍率設定
     void SetAnimCalcRate(const float calc_rate_) { anim_calc_rate = calc_rate_; }
 protected:
 
@@ -250,8 +251,8 @@ protected:
     // 攻撃当たり判定する半径
     float attack_collision_range = 0.3f;
 
-    // 歩きの速さ
-    float walk_speed = 3.0f;
+    // 歩きの速さ(スピードパラメータがあるからベースの速度は激おそ)
+    float walk_speed = 0.1f;
 
 
     float animation_tick                = 0; // アニメーション

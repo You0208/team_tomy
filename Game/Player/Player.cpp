@@ -151,7 +151,7 @@ bool Player::InputMove()
     DirectX::XMFLOAT3 vec = GetMoveVec(lx, ly);
 
     // 進行ベクトルがゼロベクトルならは入力されてない
-    if (vec.x == 0.0f || vec.z == 0.0f)
+    if (vec.x == 0.0f && vec.z == 0.0f)
         return false;
 
     Move(vec.x, vec.z, walk_speed * speed_power);
@@ -234,7 +234,7 @@ void Player::RetentionParamGet()
 void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius)
 {
 
-    // ノード位置取得
+    // プレイヤー側のノード位置取得
     DirectX::XMFLOAT3 nodePosition = Model->joint_position(mesh_name, bone_name, &keyframe, world);
 
     // 指定のノードと全ての敵を総当たりで衝突処理
@@ -248,34 +248,36 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
         // 一回当たってたら判定しない
         if (enemy->is_hit)continue;
 
-        // 衝突処理
-        DirectX::XMFLOAT3 outPosition;
-
-        // まずは当たり判定
-        if (Collision::IntersectSphereVsCylinderOut(
-            nodePosition, node_radius,
-            enemy->GetPosition(),
-            enemy->GetRadius(),
-            enemy->GetHeight(),
-            outPosition
-        ))
+        for (auto& node : enemy->hit_collisions)
         {
-            enemy->is_hit = true;
+            // 敵の喰らい当たり判定
+            DirectX::XMFLOAT3 node_pos = enemy->GetModel()->joint_position(enemy->meshName.c_str(), node->bone_name.c_str(), &enemy->keyframe, enemy->world);
 
-            // ダメージを与える判定
-            if (enemy->ApplyDamage(attack_power*motion_value))
+            // まずは当たり判定
+            if (Collision::IntersectSphereVsSphere(
+                nodePosition, node_radius,
+                node_pos,
+                node->node_radius
+            ))
             {
-                HitStopON(0.15f);
-                // このフレームで与えたダメージを保持
-                add_damage += attack_power * motion_value;
-                // もし倒したら撃破数を増やす。
-                if (enemy->death)
-                    kill_count++;
-                if (is_counter)
-                    enemy->fear_frag = true;
+                enemy->is_hit = true;
+
+                // ダメージを与える判定
+                if (enemy->ApplyDamage(attack_power * motion_value))
+                {
+                    HitStopON(0.15f);
+                    // このフレームで与えたダメージを保持
+                    add_damage += attack_power * motion_value;
+                    // もし倒したら撃破数を増やす。
+                    if (enemy->death)
+                        kill_count++;
+                    if (is_counter)
+                        enemy->fear_frag = true;
+
+                    break;
+                }
             }
         }
-
 
     }
 

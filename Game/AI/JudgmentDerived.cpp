@@ -78,7 +78,12 @@ bool NearJudgment::Judgment()
 
 bool FearJudgment::Judgment()
 {
-    return owner->fear_frag;
+    if (owner->fear_frag)
+    {
+        owner->fear_frag = false;
+        return true;
+    }
+    else return false;
 }
 
 bool ClawAttackJudgment::Judgment()

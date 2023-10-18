@@ -101,10 +101,14 @@ ActionBase::State TuraAction::Run(float elapsedTime)
 {
 	// 死亡してたら死亡アクションに移行
 	if (owner->death)
+	{
+		owner->SetAnimCalcRate(1.0f);
 		return ActionBase::State::Failed;
+	}
 
 	// 怯んだら終了
 	if (owner->fear_frag) {
+		owner->SetAnimCalcRate(1.0f);
 		step = 0;
 		return ActionBase::State::Failed;
 	}
@@ -114,6 +118,8 @@ ActionBase::State TuraAction::Run(float elapsedTime)
 	case 0:
 		// アニメーションセット
 		owner->SetAnimationIndex(owner->Walk_Anim);
+		// 軸合わせは歩きモーションのちょっと早送り
+		owner->SetAnimCalcRate(2.0f);
 
 		/*------------- 軸合わせで向く方向を計算 ------------*/
 		// プレイヤーの位置
@@ -139,6 +145,7 @@ ActionBase::State TuraAction::Run(float elapsedTime)
 		owner->Turn(target_vec_x, target_vec_z, 3.0f);
 		if (owner->GetEndAnimation())
 		{
+			owner->SetAnimCalcRate(1.0f);
 			step = 0;
 			return ActionBase::State::Complete;
 		}
@@ -372,7 +379,10 @@ ActionBase::State TwinArmsAttackAction::Run(float elapsedTime)
 		{
 			Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+			for (auto& attack_collision : owner->arm_attack_collisions)
+			{
+				owner->CollisionNodeVsPlayer(owner->meshName.c_str(), attack_collision->bone_name.c_str(), attack_collision->node_radius);
+			}
 		}
 	}
 
@@ -470,7 +480,7 @@ ActionBase::State RushAttackAction::Run(float elapsedTime)
 
 		}
 
-		owner->Move_to_Target(elapsedTime, 4.0f);
+		owner->Move_to_Target(elapsedTime, 2.0f);
 		// 当たり判定
 		if (owner->attack_collision_flag)
 		{

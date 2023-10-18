@@ -23,13 +23,11 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
     {
     case Enemy::SmallSpider:
         enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
-        enemy->meshName = "polySurface";
 
         break;
     case Enemy::BossSpider:
         enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v003.fbx"));
 
-        enemy->meshName = "spider_boss_spider_boss";
         break;
     }
 }
@@ -207,7 +205,6 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        // todo このif分の前に内積判定してカウンター成功か判定する
         if (player->CounterJudge(this)){}
         else if (player->ApplyDamage(attack_power))
         {
@@ -221,6 +218,7 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
 
             player->GetStateMachine()->SetNextState(player->Fear_State);
         }
+        return;
     }
 }
 
@@ -253,6 +251,7 @@ void Enemy::DebugImgui()
             ImGui::Text(activeNode->GetName().c_str());
 
         ImGui::DragFloat("near_attack_range", &near_attack_range);
+        ImGui::DragFloat("middle_attack_range", &middle_attack_range);
         ImGui::DragFloat3("target_position", &target_position.x);
 
         DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
@@ -279,9 +278,19 @@ void Enemy::DebugImgui()
             health = 0;
             death = true;
         }
+        ImGui::DragFloat("Walk_speed", &walk_speed);
         ImGui::DragFloat("attack_power", &attack_power);
         ImGui::DragFloat("defense_power", &defense_power);
         ImGui::DragFloat("speed_power", &speed_power);
+        ImGui::TreePop();
+    }
+    if(ImGui::TreeNode("HitCollisions"))
+    {
+        for (auto& collision : hit_collisions)
+        {
+            ImGui::Text(collision->bone_name.c_str());
+            ImGui::DragFloat("node_radius", &collision->node_radius);
+        }
         ImGui::TreePop();
     }
     ImGui::Checkbox("is_hit", &is_hit);
@@ -294,6 +303,7 @@ void Enemy::Destroy()
 {
     EnemyManager::Instance().Remove(this);
 }
+
 
 // 入力処理
 void EnemyInputComponent::Update(GameObject* gameobj, float elapsedTime)
@@ -373,7 +383,7 @@ void EnemyPhysicsComponent::Initialize(GameObject* gameobj)
     // todo ここでテリトリーを設定(とりあえず今は原点)
     
     enemy->BehaviorTreeInitialize();
-
+    enemy->SetUpHitCollision();
 }
 
 void EnemyPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)

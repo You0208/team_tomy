@@ -169,6 +169,11 @@ void GambleScene::Initialize()
 				sprite_pixel_shader.GetAddressOf());
 		}
 	}
+
+	
+	/*--------------- これデバッグ用 --------------*/
+    Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+
 }
 
 void GambleScene::Finalize()

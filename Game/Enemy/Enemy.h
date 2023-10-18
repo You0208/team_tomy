@@ -72,8 +72,6 @@ public:
         height=1.0f;
         radius = 0.5f;
 
-        walk_speed = 1.5f;
-
 
         max_health = 1000;
         health = max_health;
@@ -85,10 +83,13 @@ public:
         near_attack_range = 1.5f;
         middle_attack_range = 5.0f;
 
+
     }
 
     // 攻撃当たり判定で使う
-    std::string meshName;
+    std::string meshName = "polySurface";
+    
+    
 
     // ビヘイビアツリーの初期化
     virtual void BehaviorTreeInitialize(){};
@@ -164,5 +165,21 @@ protected:
     BehaviorTree* ai_tree = nullptr;
     NodeBase* activeNode = nullptr;
     BehaviorData* behaviorData = nullptr;
+
+protected:/*----------- 当たり判定系 -------------*/
+
+    struct NodeCollision
+    {
+        std::string bone_name;
+        float node_radius;
+    };
+
+public:
+    // 喰らい当たり判定配列
+    std::vector<std::unique_ptr<NodeCollision>> hit_collisions;
+
+    // 腕攻撃当たり判定配列
+    std::vector<std::unique_ptr<NodeCollision>> arm_attack_collisions;
+    virtual void SetUpHitCollision(){}
 };
 
