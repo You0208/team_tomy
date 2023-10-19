@@ -52,6 +52,10 @@ bool is_first_set_player = false;
 
 void GambleScene::Initialize()
 {
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+	SetState();
+
+
     // todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
 	set_skill_data();
@@ -136,7 +140,6 @@ void GambleScene::Initialize()
 	CharacterManager::Instance().SetPlayer(player);
 
 	// アセットのロード
-	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
 	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
 	spr_arrow = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
@@ -147,32 +150,11 @@ void GambleScene::Initialize()
 	spr_OK = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\OK.png");
 	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
-	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
-	// シェーダーの読み込み
-	{
-		// sprite用デフォルト描画シェーダー（ディゾルブ）
-		{
-			D3D11_INPUT_ELEMENT_DESC input_element_desc[]
-			{
-				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			};
-			create_vs_from_cso(graphics.GetDevice(),
-				"./Shader/sprite_dissolve_vs.cso",
-				sprite_vertex_shader.GetAddressOf(),
-				sprite_input_layout.GetAddressOf(),
-				input_element_desc,
-				ARRAYSIZE(input_element_desc));
-			create_ps_from_cso(graphics.GetDevice(),
-				"./Shader/sprite_dissolve_ps.cso",
-				sprite_pixel_shader.GetAddressOf());
-		}
-	}
+	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
-	
+
 	/*--------------- これデバッグ用 --------------*/
-    Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+    //Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 
 }
 
@@ -476,7 +458,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
     GamePad& game_pad = Input::Instance().GetGamePad();
     if (game_pad.GetButtonDown() & GamePad::BTN_START)
     {
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+		//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
     }
 	//if(mouse.GetButtonDown()& Mouse::BTN_RIGHT)
 	//{
@@ -488,6 +470,26 @@ void GambleScene::Render(float elapsedTime)
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
+	ID3D11RenderTargetView* render_target_view = graphics.GetRenderTargetView();
+	ID3D11DepthStencilView* depth_stencil_view = graphics.GetDepthStencilView();
+
+	// レンダーターゲット等の設定とクリア
+	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
+	// キャンバス全体を指定した色に塗りつぶす
+	immediate_context->ClearRenderTargetView(render_target_view, color);
+	// キャンバス全体の奥行き情報をリセットする
+	immediate_context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	// これから描くキャンバスを指定する
+	immediate_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
+
+	immediate_context->PSSetSamplers(0, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::POINT)].GetAddressOf());
+	immediate_context->PSSetSamplers(1, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR)].GetAddressOf());
+	immediate_context->PSSetSamplers(2, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
+	immediate_context->PSSetSamplers(3, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_BLACK)].GetAddressOf());
+	immediate_context->PSSetSamplers(4, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_WHITE)].GetAddressOf());
+	// SHADOW
+	immediate_context->PSSetSamplers(5, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::COMPARISON_LINEAR_BORDER_WHITE)].GetAddressOf());
+
 
 	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
 	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
@@ -498,73 +500,68 @@ void GambleScene::Render(float elapsedTime)
 	immediate_context->PSSetShader(sprite_pixel_shader.Get(), nullptr, 0);
 	immediate_context->PSSetSamplers(0, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR)].GetAddressOf());
 
-	SetUpRendering();
 	switch (step)
 	{
 	case Skill_Lottery:
+		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-		for (int i = 0; i < 2; i++)spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100);
 
 		for (int i = 0; i < 3; i++)
 		{
 			// カード２
 			spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y-font_d[i] }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
 		}
 
-		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		for (int i = 0; i < 2; i++)spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100);
 
 		break;
 	case Quest_Select:
 
+		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		//spr_card->render(immediate_context, Poo.x, Poo.y - plusPos[0], questCard[0].size.x, questCard[0].size.y);
-		spr_card->render(immediate_context, 0, 0 , Poo.x, Poo.y);
+		//spr_card->render(immediate_context, 0, 0 , Poo.x, Poo.y);
 		switch (selection_card)
 		{
 		case 0:
-			// 矢印
-			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
-
-			// カード１
-			for (int i = 0; i < 3; i++)
-			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
-			}
-
-			spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
-			break;
-		case 1:
-			// 矢印
-			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
-			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y);
-
-			// カード１
-			for (int i = 0; i < 3; i++)
-			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
-			}
-
-			spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[1].wcText, wcslen(questCard[1].wcText) + 1, { 40,10 }, 600, 72);
-			break;
-		case 2:
-			// 矢印
-			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
-
 			// カード１
 			for (int i = 2; i >= 0; i--)
 			{
 				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
+			// 矢印
+			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
 
-			spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[2].wcText, wcslen(questCard[2].wcText) + 1, { 63,10}, 600, 72);
+			Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
+			break;
+		case 1:
+			// カード１
+			for (int i = 0; i < 3; i++)
+			{
+				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+			}
+			// 矢印
+			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
+			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y);
+
+
+			// テキスト
+			Lemur::Graphics::Font::Instance().render(questCard[1].wcText, wcslen(questCard[1].wcText) + 1, { 40,10 }, 600, 72);
+			break;
+		case 2:
+			// カード１
+			for (int i = 0; i < 3; i++)
+			{
+				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+			}
+
+			// 矢印
+			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
+
+			// テキスト
+			Lemur::Graphics::Font::Instance().render(questCard[2].wcText, wcslen(questCard[2].wcText) + 1, { 63,10 }, 600, 72);
 			break;
 		}
 
@@ -575,32 +572,33 @@ void GambleScene::Render(float elapsedTime)
 		break;
 	case Gamble_Status:
 
-		//spr_number->render(immediate_context,0, 0, 50, 50,1,1,1,1,0,0,0,50,50);
-
+		spr_betback->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		{
+			std::ostringstream stream;
+			stream << std::fixed << std::setprecision(1) << magnification;
+			std::string result = stream.str();
+			spr_number->textout(immediate_context, result, select_decision_pos.x, 50.0f, 50, 50, 1, 1, 1, 1);
+		}
+		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
+		spr_number->textout(immediate_context, std::to_string(total_point), select_decision_pos.x, select_decision_pos.y - 70.0f, 50, 50, 1, 1, 1, 1);
 
 		for (int i = 0; i < 3; i++)
 		{
-			spr_number->textout(immediate_context, std::to_string(player_status[i]), num_bet_pos[i].x, 100,50, 50, 1, 1, 1, 1);
-
+			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
+			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
+			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
+			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
 			//TODO　小林 ここみて
 			if (bet_num[i] > 0)
 			{
-				for (int j = bet_num[i]; j >0 ; j--)
+				for (int j = bet_num[i]; j > 0; j--)
 				{
-					spr_coin->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y-5*j, 200, 100);
+					spr_coin->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y - 5 * j, 200, 100);
 				}
 			}
-			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y,50, 50, 1, 1, 1, 1);
-			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
-			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50,1,1,1,1,180);
-			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
+			spr_number->textout(immediate_context, std::to_string(int(player_status[i])), num_bet_pos[i].x, 100,25, 50, 1, 1, 1, 1);
 		}
-		spr_number->textout(immediate_context, std::to_string(total_point), select_decision_pos.x, select_decision_pos.y-70.0f, 50, 50, 1, 1, 1, 1);
-		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
 
-		spr_number->textout(immediate_context, std::to_string(magnification), select_decision_pos.x, 50.0f, 50, 50, 1, 1, 1, 1);
-
-		spr_betback->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 		Lemur::Graphics::Font::Instance().render(L"HP", 3, { char_bet_pos[0].x,char_bet_pos[0].y }, 600, 72);
 		Lemur::Graphics::Font::Instance().render(L"AP", 3, { char_bet_pos[1].x,char_bet_pos[1].y }, 600, 72);

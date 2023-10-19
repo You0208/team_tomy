@@ -73,10 +73,8 @@ namespace Lemur::Graphics
 
         RECT windowed_rect;
         DWORD windowed_style;
-        void fullscreen_state(BOOL fullscreen);
-        void on_size_changed(UINT64 width, UINT height);
-
-
+        void stylize_window(BOOL fullscreen);
+ 
         void initialize(HWND hWnd, bool fullscreen);
         Graphics(HWND hwnd, bool fullscreen);
         virtual ~Graphics() = default;

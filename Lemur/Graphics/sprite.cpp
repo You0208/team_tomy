@@ -4,6 +4,8 @@
 #include "shader.h"
 #include <sstream>
 #include <functional>
+#include "interval.h"
+#include "high_resolution_timer.h"
 
 sprite::sprite(ID3D11Device* device, const wchar_t* filename)
 {
@@ -181,12 +183,19 @@ void sprite::render(ID3D11DeviceContext* immediate_context, float dx, float dy, 
 
 void sprite::textout(ID3D11DeviceContext* immediate_context, std::string s, float x, float y, float w, float h, float r, float g, float b, float a)
 {
-    float sw = static_cast<float>(texture2d_desc.Width / 10);
+    float sw = static_cast<float>(texture2d_desc.Width / 11);
     float sh = static_cast<float>(texture2d_desc.Height);
     float carriage = 0;
-    for (const char c : s)
+    for (char c : s)
     {
-        render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), 0, sw, sh);
+        if (c =='.')
+        {
+            render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * 10, 0, sw, sh);
+        }
+        else 
+        {
+            render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), 0, sw, sh);
+        }
         carriage += w;
     }
 }
@@ -202,6 +211,46 @@ void sprite::textout(ID3D11DeviceContext* immediate_context, int n, float x, flo
         carriage += w;
     }
 }
+
+void sprite::animation(ID3D11DeviceContext* immediate_context, DirectX::XMFLOAT2 pos, DirectX::XMFLOAT2 size, DirectX::XMFLOAT4 color, float angle, DirectX::XMFLOAT2 texsize)
+{
+    float sw = static_cast<float>(texture2d_desc.Width);
+    float sh = static_cast<float>(texture2d_desc.Height);
+
+    anime_x_max = sw / int(texsize.x)-1;
+    anime_y_max = sh / int(texsize.y)-1;
+
+    {
+      interval<10>::run([&] {
+          if (anime_x < anime_x_max) anime_x++;
+          else
+          {
+              if (anime_y < anime_y_max)anime_y++;
+              else { anime_y = 0; }
+              anime_x = 0;
+          }
+          });
+    }
+
+
+    render(immediate_context, pos.x, pos.y, size.x, size.y,
+        color.x, color.y, color.z, color.w, angle, anime_x * texsize.x, anime_y * texsize.y, texsize.x, texsize.y);
+}
+
+
+
+//void sprite::textout(ID3D11DeviceContext* immediate_context, std::string s, float x, float y, float w, float h, float r, float g, float b, float a)
+//{
+//    float sw = static_cast<float>(texture2d_desc.Width / 10);
+//    float sh = static_cast<float>(texture2d_desc.Height);
+//    float carriage = 0;
+//    for (const char c : s)
+//    {
+//        render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * (c & 0x0F), 0, sw, sh);
+//        carriage += w;
+//    }
+//}
+
 
 //void sprite::textout(ID3D11DeviceContext* immediate_context, std::string s, float x, float y, float w, float h, float r, float g, float b, float a)
 //{

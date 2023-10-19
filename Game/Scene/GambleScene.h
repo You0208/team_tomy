@@ -150,5 +150,6 @@ private:/*---------------- ƒXƒLƒ‹ŠÖŒW -----------------*/
     std::shared_ptr<sprite> spr_betback;
     std::shared_ptr<sprite> spr_small_arrow;
     std::shared_ptr<sprite> spr_number;
+
 };
 

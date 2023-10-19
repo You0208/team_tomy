@@ -11,7 +11,7 @@ framebuffer::framebuffer(ID3D11Device* device, uint32_t width, uint32_t height, 
 	texture2d_desc.Height = height;
 	texture2d_desc.MipLevels = 1;
 	texture2d_desc.ArraySize = 1;
-	texture2d_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; // DXGI_FORMAT_R8G8B8A8_UNORM
+	texture2d_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // DXGI_FORMAT_R8G8B8A8_UNORM
 	texture2d_desc.SampleDesc.Count = 1;
 	texture2d_desc.SampleDesc.Quality = 0;
 	texture2d_desc.Usage = D3D11_USAGE_DEFAULT;

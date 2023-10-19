@@ -47,6 +47,8 @@ public:
 	framework(framework&&) noexcept = delete;
 	framework& operator=(framework&&) noexcept = delete;
 
+	void on_size_changed(UINT64 width, UINT height);
+
 	int run()
 	{
 		MSG msg{};
@@ -124,6 +126,15 @@ public:
 		case WM_EXITSIZEMOVE:
 			high_resolution_timer::Instance().start();
 			break;
+		case WM_SIZE:
+		{
+#if 1
+			RECT client_rect{};
+			GetClientRect(hwnd, &client_rect);
+			on_size_changed(static_cast<UINT64>(client_rect.right - client_rect.left), client_rect.bottom - client_rect.top);
+#endif
+			break;
+		}
 		default:
 			return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
