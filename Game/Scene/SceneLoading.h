@@ -7,7 +7,7 @@ class LoadingScene :
     public Lemur::Scene::BaseScene
 {
 public:
-    LoadingScene() {}
+    LoadingScene(Lemur::Scene::BaseScene* next_scene) :nextScene(next_scene){}
     ~LoadingScene() override {}
 
     // ‰Šú‰»

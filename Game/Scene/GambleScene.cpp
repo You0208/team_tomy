@@ -9,7 +9,7 @@
 #include "Lemur/Scene/SceneManager.h"
 #include "SceneGame.h"
 #include "Quest.h"
-
+#include "Game/Scene/SceneLoading.h"
 // todo 牟田さん こいつにQuestPattern型のどのクエストにするのか選択して値を入れる処理を作ってください。お願いします。
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::B;
@@ -100,7 +100,7 @@ void GambleScene::Initialize()
 		player_status_max[1] = player->attack_power;
 		player_status_max[2] = player->speed_power;
 	}
-
+	int skill_count = player->all_skills.size();
 	// ベット情報
 	bet_boxsize = { 400,200 };
 
@@ -150,7 +150,7 @@ void GambleScene::Initialize()
 	spr_OK = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\OK.png");
 	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
-	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
+	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
 
 
 	/*--------------- これデバッグ用 --------------*/
@@ -252,40 +252,40 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 		
 		
-		// 抽選できる数だけ繰り返す
-		if(can_lottery_count>0)
-		{
-			// todo 牟田さん ここで抽選するかどうかの判定をするからプレイヤーに選ばせれるようにしてください。お願いします。
-			// もう一回抽選するときはほしいスキルはキープできるような処理もお願いします。is_selectをfalseにしたらまた抽選されます
-			// ImGuiに抽選されてるスキルが表示されるようになってます。
-
-
-		    // 今はバグるから強制的に三回抽選する
-			if (can_lottery_count > 0/*todo 牟田さん ここのif文は(もっかい抽選が選ばれたら)にしてください*/)
-			{
-				SetLotterySkills();
-				can_lottery_count--;
-			}
-			/*if(// このスキルで決定するを選択したら)
-				can_lottery_count = 0;
-				*/
-		}
-		// Todo　ここ最終的に演出が終了したらにしたい
-		if (can_lottery_count <= 0)
-		{
-			// 抽選されたスキルの配列をプレイヤーに持たせる。
-			player->SetSkill(lottery_skills);
-
-#if 0 /*----------- ここはテスト用 -----------*/
-			player->TestSkillSet("StrongArm");
-			player->TestSkillSet("SuperMan");
-#endif
-
-			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
-			player->SkillSort();
-
-			//step++;
-		}
+//		// 抽選できる数だけ繰り返す
+//		if(can_lottery_count>0)
+//		{
+//			// todo 牟田さん ここで抽選するかどうかの判定をするからプレイヤーに選ばせれるようにしてください。お願いします。
+//			// もう一回抽選するときはほしいスキルはキープできるような処理もお願いします。is_selectをfalseにしたらまた抽選されます
+//			// ImGuiに抽選されてるスキルが表示されるようになってます。
+//
+//
+//		    // 今はバグるから強制的に三回抽選する
+//			if (can_lottery_count > 0/*todo 牟田さん ここのif文は(もっかい抽選が選ばれたら)にしてください*/)
+//			{
+//				SetLotterySkills();
+//				can_lottery_count--;
+//			}
+//			/*if(// このスキルで決定するを選択したら)
+//				can_lottery_count = 0;
+//				*/
+//		}
+//		// Todo　ここ最終的に演出が終了したらにしたい
+//		if (can_lottery_count <= 0)
+//		{
+//			// 抽選されたスキルの配列をプレイヤーに持たせる。
+//			player->SetSkill(lottery_skills);
+//
+//#if 0 /*----------- ここはテスト用 -----------*/
+//			player->TestSkillSet("StrongArm");
+//			player->TestSkillSet("SuperMan");
+//#endif
+//
+//			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
+//			player->SkillSort();
+//
+//			//step++;
+//		}
 
 
 		break;
@@ -452,14 +452,22 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			}
 		}
 		break;
+
+	case Loading_Transition:
+
+		// todo ここなんか簡単な演出作ってもいいかも(余裕あれば)
+
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
+
+		break;
 	}
 
 
-    GamePad& game_pad = Input::Instance().GetGamePad();
-    if (game_pad.GetButtonDown() & GamePad::BTN_START)
-    {
-		//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
-    }
+  //  GamePad& game_pad = Input::Instance().GetGamePad();
+  //  if (game_pad.GetButtonDown() & GamePad::BTN_START)
+  //  {
+		////Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+  //  }
 	//if(mouse.GetButtonDown()& Mouse::BTN_RIGHT)
 	//{
 	//	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);

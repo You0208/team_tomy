@@ -72,9 +72,10 @@ public:
     }
 
     // 攻撃当たり判定で使う
-    std::string meshName = "polySurface";
+    std::string meshName;
     
-    
+
+    void DrawDebugPrimitive() override;
 
     // ビヘイビアツリーの初期化
     virtual void BehaviorTreeInitialize(){};

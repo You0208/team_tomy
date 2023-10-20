@@ -3,27 +3,6 @@
 #include "Game/AI/ActionDerived.h"
 #include "Game/AI/JudgmentDerived.h"
 
-void BossSpider::DrawDebugPrimitive()
-{
-    DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
-    DirectX::XMFLOAT3 position = Model->joint_position("spider_boss_spider_boss", "J_root", &keyframe, world);
-    debug_renderer->DrawSphere(position, radius, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
-
-    if (attack_collision_flag)
-    {
-        for (auto& collision : arm_attack_collisions)
-        {
-            DirectX::XMFLOAT3 node_coll_pos = Model->joint_position(meshName.c_str(), collision->bone_name.c_str(), &keyframe, world);
-            debug_renderer->DrawSphere(node_coll_pos, collision->node_radius, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
-        }
-    }
-
-    //for(auto& collision:hit_collisions)
-    //{
-    //    DirectX::XMFLOAT3 node_coll_pos = Model->joint_position(meshName.c_str(), collision->bone_name.c_str(), &keyframe, world);
-    //    debug_renderer->DrawSphere(node_coll_pos, collision->node_radius, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
-    //}
-}
 
 void BossSpider::BehaviorTreeInitialize()
 {

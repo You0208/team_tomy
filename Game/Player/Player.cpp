@@ -93,7 +93,7 @@ void Player::DebugImgui()
         ImGui::Checkbox("is_hit_stop", &is_hit_stop);
         ImGui::Checkbox("invincible", &invincible);
         ImGui::DragInt("invincible_frame", &invincible_frame);
-
+        ImGui::Checkbox("can_SP_attack", &can_SP_attack);
         ImGui::TreePop();
     }
     if(ImGui::TreeNode("Animation"))

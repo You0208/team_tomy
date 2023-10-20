@@ -34,6 +34,7 @@ public:
         Skill_Lottery,// スキル抽選
         Quest_Select,// クエスト選択
         Gamble_Status,// ステータスギャンブル
+        Loading_Transition,// ロードシーンに遷移
     };
     int step;
 

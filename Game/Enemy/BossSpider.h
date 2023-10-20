@@ -27,7 +27,6 @@ public:
         enemy_type = "BossSpider";
     }
 
-    virtual void DrawDebugPrimitive() override;
 
     void BehaviorTreeInitialize() override;
     void SetUpHitCollision() override;

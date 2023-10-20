@@ -141,7 +141,7 @@ private:
     
     //特殊攻撃のクールタイム(秒)
     // タイマーがこれを超えないと特殊攻撃は使えない
-    float SP_attack_cool_time_ms=30.0f;
+    float SP_attack_cool_time_ms = 15.0f;
 
     // 特殊攻撃用の計測して値が動くタイマー(秒)
     float SP_attack_cool_timer_ms;
