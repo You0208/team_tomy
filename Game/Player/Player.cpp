@@ -179,6 +179,7 @@ void Player::CalcSPAttackTime()
     }
     else
     {
+        can_SP_attack = false;
         SP_attack_cool_timer_ms += high_resolution_timer::Instance().time_interval();
     }
 }
@@ -262,7 +263,7 @@ void Player::AttackAngleInterpolation()
         float dot = (pos_to_enemy_pos.x * front_x) + (pos_to_enemy_pos.z * front_z);
 
         // todo çUåÇéûÇÃäpìxï‚ê≥ÇÃë±Ç´
-        float angle=std::acosf(dot);
+        float angle = std::acosf(dot);
 
         rotation.y += angle;
         //Turn(pos_to_enemy_pos.x, pos_to_enemy_pos.z, 3.0f);

@@ -138,9 +138,10 @@ public:
     // 攻撃時の角度補間
     void AttackAngleInterpolation();
 private:
+    
     //特殊攻撃のクールタイム(秒)
     // タイマーがこれを超えないと特殊攻撃は使えない
-    float SP_attack_cool_time_ms;
+    float SP_attack_cool_time_ms=30.0f;
 
     // 特殊攻撃用の計測して値が動くタイマー(秒)
     float SP_attack_cool_timer_ms;
