@@ -16,6 +16,11 @@ QuestPattern quest_pattern = QuestPattern::B;
 
 void GambleScene::set_skill_data()
 {
+	for (int i = 0; i < 14; i++)
+	{
+		wcscpy_s(skill_data[0].title, L"SkillA");
+		wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
+	}
 	wcscpy_s(skill_data[0].title, L"SkillA");
 	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
 	wcscpy_s(skill_data[1].title, L"SkillB");
@@ -100,7 +105,7 @@ void GambleScene::Initialize()
 		player_status_max[1] = player->attack_power;
 		player_status_max[2] = player->speed_power;
 	}
-	skill_num_max = player->all_skills.size();
+	skill_num_max = 3;
 	// ƒxƒbƒgî•ñ
 	bet_boxsize = { 400,200 };
 
