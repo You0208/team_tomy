@@ -1,6 +1,10 @@
 // ReSharper disable All
 #pragma once
+#include <memory>
 #include <string>
+
+#include "Lemur/Graphics/Graphics.h"
+#include "Lemur/Graphics/sprite.h"
 
 class Player;
 
@@ -9,7 +13,10 @@ class BaseSkill
 {
 public:
     // プレイヤーがシーンの全スキル配列からスキルを取得するタイミングで、オーナーをセットする。
-    BaseSkill(std::string skill_name_, int priorty_ = 0) : skill_name(skill_name_),priorty(priorty_) {}
+    BaseSkill(std::string skill_name_, const wchar_t* ui_spr_filename,int priorty_ = 0) : skill_name(skill_name_),priorty(priorty_)
+    {
+        UI_spr = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), ui_spr_filename);
+    }
 
     //BaseSkill(Player* player,std::string skill_name_) :owner(player),skill_name(skill_name_){}
 
@@ -44,10 +51,13 @@ public:
     //順番で性能などが左右されるスキルのみ設定する。
     int priorty = 0;
 
+    // スキルのUIアセット
+    std::unique_ptr<sprite> UI_spr;
 protected:
     std::string skill_name;
 
     Player* owner;
+
 
 };
 

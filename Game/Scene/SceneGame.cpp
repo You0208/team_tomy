@@ -731,6 +731,5 @@ void GameScene::UIRender()
 			0, 0, 619.0f * rate, 124);
 	}
 
-
-	//player_hp_gauge->render(dc, 0, 0, 619.0f*rate, 124);
+	player->SkillUIRender();
 }

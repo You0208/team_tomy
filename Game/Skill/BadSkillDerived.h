@@ -7,7 +7,7 @@ class Tofu :
     public BaseSkill
 {
 public:
-    Tofu() :BaseSkill("Tofu"){}
+    Tofu(const wchar_t* ui_spr_filename) :BaseSkill("Tofu",ui_spr_filename){}
     ~Tofu() = default;
 
     // –¼‘OŒŸõ‚Åg‚¤‚©‚ç‚±‚±‚É‚Íˆ—‘‚©‚È‚¢
@@ -17,7 +17,7 @@ public:
 class Curse :public BaseSkill
 {
 public:
-    Curse():BaseSkill("Curse"){}
+    Curse(const wchar_t* ui_spr_filename):BaseSkill("Curse",ui_spr_filename){}
     
     void Update() override;
     float damage_time = 5.0f;
@@ -30,7 +30,7 @@ public:
 class Arrogance :public BaseSkill
 {
 public:
-    Arrogance():BaseSkill("Arrogance"){}
+    Arrogance(const wchar_t* ui_spr_filename):BaseSkill("Arrogance",ui_spr_filename){}
     
     void Update() override;
     float time_ms = 5.0f;

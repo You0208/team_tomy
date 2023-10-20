@@ -12,26 +12,57 @@
 #include "Game/Scene/SceneLoading.h"
 // todo 牟田さん こいつにQuestPattern型のどのクエストにするのか選択して値を入れる処理を作ってください。お願いします。
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
-QuestPattern quest_pattern = QuestPattern::B;
+QuestPattern quest_pattern = QuestPattern::C;
 
 void GambleScene::set_skill_data()
 {
-	wcscpy_s(skill_data[0].title, L"SkillA");
+	wcscpy_s(skill_data[0].title, L"剛腕");
 	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
-	wcscpy_s(skill_data[1].title, L"SkillB");
+	wcscpy_s(skill_data[1].title, L"鬼力");
 	wcscpy_s(skill_data[1].contents, L"Skill_ContentsB");
-	wcscpy_s(skill_data[2].title, L"SkillC");
+	wcscpy_s(skill_data[2].title, L"魔剣");
 	wcscpy_s(skill_data[2].contents, L"Skill_ContentsC");
+	wcscpy_s(skill_data[3].title, L"残酷");
+	wcscpy_s(skill_data[4].title, L"復讐");
+	wcscpy_s(skill_data[5].title, L"吸血");
+	wcscpy_s(skill_data[6].title, L"疾走");
+	wcscpy_s(skill_data[7].title, L"加速");
+	wcscpy_s(skill_data[8].title, L"我慢");
+	wcscpy_s(skill_data[9].title, L"再生");
+	wcscpy_s(skill_data[10].title, L"超人");
+	wcscpy_s(skill_data[11].title, L"剣聖");
+	wcscpy_s(skill_data[12].title, L"疾風");
+	wcscpy_s(skill_data[13].title, L"肥満");
+	wcscpy_s(skill_data[14].title, L"豆腐");
+	wcscpy_s(skill_data[15].title, L"呪詛");
+	wcscpy_s(skill_data[16].title, L"傲慢");
 }
 
 void GambleScene::set_quest_data()
 {
-	wcscpy_s(quest_data[0].title, L"QuestA");
+	wcscpy_s(quest_data[0].title,  L"Quest0");
 	wcscpy_s(quest_data[0].contents, L"Quest_ContentsA");
-	wcscpy_s(quest_data[1].title, L"QuestB");
+	wcscpy_s(quest_data[1].title,  L"Quest1");
 	wcscpy_s(quest_data[1].contents, L"Quest_ContentsB");
-	wcscpy_s(quest_data[2].title, L"QuestC");
+	wcscpy_s(quest_data[2].title,  L"Quest2");
 	wcscpy_s(quest_data[2].contents, L"Quest_ContentsC");
+	wcscpy_s(quest_data[3].title,  L"Quest3");
+	wcscpy_s(quest_data[4].title,  L"Quest4");
+	wcscpy_s(quest_data[5].title,  L"Quest5");
+	wcscpy_s(quest_data[6].title,  L"Quest6");
+	wcscpy_s(quest_data[7].title,  L"Quest7");
+	wcscpy_s(quest_data[8].title,  L"Quest8");
+	wcscpy_s(quest_data[9].title,  L"Quest9");
+	wcscpy_s(quest_data[10].title, L"Quest10");
+	wcscpy_s(quest_data[11].title, L"Quest11");
+	wcscpy_s(quest_data[12].title, L"Quest12");
+	wcscpy_s(quest_data[13].title, L"Quest13");
+	wcscpy_s(quest_data[14].title, L"Quest14");
+	wcscpy_s(quest_data[15].title, L"Quest15");
+	wcscpy_s(quest_data[16].title, L"Quest16");
+
+
+
 
 	quest_data[0].min_magnification = 1.2f;
 	quest_data[1].min_magnification = 1.5f;
@@ -58,32 +89,30 @@ void GambleScene::Initialize()
 
     // todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
-	set_skill_data();
-	set_quest_data();
 	if(!is_first_set_player)
 	{
 		// プレイヤーの生成
 	    player = CreatePlayer();
 
         // ゲームの全スキルの設定
-		player->SetSkill<StrongArm>();
-		player->SetSkill<DemonPower>();
-		player->SetSkill<MagicSword>();
-		player->SetSkill<Cruel>();
-		player->SetSkill<Revenge>();
-		player->SetSkill<BloodSucking>();
-		player->SetSkill<Sprint>();
-		player->SetSkill<Acceleration>();
-		player->SetSkill<Patience>();
-		player->SetSkill<Regeneration>();
-		player->SetSkill<SuperMan>();
-		player->SetSkill<SwordSaint>();
-		player->SetSkill<Gale>();
-		player->SetSkill<Obesity>();
+		player->SetSkill<StrongArm>(L"./resources/Image/剛腕.png");
+		player->SetSkill<DemonPower>(L"./resources/Image/鬼力.png");
+		player->SetSkill<MagicSword>(L"./resources/Image/魔剣.png");
+		player->SetSkill<Cruel>(L"./resources/Image/残酷.png");
+		player->SetSkill<Revenge>(L"./resources/Image/復讐.png");
+		player->SetSkill<BloodSucking>(L"./resources/Image/吸血.png");
+		player->SetSkill<Sprint>(L"./resources/Image/疾走.png");
+		player->SetSkill<Acceleration>(L"./resources/Image/加速.png");
+		player->SetSkill<Patience>(L"./resources/Image/我慢.png");
+		player->SetSkill<Regeneration>(L"./resources/Image/再生.png");
+		player->SetSkill<SuperMan>(L"./resources/Image/超人.png");
+		player->SetSkill<SwordSaint>(L"./resources/Image/剣聖.png");
+		player->SetSkill<Gale>(L"./resources/Image/疾風.png");
+		player->SetSkill<Obesity>(L"./resources/Image/肥満.png");
 
-		//player->SetSkill<Tofu>();
-		player->SetSkill<Curse>();
-		player->SetSkill<Arrogance>();
+		player->SetSkill<Tofu>(L"./resources/Image/豆腐.png");
+		player->SetSkill<Curse>(L"./resources/Image/呪詛.png");
+		player->SetSkill<Arrogance>(L"./resources/Image/傲慢.png");
 
 		is_first_set_player = true;
 
@@ -95,6 +124,8 @@ void GambleScene::Initialize()
 		// もうすでに生成してたらシングルトンクラスから持ってくるだけ
 		player = CharacterManager::Instance().GetPlayer();
 	}
+	set_skill_data();
+	set_quest_data();
 
 
 	// プレイヤーのステータスを一時保存
@@ -160,7 +191,7 @@ void GambleScene::Initialize()
 
 
 	/*--------------- これデバッグ用 --------------*/
-    Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+    //Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 	player->TestSkillSet("Arrogance");
 
 

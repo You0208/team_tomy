@@ -6,7 +6,7 @@
 class BloodSucking:public BaseSkill
 {
 public:
-    BloodSucking() :BaseSkill("BloodSucking") {}
+    BloodSucking(const wchar_t* ui_spr_filename) :BaseSkill("BloodSucking", ui_spr_filename) {}
     ~BloodSucking() = default;
 
     void Update() override;
@@ -16,7 +16,7 @@ public:
 class Sprint:public BaseSkill
 {
 public:
-    Sprint():BaseSkill("Sprint"){}
+    Sprint(const wchar_t* ui_spr_filename):BaseSkill("Sprint", ui_spr_filename){}
     ~Sprint();
 
     void Init() override;
@@ -26,7 +26,7 @@ public:
 class Acceleration:public BaseSkill
 {
 public:
-    Acceleration():BaseSkill("Acceleration",1){}
+    Acceleration(const wchar_t* ui_spr_filename):BaseSkill("Acceleration",  ui_spr_filename,1){}
 
     void Init() override;
     void Update() override;
@@ -38,7 +38,7 @@ public:
 class Patience:public BaseSkill
 {
 public:
-    Patience():BaseSkill("Patience"){}
+    Patience(const wchar_t* ui_spr_filename):BaseSkill("Patience", ui_spr_filename){}
 
     void Update() override;
     bool is_used = false;
@@ -48,7 +48,7 @@ public:
 class Regeneration:public BaseSkill
 {
 public:
-    Regeneration():BaseSkill("Regeneration"){}
+    Regeneration(const wchar_t* ui_spr_filename):BaseSkill("Regeneration", ui_spr_filename){}
 
     void Update() override;
     float heal_time = 20.0f;
@@ -60,7 +60,7 @@ public:
 class Reverse:public BaseSkill
 {
 public:
-    Reverse():BaseSkill("Reverse"){}
+    Reverse(const wchar_t* ui_spr_filename):BaseSkill("Reverse", ui_spr_filename){}
 
     void Update() override;
 
@@ -81,7 +81,7 @@ public:
 class SuperMan:public BaseSkill
 {
 public:
-    SuperMan() :BaseSkill("SuperMan"){}
+    SuperMan(const wchar_t* ui_spr_filename) :BaseSkill("SuperMan", ui_spr_filename){}
     void Init() override;
 };
 
@@ -89,7 +89,7 @@ public:
 class Gale :public BaseSkill
 {
 public:
-    Gale() :BaseSkill("Gale"){}
+    Gale(const wchar_t* ui_spr_filename) :BaseSkill("Gale", ui_spr_filename){}
 
     void Init() override;
 };
@@ -98,7 +98,7 @@ public:
 class Obesity:public BaseSkill
 {
 public:
-    Obesity():BaseSkill("Obesity"){}
+    Obesity(const wchar_t* ui_spr_filename):BaseSkill("Obesity", ui_spr_filename){}
 
     void Init() override;
 };

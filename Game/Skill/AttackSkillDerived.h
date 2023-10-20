@@ -7,7 +7,7 @@
 class StrongArm : public BaseSkill
 {
 public:
-    StrongArm() :BaseSkill("StrongArm"){}
+    StrongArm(const wchar_t* ui_spr_filename) :BaseSkill("StrongArm",ui_spr_filename){}
     ~StrongArm() = default;
 
     void Init() override;
@@ -21,7 +21,7 @@ public:
 class DemonPower:public BaseSkill
 {
 public:
-    DemonPower() :BaseSkill("DemonPower"){}
+    DemonPower(const wchar_t* ui_spr_filename) :BaseSkill("DemonPower", ui_spr_filename){}
     ~DemonPower() = default;
 
     void Update() override;
@@ -33,7 +33,7 @@ public:
 class MagicSword :public BaseSkill
 {
 public:
-    MagicSword():BaseSkill("MagicSword"){}
+    MagicSword(const wchar_t* ui_spr_filename):BaseSkill("MagicSword", ui_spr_filename){}
 
     void Init() override;
 };
@@ -42,7 +42,7 @@ public:
 class Cruel :public BaseSkill
 {
 public:
-    Cruel():BaseSkill("Cruel"){}
+    Cruel(const wchar_t* ui_spr_filename):BaseSkill("Cruel", ui_spr_filename){}
 
     void Update() override;
 };
@@ -51,7 +51,7 @@ public:
 class Revenge :public BaseSkill
 {
 public:
-    Revenge() :BaseSkill("Revenge",1){}
+    Revenge(const wchar_t* ui_spr_filename) :BaseSkill("Revenge", ui_spr_filename,1){}
 
     void DrawImGui() override;
     void Init() override;
@@ -70,7 +70,7 @@ public:
 class HolySword :public BaseSkill
 {
 public:
-    HolySword():BaseSkill("HolySword"){}
+    HolySword(const wchar_t* ui_spr_filename):BaseSkill("HolySword", ui_spr_filename){}
 
     void Init()override;
 };
@@ -79,7 +79,7 @@ public:
 class SwordSaint:public BaseSkill
 {
 public:
-    SwordSaint():BaseSkill("SwordSaint"){}
+    SwordSaint(const wchar_t* ui_spr_filename):BaseSkill("SwordSaint", ui_spr_filename){}
 
     void Init() override;
 };

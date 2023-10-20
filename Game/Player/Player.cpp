@@ -35,6 +35,7 @@ void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3
 void Player::DebugImgui()
 {
     ImGui::Begin("Player");
+    ImGui::DragFloat("ui_offset_y", &ui_offset_y);
     ImGui::DragInt("down_count", &down_count);
     if(ImGui::TreeNode("Transform"))
     {
@@ -441,6 +442,17 @@ void Player::SkillFin()
 {
     skills.clear();
     RetentionParamGet();
+}
+
+void Player::SkillUIRender()
+{
+    
+    ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+    for (int skill_i = 0; skill_i < skills.size(); skill_i++)
+    {
+        skills.at(skill_i)->UI_spr->render(dc, 421*skill_i, ui_offset_y, 421, 402);
+    }
+
 }
 
 void PlayerPhysicsComponent::Initialize(GameObject* gameobj)

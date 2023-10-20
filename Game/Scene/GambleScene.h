@@ -50,8 +50,9 @@ public:
 		float max_magnification;
 	};
 
-	data quest_data[3];
-	data skill_data[3];
+	// クエスト数はボス含めて17個
+	data quest_data[30];
+	data skill_data[30];
 
 	void set_skill_data();
 	void set_quest_data();

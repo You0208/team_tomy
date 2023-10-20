@@ -218,9 +218,9 @@ public:/*----------------- スキル関係 -----------------*/
 
     // スキルを設定
     template<class Skill>
-    void SetSkill()
+    void SetSkill(const wchar_t* ui_spr_filename)
     {
-        Skill* skill = new Skill();
+        Skill* skill = new Skill(ui_spr_filename);
         all_skills.emplace_back(skill);
     }
 
@@ -279,7 +279,11 @@ public:/*----------------- スキル関係 -----------------*/
     // ゲームに存在する全スキル
     std::vector<std::unique_ptr<BaseSkill>> all_skills;
 
-    
+    // 所持スキルのUI描画
+    void SkillUIRender();
+
+    /*--------- デバッグ用 ----------*/
+    float ui_offset_y = 0;
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;
