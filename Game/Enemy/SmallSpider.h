@@ -13,6 +13,8 @@ public:
         enemy_type = "SmallSpider";
     }
 
+    void BehaviorTreeInitialize() override;
+    void SetUpHitCollision() override;
 
 };
 

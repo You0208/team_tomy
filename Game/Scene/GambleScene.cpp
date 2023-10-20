@@ -91,6 +91,7 @@ void GambleScene::Initialize()
 		player = CharacterManager::Instance().GetPlayer();
 	}
 
+
 	// プレイヤーのステータスを一時保存
 	{
 		player_status[0] = player->health;
