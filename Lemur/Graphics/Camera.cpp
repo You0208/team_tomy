@@ -76,6 +76,51 @@ void Camera::DrawDebug()
     ImGui::End();
 }
 
+void Camera::RenderEnemyHP(sprite* gauge)
+{
+    if (!lock_on_enemy) return;
+
+    // ビューポート
+    D3D11_VIEWPORT viewport;
+    UINT numViewports = 1;
+    ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+    dc->RSGetViewports(&numViewports, &viewport);
+
+    // 変換行列 (計算しやすいように行列に変換)
+
+    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+    // 全ての敵の頭上にHPゲージ表示
+    EnemyManager& enemy_manager = EnemyManager::Instance();
+    int enemyCount = enemy_manager.GetEnemyCount();
+
+
+    DirectX::XMVECTOR enemy_pos = DirectX::XMLoadFloat3(&lock_on_enemy->GetPosition());
+    DirectX::XMVECTOR ScreenPosition;
+
+    ScreenPosition = DirectX::XMVector3Project(enemy_pos,
+        viewport.TopLeftX,
+        viewport.TopLeftY,
+        viewport.Width,
+        viewport.Height,
+        viewport.MinDepth,
+        viewport.MaxDepth,
+        P,
+        V,
+        World
+    );
+    DirectX::XMFLOAT3 screenPosition;
+    DirectX::XMStoreFloat3(&screenPosition, ScreenPosition);
+    // ゲージのサイズ設定
+    DirectX::XMFLOAT2 gauge_size = { 10.0f * lock_on_enemy->GetHeight(),10.0f };
+
+    // ゲージの描画オフセット設定
+    DirectX::XMFLOAT2 gauge_offset = { -lock_on_enemy->GetRadius() ,-lock_on_enemy->GetHeight() };
+
+    gauge->render(dc, screenPosition.x + gauge_offset.x, screenPosition.y + gauge_offset.y,
+        gauge_size.x, gauge_size.y,
+        1, 1, 0, 0, 0, 1, 0, 0, 1);
+}
+
 void Camera::UpdateDebug()
 {
 }

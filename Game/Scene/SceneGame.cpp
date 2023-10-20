@@ -14,6 +14,7 @@
 #include "ResultScene.h"
 #include "TitleScene.h"
 #include "Game/Enemy/BossSpider.h"
+#include "Game/Enemy/Spider_A.h"
 #include "Lemur/Scene/SceneManager.h"
 extern QuestPattern quest_pattern;
 
@@ -145,6 +146,9 @@ void GameScene::Initialize()
 
 		stage = std::make_unique<Stage>();
 		stage->Init();
+
+		hp_gauge = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui_02.png");
+		hp_gauge_Zabuton = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui.png");
 	}
 
 	// ライト
@@ -566,6 +570,12 @@ void GameScene::Render(float elapsedTime)
 			}
 			//dummy_sprite->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		}
+		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
+		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+		immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
+
+		UIRender();
+		camera.RenderEnemyHP(hp_gauge.get());
 	}
 #endif
 
@@ -602,9 +612,12 @@ void GameScene::Render(float elapsedTime)
 
 void GameScene::DebugImGui()
 {
+	float a = 619.0f * rate;
 	ImGui::Begin("Scene");
 	ImGui::Checkbox("is_update", &is_update);
 	ImGui::DragFloat("bet_rate", &bet_rate);
+	ImGui::DragFloat("rate", & rate );
+	ImGui::DragFloat("a", & a );
 	ImGui::End();
 }
 
@@ -620,12 +633,12 @@ void GameScene::CreateEnemy_KARI()
 		// todo ここでベットレートの設定
 		for (int i = 0; i < 1; ++i)
 		{
-			Enemy* enemy = CreateEnemy(Enemy::SmallSpider);
-			enemy->Initialize();
-			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
-			enemyManager.Register(enemy);
+			//Enemy* enemy = CreateEnemy<>();
+			//enemy->Initialize();
+			//enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
+			//enemyManager.Register(enemy);
 
-			ColliderManager::Instance().SetCollider(enemy);
+			//ColliderManager::Instance().SetCollider(enemy);
 		}
 
 		break;
@@ -635,7 +648,8 @@ void GameScene::CreateEnemy_KARI()
 
         for (int i = 0; i < 1; ++i)
 		{
-			BossSpider* enemy = CreateBossSpider();
+			Enemy* enemy = CreateEnemy<Spider_A>();
+			//BossSpider* enemy = CreateBossSpider();
 			enemy->Initialize();
 			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
 			enemyManager.Register(enemy);
@@ -672,4 +686,15 @@ void GameScene::QuestFailed()
 			Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,false));
 		}
 	}
+}
+
+void GameScene::UIRender()
+{
+	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+	hp_gauge_Zabuton->render(dc, 0, 0, 619, 124);
+    rate = static_cast<float>(player->health) / static_cast<float>(player->max_health);
+	hp_gauge->render(dc, 0, 0, 619.0f * rate, 124, 1, 1, 1, 1, 1,
+		0, 0, 619.0f * rate, 124);
+
+	//hp_gauge->render(dc, 0, 0, 619.0f*rate, 124);
 }

@@ -132,3 +132,16 @@ inline float Length(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2)
     );
     return ret;
 }
+
+// “ñ‚Â‚ÌƒxƒNƒgƒ‹‚Ì“àÏ‚ğŒvZ‚µ‚ÄŠp“xtheta‚æ‚è‘å‚«‚©‚Á‚½‚çtrue
+inline bool CalcAngle(DirectX::XMVECTOR Vec1, DirectX::XMVECTOR Vec2, float theta)
+{
+    Vec1 = DirectX::XMVector3Normalize(Vec1);
+    Vec2 = DirectX::XMVector3Normalize(Vec2);
+    float dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(Vec1, Vec2));
+    if (dot > theta)
+    {
+        return true;
+    }
+    return false;
+}

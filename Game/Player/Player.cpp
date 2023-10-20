@@ -10,6 +10,7 @@
 #include "Game/StateMachine/StateDerived.h"
 #include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Collision/Collision.h"
+#include "Game/MathHelper.h"
 
 void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -182,7 +183,7 @@ void Player::CalcSPAttackTime()
     }
 }
 
-bool Player::CounterJudge(Enemy* enemy)
+bool Player::CounterJudge(DirectX::XMFLOAT3 hit_pos)
 {
     if (!can_counter)return false;
 
@@ -194,7 +195,7 @@ bool Player::CounterJudge(Enemy* enemy)
     //プレイヤーの位置
     DirectX::XMVECTOR Player_pos = DirectX::XMLoadFloat3(&position);
     // 敵の位置
-    DirectX::XMVECTOR Enemy_pos = DirectX::XMLoadFloat3(&enemy->GetPosition());
+    DirectX::XMVECTOR Enemy_pos = DirectX::XMLoadFloat3(&hit_pos);
     // プレイヤーから敵までのベクトル
     DirectX::XMVECTOR Player_to_Enemy = DirectX::XMVectorSubtract(Enemy_pos, Player_pos);
 
@@ -211,6 +212,61 @@ bool Player::CounterJudge(Enemy* enemy)
         return true;
     }
     return false;
+}
+
+void Player::AttackAngleInterpolation()
+{
+    int enemy_count = EnemyManager::Instance().GetEnemyCount();
+    if (enemy_count <= 0)return;
+
+    // 敵と自分との距離
+    float player_to_enemy = FLT_MAX;
+    DirectX::XMFLOAT3 enemy_pos;
+
+    // 全エネミーとの距離判定
+    for (auto enemy : EnemyManager::Instance().GetEnemies())
+    {
+        float length = Length(position, enemy->GetPosition());
+
+        if (player_to_enemy > length)
+        {
+            enemy_pos = enemy->GetPosition();
+            player_to_enemy = length;
+        }
+    }
+
+    // todo Nero ここから下をモジュール化。enemy_posは引数にするか
+    // この値より内積が小さかったら補間できない
+    float theta = 0.75f;
+    DirectX::XMVECTOR Pos = DirectX::XMLoadFloat3(&position);
+    DirectX::XMVECTOR Enemy_pos = DirectX::XMLoadFloat3(&enemy_pos);
+
+    // 内積判定
+    if(CalcAngle(Pos,Enemy_pos,theta))
+    {
+        /*-------- 判定クリアしたら補間 --------*/
+
+        // プレイヤーから敵の位置
+        DirectX::XMVECTOR Pos_to_EnemyPos = DirectX::XMVectorSubtract(Enemy_pos, Pos);
+        Pos_to_EnemyPos = DirectX::XMVector3Normalize(Pos_to_EnemyPos);
+
+        // プレイヤーから敵の位置
+        DirectX::XMFLOAT3 pos_to_enemy_pos;
+        DirectX::XMStoreFloat3(&pos_to_enemy_pos, Pos_to_EnemyPos);
+
+
+        // プレイヤーの前方向
+        float front_x = sinf(rotation.y);
+        float front_z = cosf(rotation.y);
+
+        float dot = (pos_to_enemy_pos.x * front_x) + (pos_to_enemy_pos.z * front_z);
+
+        // todo 攻撃時の角度補正の続き
+        float angle=std::acosf(dot);
+
+        rotation.y += angle;
+        //Turn(pos_to_enemy_pos.x, pos_to_enemy_pos.z, 3.0f);
+    }
 }
 
 void Player::RetentionParamSet()
@@ -266,8 +322,12 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 if (enemy->ApplyDamage(attack_power * motion_value))
                 {
                     HitStopON(0.15f);
+
+                    enemy->DamageRender(attack_power * motion_value);
+
                     // このフレームで与えたダメージを保持
                     add_damage += attack_power * motion_value;
+
                     // もし倒したら撃破数を増やす。
                     if (enemy->death)
                         kill_count++;
@@ -276,6 +336,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
 
                     break;
                 }
+                
             }
         }
 

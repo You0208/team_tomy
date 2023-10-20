@@ -110,8 +110,6 @@ namespace Nero::Component::AI
             owner->invincible = true;
         else
             owner->invincible = false;
-
-
     }
 
     void AvoidState::End()
@@ -170,6 +168,9 @@ namespace Nero::Component::AI
 
     void AttackState::Begin()
     {
+        // 角度補正
+        owner->AttackAngleInterpolation();
+
         owner->SetAnimationIndex(owner->FirstAttack_Anim);
 
         // todo アニメーションから攻撃判定時間を決める
@@ -195,7 +196,12 @@ namespace Nero::Component::AI
 
             owner->CollisionNodeVsEnemies("wepon", "J_wepon", owner->GetAttackCollisionRange());
         }
-        // todo てきのHPへらす
+        
+        // 特殊攻撃ボタン押されたら特殊攻撃ステート
+        if (owner->GetButtonDownY_AND_MouseRight())
+        {
+            owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
+        }
 
         switch (attack_step)
         {

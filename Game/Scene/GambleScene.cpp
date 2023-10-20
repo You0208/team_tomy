@@ -580,9 +580,9 @@ void GambleScene::Render(float elapsedTime)
 
 		for (int i = 0; i < 3; i++)
 		{
+			//TODO@¬—Ñ ‚±‚±‚Ý‚Ä
 			spr_number->textout(immediate_context, std::to_string(player_status[i]), num_bet_pos[i].x, 100,50, 50, 1, 1, 1, 1);
 
-			//TODO@¬—Ñ ‚±‚±‚Ý‚Ä
 			if (bet_num[i] > 0)
 			{
 				for (int j = bet_num[i]; j >0 ; j--)

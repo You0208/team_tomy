@@ -19,17 +19,26 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    switch (enemy->enemy_type)
+    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
+
+    if (enemy->enemy_type == "BossSpider")
     {
-    case Enemy::SmallSpider:
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
-
-        break;
-    case Enemy::BossSpider:
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v003.fbx"));
-
-        break;
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v004.fbx"));
     }
+    else
+    {
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v006.fbx"));
+    }
+    //switch (enemy->enemy_type)
+    //{
+    //case Enemy::SmallSpider:
+    //    enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
+
+    //    break;
+    //case Enemy::BossSpider:
+
+    //    break;
+    //}
 }
 
 void EnemyGraphicsComponent::Update(GameObject* gameobj)
@@ -48,52 +57,379 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     enemy->DebugImgui();
 }
 
-//void Enemy::DrawDebugPrimitive()
-//{
-//    //DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
-//    //DirectX::XMFLOAT3 position = Model->joint_position("polySurface1","J_root" , &keyframe, world);
-//    //debug_renderer->DrawSphere(position, radius,  DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f));
-//
-//    //if(attack_collision_flag)
-//    //{
-//    //    position = Model->joint_position("polySurface1", "J_leg_A_03_L", &keyframe, world);
-//    //    debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
-//    //}
-//}
 
-//void Enemy::BehaviorTreeInitialize()
-//{
-//    behaviorData = new BehaviorData();
-//    ai_tree = new BehaviorTree(this);
-//
-//    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
-//    {
-//        // 非戦闘
-//        ai_tree->AddNode("Root", "NonBattle", 2, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
-//        {
-//            // 徘徊
-//            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
-//            // 待機
-//            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
-//        }
-//        // 戦闘
-//        ai_tree->AddNode("Root", "Battle", 1, BehaviorTree::SelectRule::Priority,new BattleJudgment(this) , nullptr);
-//        {
-//            // 追跡
-//            ai_tree->AddNode("Battle", "Pursue", 2, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
-//            // 攻撃
-//            ai_tree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
-//            {
-//                ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
-//            }
-//        }
-//        // 死亡
-//        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
-//
-//    }
-//
-//
-//}
+void Enemy::BehaviorTreeInitialize_Level1()
+{
+    behaviorData = new BehaviorData();
+    ai_tree = new BehaviorTree(this);
+
+    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+    {
+#if 0 デバッグ用
+        //// 待機(デバッグ用)
+        //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        // 両腕攻撃(デバッグ用)
+        ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+        // 軸合わせ(デバッグ用)
+        ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+#else
+        // 非戦闘
+        ai_tree->AddNode("Root", "NonBattle", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        {
+            // 徘徊
+            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+            // 待機
+            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new TuraAction(this));
+        }
+        // 戦闘
+        ai_tree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority, new BattleJudgment(this), nullptr);
+        {
+            // 軸合わせ
+            ai_tree->AddNode("Battle", "Turn", 0, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new IdleAction(this));
+            // 近接戦闘
+            ai_tree->AddNode("Battle", "Near", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+            {
+                // 飛びつき攻撃
+                ai_tree->AddNode("Near", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                //待機
+                ai_tree->AddNode("Near", "Idle", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+            }
+            // 中距離戦闘
+            ai_tree->AddNode("Battle", "Middle", 2, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Middle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+            }
+            // 遠距離戦闘
+            ai_tree->AddNode("Battle", "Far", 3, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Far", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+            }
+        }
+#endif
+        // 死亡
+        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+
+    }
+
+}
+
+void Enemy::BehaviorTreeInitialize_Level2()
+{
+    behaviorData = new BehaviorData();
+    ai_tree = new BehaviorTree(this);
+
+    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+    {
+#if 0 デバッグ用
+        //// 待機(デバッグ用)
+        //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        // 両腕攻撃(デバッグ用)
+        ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+        // 軸合わせ(デバッグ用)
+        ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+#else
+        // 非戦闘
+        ai_tree->AddNode("Root", "NonBattle", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        {
+            // 徘徊
+            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+            // 待機
+            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        }
+        // 戦闘
+        ai_tree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority, new BattleJudgment(this), nullptr);
+        {
+            // 軸合わせ
+            ai_tree->AddNode("Battle", "Turn", 0, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+            // 近接戦闘
+            ai_tree->AddNode("Battle", "Near", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+            {
+                // 待機or軸合わせ→両腕攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_B", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    // 待機か軸合わせ
+                    ai_tree->AddNode("Combo_B", "Idle_or_Turn", 0, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+                    {
+                        ai_tree->AddNode("Idle_or_Turn", "Idle", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+                        ai_tree->AddNode("Idle_or_Turn", "Turn", 0, BehaviorTree::SelectRule::Non, nullptr, new TuraAction(this));
+                    }
+                    //両腕攻撃
+                    ai_tree->AddNode("Combo_B", "TwinArmsAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+                }
+                // バックステップ
+                ai_tree->AddNode("Near", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+            }
+            // 中距離戦闘
+            ai_tree->AddNode("Battle", "Middle", 2, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Middle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+            }
+            // 遠距離戦闘
+            ai_tree->AddNode("Battle", "Far", 3, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Far", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+            }
+        }
+#endif
+        // 死亡
+        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+
+    }
+
+}
+
+void Enemy::BehaviorTreeInitialize_Level3()
+{
+    behaviorData = new BehaviorData();
+    ai_tree = new BehaviorTree(this);
+
+    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+    {
+#if 0 デバッグ用
+        //// 待機(デバッグ用)
+        //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        // 両腕攻撃(デバッグ用)
+        ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+        // 軸合わせ(デバッグ用)
+        ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+#else
+        // 非戦闘
+        ai_tree->AddNode("Root", "NonBattle", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        {
+            // 徘徊
+            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+            // 待機
+            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        }
+        // 戦闘
+        ai_tree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority, new BattleJudgment(this), nullptr);
+        {
+            // 軸合わせ
+            ai_tree->AddNode("Battle", "Turn", 0, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+            // 近接戦闘
+            ai_tree->AddNode("Battle", "Near", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+            {
+                // 飛びつき攻撃
+                ai_tree->AddNode("Near", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+            
+                // 待機or軸合わせ→飛びつき攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_B", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    // 待機か軸合わせ
+                    ai_tree->AddNode("Combo_B", "Idle_or_Turn", 0, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+                    {
+                        ai_tree->AddNode("Idle_or_Turn", "Idle", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+                        ai_tree->AddNode("Idle_or_Turn", "Turn", 0, BehaviorTree::SelectRule::Non, nullptr, new TuraAction(this));
+                    }
+                    //飛びつき攻撃
+                    ai_tree->AddNode("Combo_B", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                }
+                // バックステップ
+                ai_tree->AddNode("Near", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+            }
+            // 中距離戦闘
+            ai_tree->AddNode("Battle", "Middle", 2, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
+            {
+                // 毒ブレス
+                ai_tree->AddNode("Middle", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+
+            }
+            // 遠距離戦闘
+            ai_tree->AddNode("Battle", "Far", 3, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Far", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+                // 毒ブレス
+                ai_tree->AddNode("Far", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+            }
+        }
+#endif
+        // 死亡
+        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+
+    }
+
+}
+
+void Enemy::BehaviorTreeInitialize_Level4()
+{
+    behaviorData = new BehaviorData();
+    ai_tree = new BehaviorTree(this);
+
+    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+    {
+#if 0 デバッグ用
+        //// 待機(デバッグ用)
+        //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        // 両腕攻撃(デバッグ用)
+        ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+        // 軸合わせ(デバッグ用)
+        ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+#else
+        // 非戦闘
+        ai_tree->AddNode("Root", "NonBattle", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        {
+            // 徘徊
+            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+            // 待機
+            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        }
+        // 戦闘
+        ai_tree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority, new BattleJudgment(this), nullptr);
+        {
+            // 軸合わせ
+            ai_tree->AddNode("Battle", "Turn", 0, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+            // 近接戦闘
+            ai_tree->AddNode("Battle", "Near", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+            {
+                // 飛びつき→二段攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_A", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    ai_tree->AddNode("Combo_A", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                }
+                // 待機or軸合わせ→二段攻撃or両腕攻撃or飛びつき攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_B", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    // 待機か軸合わせ
+                    ai_tree->AddNode("Combo_B", "Idle_or_Turn", 0, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+                    {
+                        ai_tree->AddNode("Idle_or_Turn", "Idle", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+                        ai_tree->AddNode("Idle_or_Turn", "Turn", 0, BehaviorTree::SelectRule::Non, nullptr, new TuraAction(this));
+                    }
+                    // 二段攻撃か両腕攻撃か飛びつき攻撃
+                    ai_tree->AddNode("Combo_B", "DA_or_TA_or_JA", 0, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+                    {
+                        ai_tree->AddNode("DA_or_TA_or_JA", "DoubleAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new DoubleAttackAction(this));
+                        ai_tree->AddNode("DA_or_TA_or_JA", "TwinArmsAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+                        ai_tree->AddNode("DA_or_TA_or_JA", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                    }
+                }
+                // バックステップ
+                ai_tree->AddNode("Near", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+                // 攻撃
+                ai_tree->AddNode("Near", "Attack", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+                {
+                    ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
+                }
+            }
+            // 中距離戦闘
+            ai_tree->AddNode("Battle", "Middle", 2, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Middle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+                // 毒ブレス
+                ai_tree->AddNode("Middle", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+
+            }
+            // 遠距離戦闘
+            ai_tree->AddNode("Battle", "Far", 3, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+            {
+                // 突進攻撃
+                ai_tree->AddNode("Far", "Rush", 0, BehaviorTree::SelectRule::Non, nullptr, new RushAttackAction(this));
+                // 毒ブレス
+                ai_tree->AddNode("Far", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+            }
+        }
+#endif
+        // 死亡
+        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+
+    }
+
+}
+
+void Enemy::BehaviorTreeInitialize_Level5()
+{
+    behaviorData = new BehaviorData();
+    ai_tree = new BehaviorTree(this);
+
+    ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+    {
+#if 1 デバッグ用
+        //// 待機(デバッグ用)
+        //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        // 両腕攻撃(デバッグ用)
+        ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+        // 軸合わせ(デバッグ用)
+        ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+#else
+        // 非戦闘
+        ai_tree->AddNode("Root", "NonBattle", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+        {
+            // 徘徊
+            ai_tree->AddNode("NonBattle", "Wander", 0, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+            // 待機
+            ai_tree->AddNode("NonBattle", "Idle", 1, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+        }
+        // 戦闘
+        ai_tree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority, new BattleJudgment(this), nullptr);
+        {
+            // 軸合わせ
+            ai_tree->AddNode("Battle", "Turn", 0, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+            // 近接戦闘
+            ai_tree->AddNode("Battle", "Near", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+            {
+                // 飛びつき→二段攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_A", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    ai_tree->AddNode("Combo_A", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                }
+                // 待機or軸合わせ→二段攻撃or両腕攻撃or飛びつき攻撃のコンボ
+                ai_tree->AddNode("Near", "Combo_B", 0, BehaviorTree::SelectRule::Sequence, nullptr, nullptr);
+                {
+                    // 待機か軸合わせ
+                    ai_tree->AddNode("Combo_B", "Idle_or_Turn", 0, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+                    {
+                        ai_tree->AddNode("Idle_or_Turn", "Idle", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+                        ai_tree->AddNode("Idle_or_Turn", "Turn", 0, BehaviorTree::SelectRule::Non, nullptr, new TuraAction(this));
+                    }
+                    // 二段攻撃か両腕攻撃か飛びつき攻撃
+                    ai_tree->AddNode("Combo_B", "DA_or_TA_or_JA", 0, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+                    {
+                        ai_tree->AddNode("DA_or_TA_or_JA", "DoubleAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new DoubleAttackAction(this));
+                        ai_tree->AddNode("DA_or_TA_or_JA", "TwinArmsAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+                        ai_tree->AddNode("DA_or_TA_or_JA", "JumpAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new JumpAttackAction(this));
+                    }
+                }
+                // バックステップ
+                ai_tree->AddNode("Near", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+                // 攻撃
+                ai_tree->AddNode("Near", "Attack", 1, BehaviorTree::SelectRule::Random, new NearJudgment(this), nullptr);
+                {
+                    ai_tree->AddNode("Attack", "NearAttack", 0, BehaviorTree::SelectRule::Non, nullptr, new NearAttackAction(this));
+                }
+            }
+            // 中距離戦闘
+            ai_tree->AddNode("Battle", "Middle", 2, BehaviorTree::SelectRule::Random, new MiddleJudgment(this), nullptr);
+            {
+                // 追跡
+                ai_tree->AddNode("Middle", "Pursue", 0, BehaviorTree::SelectRule::Non, nullptr, new PursueAction(this));
+                // 毒ブレス
+                ai_tree->AddNode("Middle", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+
+            }
+            // 遠距離戦闘
+            ai_tree->AddNode("Battle", "Far", 3, BehaviorTree::SelectRule::Random, nullptr, nullptr);
+            {
+                // 突進攻撃
+                ai_tree->AddNode("Far", "Rush", 0, BehaviorTree::SelectRule::Non, nullptr, new RushAttackAction(this));
+                // 毒ブレス
+                ai_tree->AddNode("Far", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
+            }
+        }
+#endif
+        // 怯み
+        ai_tree->AddNode("Root", "Fear", 1, BehaviorTree::SelectRule::Non, new FearJudgment(this), new FearAction(this));
+        // 死亡
+        ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
+
+    }
+
+}
 
 void Enemy::BehaviorTreeUpdate()
 {
@@ -169,8 +505,8 @@ bool Enemy::SearchPlayer(float found_distance, float found_range)
         }
     }
     return false;
-
 }
+
 
 void Enemy::Move_to_Target(float elapsedTime, float move_speed_rate, float turn_speed_rate)
 {
@@ -196,7 +532,6 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
     if (player->invincible)
         return;
 
-
     // ノード位置取得
     DirectX::XMFLOAT3 nodePosition = Model->joint_position(mesh_name, bone_name, &keyframe, world);
 
@@ -205,7 +540,7 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        if (player->CounterJudge(this)){}
+        if (player->CounterJudge(nodePosition)){}
         else if (player->ApplyDamage(attack_power))
         {
             // 豆腐スキル持ってたら強制的にHP0にする
@@ -234,12 +569,49 @@ void Enemy::SetRandomTargetPosition()
 
 }
 
+void Enemy::DamageRender(const float damage)
+{
+    // ビューポート
+    D3D11_VIEWPORT viewport;
+    UINT numViewports = 1;
+    ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+    dc->RSGetViewports(&numViewports, &viewport);
+
+    // 変換行列 (計算しやすいように行列に変換)
+    DirectX::XMMATRIX V = Camera::Instance().GetViewMatrix();
+    DirectX::XMMATRIX P = Camera::Instance().GetProjectionMatrix();
+    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+
+    // ベクトル変換
+    DirectX::XMVECTOR Pos = DirectX::XMLoadFloat3(&position);
+
+    DirectX::XMVECTOR ScreenPosition;
+
+    ScreenPosition = DirectX::XMVector3Project(Pos,
+        viewport.TopLeftX,
+        viewport.TopLeftY,
+        viewport.Width,
+        viewport.Height,
+        viewport.MinDepth,
+        viewport.MaxDepth,
+        P,
+        V,
+        World
+    );
+    DirectX::XMFLOAT3 screenPosition;
+    DirectX::XMStoreFloat3(&screenPosition, ScreenPosition);
+    damage_spr->textout(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), std::to_string(damage), screenPosition.x, screenPosition.y, 50, 50, 1, 1, 1, 1);
+
+}
+
 void Enemy::DebugImgui()
 {
     ImGui::Begin("Enemy");
+    ImGui::Text(enemy_type.c_str());
     if (ImGui::TreeNode("Transform"))
     {
         ImGui::DragFloat3("position", &position.x);
+        ImGui::SliderAngle("rotation", &rotation.y);
         ImGui::DragFloat("scale_factor", &scaleFactor);
         ImGui::TreePop();
     }

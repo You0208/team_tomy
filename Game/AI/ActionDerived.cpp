@@ -228,7 +228,10 @@ ActionBase::State NearAttackAction::Run(float elapsedTime)
 		{
 			Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_leg_A_03_L", owner->GetAttackCollisionRange());
+			for (auto& attack_collision : owner->arm_attack_collisions)
+			{
+				owner->CollisionNodeVsPlayer(owner->meshName.c_str(), attack_collision->bone_name.c_str(), attack_collision->node_radius);
+			}
 		}
 
 
@@ -293,7 +296,11 @@ ActionBase::State JumpAttackAction::Run(float elapsedTime)
 		{
 			Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+			for (auto& collision : owner->hit_collisions)
+			{
+				owner->CollisionNodeVsPlayer(owner->meshName.c_str(), collision->bone_name.c_str(), collision->node_radius);
+			}
+
 		}
 
 	}
@@ -336,7 +343,10 @@ ActionBase::State DoubleAttackAction::Run(float elapsedTime)
 		{
 			Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+			for (auto& attack_collision : owner->arm_attack_collisions)
+			{
+				owner->CollisionNodeVsPlayer(owner->meshName.c_str(), attack_collision->bone_name.c_str(), attack_collision->node_radius);
+			}
 		}
 
 	}

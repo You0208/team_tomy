@@ -8,9 +8,9 @@ public:
     SmallSpider() {}
     SmallSpider(InputComponent* input_,
         PhysicsComponent* physics_,
-        GraphicsComponent* graphics_) :Enemy(input_, physics_, graphics_,EnemyType::SmallSpider)
+        GraphicsComponent* graphics_) :Enemy(input_, physics_, graphics_)
     {
-        
+        enemy_type = "SmallSpider";
     }
 
 

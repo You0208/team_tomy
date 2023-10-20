@@ -56,7 +56,7 @@ public:
         walk_speed = 0.1f;
 
         //max_health = 20;
-        max_health = 1000000;
+        max_health = 1000;
         health = max_health;
 
         attack_power = 20;
@@ -133,8 +133,10 @@ public:
     // カウンター成功
     bool GetCanCounter()const { return can_counter; }
 
-    bool CounterJudge(Enemy* enemy);
+    bool CounterJudge(DirectX::XMFLOAT3 hit_pos);
 
+    // 攻撃時の角度補間
+    void AttackAngleInterpolation();
 private:
     //特殊攻撃のクールタイム(秒)
     // タイマーがこれを超えないと特殊攻撃は使えない

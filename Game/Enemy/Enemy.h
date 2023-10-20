@@ -32,21 +32,7 @@ private:
 class Enemy :public GameObject
 {
 public:
-    enum EnemyType
-    {
-        SmallSpider,
-
-        A_Spider,
-        B_Spider,
-        C_Spider,
-        D_Spider,
-        E_Spider,
-        F_Spider,
-        G_Spider,
-        H_Spider,
-
-        BossSpider,
-    }enemy_type;
+    std::string enemy_type;
 
     enum AnimIndex
     {
@@ -64,8 +50,7 @@ public:
     Enemy(){}
     Enemy(InputComponent* input_,
         PhysicsComponent* physics_,
-        GraphicsComponent* graphics_,
-        EnemyType type):enemy_type(type),GameObject(input_, physics_, graphics_)
+        GraphicsComponent* graphics_):GameObject(input_, physics_, graphics_)
     {
         // todo 調整
 
@@ -93,6 +78,19 @@ public:
 
     // ビヘイビアツリーの初期化
     virtual void BehaviorTreeInitialize(){};
+
+    /*------------- 各AIレベルのビヘイビアツリーの構築 -------------*/
+
+
+    virtual void BehaviorTreeInitialize_Level1();
+    virtual void BehaviorTreeInitialize_Level2();
+    virtual void BehaviorTreeInitialize_Level3();
+    virtual void BehaviorTreeInitialize_Level4();
+
+    // ボススパイダー用のAI
+    virtual void BehaviorTreeInitialize_Level5();
+
+
     // ビヘイビアツリーの更新処理
     void BehaviorTreeUpdate();
 
@@ -124,6 +122,7 @@ public:
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
 
+    void DamageRender(const float damage);
     void DebugImgui() override;
 
     // 破棄
@@ -181,5 +180,8 @@ public:
     // 腕攻撃当たり判定配列
     std::vector<std::unique_ptr<NodeCollision>> arm_attack_collisions;
     virtual void SetUpHitCollision(){}
+
+public:
+    std::unique_ptr<sprite> damage_spr;
 };
 

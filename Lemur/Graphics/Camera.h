@@ -34,6 +34,8 @@ public:
 
     void DrawDebug();
 
+    // HPゲージの描画
+    void RenderEnemyHP(sprite* gauge);
 private:
     void UpdateDebug();
 
@@ -45,6 +47,8 @@ private:
 
     // ロックオンしてない時のカメラの挙動
     void NonLockOnUpdate(float elapsedTime);
+
+    
 public:
     DirectX::XMMATRIX GetViewMatrix() { return V; }         // view行列取得
     DirectX::XMMATRIX GetProjectionMatrix() { return P; }   // projection行列取得
@@ -90,4 +94,5 @@ private:
 
     // ロックオンしてるか
     bool is_lockOn = false;
+
 };

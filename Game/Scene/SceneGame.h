@@ -14,7 +14,7 @@ class GameScene :public Lemur::Scene::BaseScene
 public:
     float x;
     float xp;
-
+    float rate;
     GameScene() {}
     ~GameScene() override {}
 
@@ -41,13 +41,13 @@ public:
         );
     }
 
-    Enemy* CreateEnemy(Enemy::EnemyType enemy_type)
+    template<class Spider_T>
+    Spider_T* CreateEnemy()
     {
-        return new Enemy(
+        return new Spider_T(
             new EnemyInputComponent(),
             new EnemyPhysicsComponent(),
-            new EnemyGraphicsComponent(),
-            enemy_type
+            new EnemyGraphicsComponent()
         );
     }
     BossSpider* CreateBossSpider()
@@ -84,7 +84,8 @@ private:// ゲーム関連
             is_update = !is_update;
     }
 
-
+    // UI関係の描画
+    void UIRender();
 
     float timer;
 
@@ -113,6 +114,11 @@ private:// ゲーム関連
     DirectX::XMFLOAT3 scaling{ 1, 1, 1 };
     DirectX::XMFLOAT3 rotation{ 0, 0, 0 };
     DirectX::XMFLOAT4 material_color{ 1, 1, 1, 1 };
+
+    // HPゲージ
+    std::unique_ptr<sprite> hp_gauge;
+    // HPゲージ座布団
+    std::unique_ptr<sprite> hp_gauge_Zabuton;
 
 private:// シェーダー関連
     std::unique_ptr<framebuffer> framebuffers[8];

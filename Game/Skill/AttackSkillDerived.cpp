@@ -55,12 +55,13 @@ void Cruel::Update()
         {
         case Nero::Component::AI::AttackState::second_attack:
 
+            // 1.1”{‘‚¦‚é
             motion_value *= 1.1f;
             owner->GetStateMachine()->GetAttackState()->SetMotionValue(Nero::Component::AI::AttackState::second_attack, motion_value);
             break;
 
         case Nero::Component::AI::AttackState::third_attack:
-
+            // 1.2”{‘‚¦‚é
             motion_value *= 1.2f;
             owner->GetStateMachine()->GetAttackState()->SetMotionValue(Nero::Component::AI::AttackState::third_attack, motion_value);
             break;
