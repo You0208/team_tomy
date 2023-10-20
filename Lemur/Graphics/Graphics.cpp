@@ -43,13 +43,17 @@ namespace Lemur::Graphics
 
 		if (fullscreen)
 		{
-			fullscreen_state(TRUE);
+			stylize_window(TRUE);
 		}
 
 		RECT client_rect;
 		GetClientRect(hwnd, &client_rect);
-		framebuffer_dimensions.cx = client_rect.right - client_rect.left;
-		framebuffer_dimensions.cy = client_rect.bottom - client_rect.top;
+		//framebuffer_dimensions.cx = client_rect.right - client_rect.left;
+		//framebuffer_dimensions.cy = client_rect.bottom - client_rect.top;
+
+		framebuffer_dimensions.cx = SCREEN_WIDTH;
+		framebuffer_dimensions.cy = SCREEN_HEIGHT;
+
 
 		HRESULT hr{ S_OK };
 
@@ -281,7 +285,7 @@ namespace Lemur::Graphics
 	}
 #endif
 
-	void Graphics::fullscreen_state(BOOL fullscreen)
+	void Graphics::stylize_window(BOOL fullscreen)
 	{
 		fullscreen_mode = fullscreen;
 		if (fullscreen)
@@ -350,30 +354,6 @@ namespace Lemur::Graphics
 		}
 	}
 
-	void Graphics::on_size_changed(UINT64 width, UINT height)
-	{
-		HRESULT hr{ S_OK };
-		if (width != framebuffer_dimensions.cx || height != framebuffer_dimensions.cy)
-		{
-			framebuffer_dimensions.cx = static_cast<LONG>(width);
-			framebuffer_dimensions.cy = height;
-
-			// Release all objects that hold shader resource views here.
-#ifdef ENABLE_DIRECT2D
-			d2d1_device_context.Reset();
-#endif
-
-			Microsoft::WRL::ComPtr<IDXGIFactory6> dxgi_factory6;
-			hr = swap_chain->GetParent(IID_PPV_ARGS(dxgi_factory6.GetAddressOf()));
-			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-			create_swap_chain(dxgi_factory6.Get());
-
-			// Recreate all objects that hold shader resource views here.
-#ifdef ENABLE_DIRECT2D
-			create_direct2d_objects();
-#endif
-		}
-	}
 
 	void Graphics::initialize(HWND hwnd, bool fullscreen)
 	{
