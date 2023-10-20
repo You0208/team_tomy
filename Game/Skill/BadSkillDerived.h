@@ -20,4 +20,21 @@ public:
     Curse():BaseSkill("Curse"){}
     
     void Update() override;
+    float damage_time = 5.0f;
+    float damage_timer = 0.0f;
+    int damage_value = 50;
+
+};
+
+// 6.˜ü–(ŠÔŒo‰ß‚É‚æ‚èUŒ‚—Í‚ª‰º‚ª‚é)
+class Arrogance :public BaseSkill
+{
+public:
+    Arrogance():BaseSkill("Arrogance"){}
+    
+    void Update() override;
+    float time_ms = 5.0f;
+    float timer_ms = 0.0f;
+    float value = 5;
+
 };

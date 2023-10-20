@@ -82,8 +82,13 @@ void GambleScene::Initialize()
 		player->SetSkill<Obesity>();
 
 		//player->SetSkill<Tofu>();
+		player->SetSkill<Curse>();
+		player->SetSkill<Arrogance>();
 
 		is_first_set_player = true;
+
+	    // ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
+	    CharacterManager::Instance().SetPlayer(player);
 	}
 	else
 	{
@@ -119,7 +124,8 @@ void GambleScene::Initialize()
 			// サイズ
 			skillCard[i].size = { 600, 780 };
 			// 配布された番号に合わせた文
-			wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
+			//wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
+			skillCard[i].wcText = skill_data[skillCard[i].category].title;
 		}
 
 		// クエストカード設定
@@ -127,7 +133,8 @@ void GambleScene::Initialize()
 			//TODO 配り方考える（ひとまず順番で）
 			questCard[i].category = i;
 			// 配布された番号に合わせた文
-			wcscpy_s(questCard[i].wcText, quest_data[questCard[i].category].title);
+			//wcscpy_s(questCard[i].wcText, quest_data[questCard[i].category].title);
+			skillCard[i].wcText = skill_data[skillCard[i].category].title;
 		}
 
 		bet_boxpos[i] = { 100 + float(i * 500),800 };
@@ -137,8 +144,6 @@ void GambleScene::Initialize()
 		num_bet_pos[i] = { 300 + float(i * 500),900 };
 		coin_bet_pos[i] = { 300 + float(i * 500),700 };
 	}
-	// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
-	CharacterManager::Instance().SetPlayer(player);
 
 	// アセットのロード
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
@@ -155,7 +160,9 @@ void GambleScene::Initialize()
 
 
 	/*--------------- これデバッグ用 --------------*/
-    //Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+    Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	player->TestSkillSet("Arrogance");
+
 
 }
 
@@ -217,7 +224,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 						if (SelectCard[i])
 						{
 							skillCard[i].category = rand() % skill_num_max;
-							wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
+							//wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
+							skillCard[i].wcText = skill_data[skillCard[i].category].title;
 							// カードを元に
 							SelectCard[i] = false;
 							plusPos[i] = 0;
@@ -520,7 +528,8 @@ void GambleScene::Render(float elapsedTime)
 			// カード２
 			spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(skillCard[i].wcText.c_str(), skillCard[i].wcText.size() + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
+			//Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
 		}
 
 		for (int i = 0; i < 2; i++)spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100);
@@ -543,7 +552,9 @@ void GambleScene::Render(float elapsedTime)
 			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
 
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
+
+			Lemur::Graphics::Font::Instance().render(questCard[0].wcText.c_str(), questCard[0].wcText.size(), { 16,10 }, 600, 72);
+		//	Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
 			break;
 		case 1:
 			// カード１
@@ -557,7 +568,7 @@ void GambleScene::Render(float elapsedTime)
 
 
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[1].wcText, wcslen(questCard[1].wcText) + 1, { 40,10 }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(questCard[1].wcText.c_str(), questCard[1].wcText.size(), { 40,10 }, 600, 72);
 			break;
 		case 2:
 			// カード１
@@ -570,7 +581,7 @@ void GambleScene::Render(float elapsedTime)
 			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
 
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[2].wcText, wcslen(questCard[2].wcText) + 1, { 63,10 }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(questCard[2].wcText.c_str(), questCard[2].wcText.size(), { 63,10 }, 600, 72);
 			break;
 		}
 

@@ -145,3 +145,11 @@ inline bool CalcAngle(DirectX::XMVECTOR Vec1, DirectX::XMVECTOR Vec2, float thet
     }
     return false;
 }
+
+//ê≥ãKâª
+inline DirectX::XMFLOAT3 Normalize(const DirectX::XMFLOAT3& f)
+{
+    DirectX::XMFLOAT3 ret{};
+    DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&f)));
+    return ret;
+}

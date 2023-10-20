@@ -343,7 +343,7 @@ public:
     void render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe, ID3D11PixelShader* replaced_pixel_shader);
     void update_animation(animation::keyframe& keyframe);
 
-    bool append_animations(const char* animation_filename, float sampling_rate /*0:use default value*/);
+    bool append_animations(const char* animation_filename, float sampling_rate /*0:use default damage_value*/);
     void blend_animations(const animation::keyframe* keyframes[2], float factor, animation::keyframe& keyframe);
 
     // RAYCAST
@@ -414,7 +414,7 @@ protected:
     void fetch_materials(FbxScene* fbx_scene, std::unordered_map<uint64_t, material>& materials);
     void fetch_skeleton(FbxMesh* fbx_mesh, skeleton& bind_pose);
     void fetch_animations(FbxScene* fbx_scene, std::vector<animation>& animation_clips, float sampling_rate /*この値が 0 の場合、アニメーション データはデフォルトのフレーム レートでサンプリングされる*/);
-    void fetch_scene(const char* fbx_filename, bool triangulate, float sampling_rate/*If this value is 0, the animation data will be sampled at the default frame rate.*/);
+    void fetch_scene(const char* fbx_filename, bool triangulate, float sampling_rate/*If this damage_value is 0, the animation data will be sampled at the default frame rate.*/);
 };
 
 // STATIC_BATCHING

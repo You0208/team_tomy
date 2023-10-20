@@ -7,6 +7,7 @@
 #include "Game/Scene/ResultScene.h"
 #include "Game/Scene/TitleScene.h"
 #include "Game/StateMachine/StateMachine.h"
+#include "Lemur/Graphics/Camera.h"
 #include "Lemur/Scene/SceneManager.h"
 
 namespace Nero::Component::AI
@@ -143,6 +144,9 @@ namespace Nero::Component::AI
 
     void FearState::Begin()
     {
+        // ‰æ–ÊU“®
+        Camera::Instance().ScreenVibrate(0.05f, 0.3f);
+
         owner->SetAnimationIndex(owner->Fear_Anim);
     }
 

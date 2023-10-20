@@ -95,4 +95,18 @@ private:
     // ƒƒbƒNƒIƒ“‚µ‚Ä‚é‚©
     bool is_lockOn = false;
 
+public:/*--------------- ‰æ–ÊU“®Œn -------------*/
+
+    //‰æ–ÊU“®
+    void ScreenVibrate(float volume/*U“®—Ê*/, float effectTime/*U“®ŠÔ*/);
+    // ‰æ–ÊU“®‚ÌŒvZ
+    void ScreenVibrationUpdate();
+
+private:
+    //‰æ–ÊU“®
+    DirectX::XMFLOAT3 screenVibrationOffset{};//U“®•\Œ»—p‚ÌÀ•W
+    float vibrationVolume;//U“®—Ê
+    float vibrationTime;//U“®ŠÔ
+    float vibrationTimer;//U“®ŠÔ‚ğ‘ª‚é‚½‚ß‚Ìƒ^ƒCƒ}[
+
 };

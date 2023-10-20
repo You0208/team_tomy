@@ -1,4 +1,7 @@
 #include "Camera.h"
+
+#include <Game/Easing.h>
+
 #include"..\Input/Input.h"
 #include "Game/MathHelper.h"
 #include "Game/Manager/EnemyManager.h"
@@ -56,11 +59,22 @@ void Camera::Update(float elapsedTime)
         InputLockOn();
     }
 
+    ScreenVibrationUpdate();
 
     if (is_lockOn) LockOnUpdate(elapsedTime);
 
     else NonLockOnUpdate(elapsedTime);
 
+    eye.x += screenVibrationOffset.x;
+    eye.y += screenVibrationOffset.y;
+    eye.z += screenVibrationOffset.z;
+
+    target.x += screenVibrationOffset.x;
+    target.y += screenVibrationOffset.y;
+    target.z += screenVibrationOffset.z;
+
+    //カメラの視点と注視点を設定
+    SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
 
 
 }
@@ -185,8 +199,6 @@ void Camera::LockOnUpdate(float elapsedTime)
         enemy_pos.y + target_y_offset,
         enemy_pos.z
     };
-    //カメラの視点と注視点を設定
-    SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
 
 }
 
@@ -276,7 +288,44 @@ void Camera::NonLockOnUpdate(float elapsedTime)
         angle.y -= DirectX::XM_2PI;
     }
 
-    //カメラの視点と注視点を設定
-    SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
+    ////カメラの視点と注視点を設定
+    //SetLookAt(eye, target, DirectX::XMFLOAT3(0, 1, 0));
+
+}
+
+void Camera::ScreenVibrate(float volume, float effectTime)
+{
+    vibrationVolume = volume;
+    vibrationTimer = effectTime;
+    vibrationTime = effectTime;
+}
+
+void Camera::ScreenVibrationUpdate()
+{
+    screenVibrationOffset = {};
+    if (vibrationTimer <= 0)return;
+
+    //振動方向の指定(乱数)
+    DirectX::XMFLOAT3 vibVec;
+    DirectX::XMFLOAT3 right = this->right;
+    DirectX::XMFLOAT3 up = this->up;
+
+    right = right * Mathf::RandomRange(-50.0f, 50.0f);
+    up = up * Mathf::RandomRange(-50.0f, 50.0f);
+
+    vibVec = {
+        right.x + up.x,
+        right.y + up.y,
+        0.0f
+    };
+    vibVec = Normalize(vibVec);
+
+    //イージングを使い経過時間で振動量を調整する
+    float vibrationVolume = Easing::InSine(vibrationTimer, vibrationTime, this->vibrationVolume, 0.0f);
+
+    //振動値を入れる
+    screenVibrationOffset = vibVec * vibrationVolume;
+
+    vibrationTimer -= high_resolution_timer::Instance().time_interval();
 
 }

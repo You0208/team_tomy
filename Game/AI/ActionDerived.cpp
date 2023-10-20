@@ -245,7 +245,7 @@ ActionBase::State DeathAction::Run(float elapsedTime)
     {
     case 0:
 		// todo アニメーション再生
-		//owner->SetAnimationIndex(owner->Death_Anim);
+		owner->SetAnimationIndex(owner->Death_Anim);
 		step ++ ;
 		break;
     case 1:
@@ -358,12 +358,23 @@ ActionBase::State TwinArmsAttackAction::Run(float elapsedTime)
 {
 	// 怯んだら終了
 	if (owner->fear_frag) {
+
+		if (owner->enemy_type == "E_Spider")
+		{
+			owner->SetAnimCalcRate(1.0f);
+		}
 		step = 0;
 		return ActionBase::State::Failed;
 	}
 	// 死亡してたら死亡アクションに移行
 	if (owner->death)
+	{
+		if (owner->enemy_type == "E_Spider")
+		{
+			owner->SetAnimCalcRate(1.0f);
+		}
 		return ActionBase::State::Failed;
+	}
 
 
 	switch (step)
@@ -371,6 +382,12 @@ ActionBase::State TwinArmsAttackAction::Run(float elapsedTime)
 	case 0:
 		// todo アニメーション再生
 		owner->SetAnimationIndex(owner->JumpAttack_Anim);
+
+		// Eクモは一撃が遅いからアニメ速度遅くする。
+        if (owner->enemy_type=="E_Spider")
+        {
+			owner->SetAnimCalcRate(0.7f);
+        }
 		step++;
 		break;
 	case 1:
@@ -380,6 +397,10 @@ ActionBase::State TwinArmsAttackAction::Run(float elapsedTime)
 
 		if (owner->GetEndAnimation())
 		{
+		    if (owner->enemy_type == "E_Spider")
+			{
+				owner->SetAnimCalcRate(1.0f);
+			}
 			step = 0;
 			return ActionBase::State::Complete;
 		}

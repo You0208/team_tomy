@@ -9,7 +9,7 @@ namespace Lemur::Graphics
         static Font& Instance() { return *fontInstance; }
         void initialize();
         void render();
-        void render(WCHAR wcText1[], int TextNum,DirectX::XMFLOAT2 pos,float width,float hight);
+        void render(const WCHAR wcText1[], int TextNum,DirectX::XMFLOAT2 pos,float width,float hight);
     private:
         ////TODO Font
         // 

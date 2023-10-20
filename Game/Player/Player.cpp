@@ -323,7 +323,8 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 if (enemy->ApplyDamage(attack_power * motion_value))
                 {
                     HitStopON(0.15f);
-
+                    // todo これいる？
+                    Camera::Instance().ScreenVibrate(0.05f, 0.3f);
                     enemy->DamageRender(attack_power * motion_value);
 
                     // このフレームで与えたダメージを保持

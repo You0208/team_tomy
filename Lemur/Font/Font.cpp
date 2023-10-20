@@ -46,7 +46,7 @@ namespace Lemur::Graphics
 #endif
 	}
 
-	void Font::render(WCHAR wcText1[],int TextNum,DirectX::XMFLOAT2 pos, float width, float hight)
+	void Font::render(const WCHAR wcText1[],int TextNum,DirectX::XMFLOAT2 pos, float width, float hight)
 	{
 #ifdef ENABLE_DIRECT2D
 		Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();

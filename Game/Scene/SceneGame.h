@@ -50,14 +50,14 @@ public:
             new EnemyGraphicsComponent()
         );
     }
-    BossSpider* CreateBossSpider()
-    {
-        return new BossSpider(
-            new EnemyInputComponent(),
-            new EnemyPhysicsComponent(),
-            new EnemyGraphicsComponent()
-        );
-    }
+    //BossSpider* CreateBossSpider()
+    //{
+    //    return new BossSpider(
+    //        new EnemyInputComponent(),
+    //        new EnemyPhysicsComponent(),
+    //        new EnemyGraphicsComponent()
+    //    );
+    //}
 
 
 private:// ゲーム関連
@@ -91,7 +91,8 @@ private:// ゲーム関連
 
     //DemoPlayer
     Player* player = nullptr;
-    DemoEnemy* enemy = nullptr;
+    // ボス敵
+    Enemy* boss_enemy = nullptr;
 
     std::unique_ptr<Stage> stage;
 
@@ -115,11 +116,18 @@ private:// ゲーム関連
     DirectX::XMFLOAT3 rotation{ 0, 0, 0 };
     DirectX::XMFLOAT4 material_color{ 1, 1, 1, 1 };
 
-    // HPゲージ
-    std::unique_ptr<sprite> hp_gauge;
-    // HPゲージ座布団
-    std::unique_ptr<sprite> hp_gauge_Zabuton;
+    /*----------------- UI関連 ------------------*/
+    // プレイヤーのHPゲージ
+    std::unique_ptr<sprite> player_hp_gauge;
+    // プレイヤーのHPゲージ座布団
+    std::unique_ptr<sprite> player_hp_gauge_zabuton;
 
+    // 敵のHPゲージ
+    std::unique_ptr<sprite> enemy_hp_gauge;
+    // 敵のHPゲージ座布団
+    std::unique_ptr<sprite> enemy_hp_gauge_zabuton;
+    // 敵のHPゲージの位置
+    DirectX::XMFLOAT3 ene_HP_gauge_pos{640.0f,0.0f,0.0f};
 private:// シェーダー関連
     std::unique_ptr<framebuffer> framebuffers[8];
     enum class FRAME_BUFFER { FOG_1, FOG_2, BLOOM };

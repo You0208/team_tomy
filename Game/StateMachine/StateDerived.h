@@ -109,7 +109,7 @@ namespace Nero::Component::AI
 
         // 先行入力完了フラグ
         bool buffered_input = false;
-        // 先行入力受付可能フラグ
+        // 先行入力受付可能フラグ(ImGuiで見る用)
         bool buffered_input_OK = false;
 
         // 先行入力チェック

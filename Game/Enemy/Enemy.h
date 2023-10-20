@@ -42,7 +42,7 @@ public:
         BackStep_Anim,
         Fear_Anim,
         JumpAttack_Anim,
-        //Death_Anim,
+        Death_Anim,
 
         Max_Anim,
     };
@@ -60,7 +60,6 @@ public:
 
         max_health = 1000;
         health = max_health;
-        defense_power = 50.5f;
 
         attack_power = 1;
         attack_collision_range = 0.3f;
@@ -180,8 +179,12 @@ public:
 
     // 腕攻撃当たり判定配列
     std::vector<std::unique_ptr<NodeCollision>> arm_attack_collisions;
+
     virtual void SetUpHitCollision(){}
 
+    // 通常サイズのクモ用の当たり判定配列セットアップ
+    //よく使うから関数化
+    void SetUpHitCollisionNormalSize();
 public:
     std::unique_ptr<sprite> damage_spr;
 };
