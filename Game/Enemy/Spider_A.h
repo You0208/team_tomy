@@ -18,7 +18,7 @@ public:
 
         near_attack_range = 6.0f;
         middle_attack_range = 10.0f;
-        scaleFactor = 3.0f;
+        scaleFactor = 1.0f;
 
         // ƒƒbƒVƒ…‚Ì–¼‘Oˆá‚¤‚©‚ç‚±‚±‚ÅÄİ’è
         meshName = "polySurface1";

@@ -135,6 +135,7 @@ public:
 
     bool CounterJudge(DirectX::XMFLOAT3 hit_pos);
 
+    void ResetSPAttackTimer() { SP_attack_cool_timer_ms = 0.0f; }
     // UŒ‚‚ÌŠp“x•âŠÔ
     void AttackAngleInterpolation();
 private:

@@ -41,6 +41,7 @@ namespace Nero::Component::AI
         // 特殊攻撃ボタン押されたら特殊攻撃ステート
         if (owner->GetButtonDownY_AND_MouseRight())
         {
+            if (owner->can_SP_attack)
             owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
         }
     }
@@ -80,6 +81,7 @@ namespace Nero::Component::AI
         // 特殊攻撃ボタン押されたら特殊攻撃ステート
         if (owner->GetButtonDownY_AND_MouseRight())
         {
+            if (owner->can_SP_attack)
             owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
         }
 
@@ -200,7 +202,8 @@ namespace Nero::Component::AI
         // 特殊攻撃ボタン押されたら特殊攻撃ステート
         if (owner->GetButtonDownY_AND_MouseRight())
         {
-            owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
+            if (owner->can_SP_attack)
+                owner->GetStateMachine()->SetNextState(owner->SPAttack_State);
         }
 
         switch (attack_step)
@@ -353,5 +356,8 @@ namespace Nero::Component::AI
         owner->SetIsCounter(false);
         owner->SetCanCounter(false);
         owner->invincible = false;
+
+        owner->can_SP_attack = false;
+        owner->ResetSPAttackTimer();
     }
 }
