@@ -60,7 +60,7 @@ public:
     //    
     //}
 
-    int skill_num_max = 3;
+    int skill_num_max ;
 
 
     struct Card

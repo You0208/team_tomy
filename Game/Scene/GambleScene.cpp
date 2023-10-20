@@ -100,7 +100,7 @@ void GambleScene::Initialize()
 		player_status_max[1] = player->attack_power;
 		player_status_max[2] = player->speed_power;
 	}
-	int skill_count = player->all_skills.size();
+	skill_num_max = player->all_skills.size();
 	// ベット情報
 	bet_boxsize = { 400,200 };
 
@@ -111,7 +111,7 @@ void GambleScene::Initialize()
 		// スキルカード設定
 		{
 			// どのスキルカードを配布したかをランダムで
-			skillCard[i].category = rand() % 3;
+			skillCard[i].category = rand() % skill_num_max - 1;
 			// 位置
 			skillCard[i].position = { 20 + float(i * 630), 98 };
 			skillCard[i].font_position = { 10 + float(i * 30), 10 };
@@ -150,7 +150,7 @@ void GambleScene::Initialize()
 	spr_OK = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\OK.png");
 	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
-	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
+	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
 
 	/*--------------- これデバッグ用 --------------*/
@@ -592,17 +592,10 @@ void GambleScene::Render(float elapsedTime)
 
 		for (int i = 0; i < 3; i++)
 		{
-//<<<<<<< HEAD
-//			//TODO　小林 ここみて
-//			spr_number->textout(immediate_context, std::to_string(player_status[i]), num_bet_pos[i].x, 100,50, 50, 1, 1, 1, 1);
-//
-//=======
-//			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
-//			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
-//			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
-//			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
-//			//TODO　小林 ここみて
-//>>>>>>> origin/muta2
+			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
+			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
+			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
+			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
 			if (bet_num[i] > 0)
 			{
 				for (int j = bet_num[i]; j > 0; j--)
