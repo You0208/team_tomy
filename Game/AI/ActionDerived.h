@@ -150,7 +150,7 @@ public:
 	// 下がる距離
 	float length = 10.0f;
 
-	float easing_time = 1.0;
+	float easing_time = 1.5f;
 	float easing_timer;
 
 	// バックステップ開始座標

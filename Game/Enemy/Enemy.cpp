@@ -378,10 +378,13 @@ void Enemy::BehaviorTreeInitialize_Level5()
 #if 1 デバッグ用
         //// 待機(デバッグ用)
         //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
-        // 両腕攻撃(デバッグ用)
-        ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
-        // 軸合わせ(デバッグ用)
-        ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
+                        // バックステップ
+        ai_tree->AddNode("Root", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+
+        //// 両腕攻撃(デバッグ用)
+        //ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
+        //// 軸合わせ(デバッグ用)
+        //ai_tree->AddNode("Root", "Turn(debug)", 2, BehaviorTree::SelectRule::Non, new TurnJudgment(this), new TuraAction(this));
 #else
         // 非戦闘
         ai_tree->AddNode("Root", "NonBattle", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);

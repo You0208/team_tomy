@@ -579,17 +579,18 @@ ActionBase::State BackStepAction::Run(float elapsedTime)
 		start_pos = owner->GetPosition();
 		end_pos = { start_pos.x - front.x * length, start_pos.y,start_pos.z - front.z * length };
 
+		easing_timer = 0;
 
 		step++;
 		break;
 	case 1:
 
-		// todo 挙動がおかしい
+		// todo ほかのイージング試す
 		owner->SetPosition(
 			// イージングによるX座標の更新
-			Easing::InOutCirc(easing_timer, easing_time, end_pos.x, start_pos.x),
+			Easing::OutCubic(easing_timer, easing_time, end_pos.x, start_pos.x),
 			owner->GetPosition().y,
-			Easing::InOutCirc(easing_timer, easing_time, end_pos.z, start_pos.z)
+			Easing::OutCubic(easing_timer, easing_time, end_pos.z, start_pos.z)
 			);
 		// todo ここで壁レイキャスト
 

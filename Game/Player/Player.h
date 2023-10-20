@@ -61,7 +61,9 @@ public:
 
         attack_power = 20;
 
+
         speed_power = 30;
+        speed_power = 300;// デバッグ用
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);
@@ -283,7 +285,7 @@ public:/*----------------- スキル関係 -----------------*/
     void SkillUIRender();
 
     /*--------- デバッグ用 ----------*/
-    float ui_offset_y = 0;
+    float ui_offset_y = 120;
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;
