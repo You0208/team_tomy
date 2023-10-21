@@ -17,6 +17,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v009.fbx"));
+    player->slash = std::make_unique<Effect>("./resources/Effect/poison.efkpkg");
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -228,16 +229,26 @@ void Player::AttackAngleInterpolation()
     float player_to_enemy = FLT_MAX;
     DirectX::XMFLOAT3 enemy_pos;
 
-    // 全エネミーとの距離判定
-    for (auto enemy : EnemyManager::Instance().GetEnemies())
-    {
-        float length = Length(position, enemy->GetPosition());
+    // ロックオンしてたらロックオンした敵に向くように補正
+    if (Camera::Instance().GetLockONEnemy())enemy_pos = Camera::Instance().GetLockONEnemy()->GetPosition();
 
-        if (player_to_enemy > length)
+    // してなかったら一番近いやつに向く補正
+    else
+    {
+        // 全エネミーとの距離判定
+        for (auto enemy : EnemyManager::Instance().GetEnemies())
         {
-            enemy_pos = enemy->GetPosition();
-            player_to_enemy = length;
+            float length = Length(position, enemy->GetPosition());
+
+            if (player_to_enemy > length)
+            {
+                enemy_pos = enemy->GetPosition();
+                player_to_enemy = length;
+            }
         }
+
+        // 距離判定、離れすぎてたら補正しない
+        if (player_to_enemy > can_attack_interpolation_length)return;
     }
 
     // todo Nero ここから下をモジュール化。enemy_posは引数にするか
@@ -269,8 +280,15 @@ void Player::AttackAngleInterpolation()
         // todo 攻撃時の角度補正の続き
         float angle = std::acosf(dot);
 
-        rotation.y += angle;
-        //Turn(pos_to_enemy_pos.x, pos_to_enemy_pos.z, 3.0f);
+        float cross = (pos_to_enemy_pos.x * front_z) - (pos_to_enemy_pos.z * front_x);
+        if(cross<0.0f)
+        {
+            rotation.y -= angle;
+        }
+        else
+        {
+            rotation.y += angle;
+        }
     }
 }
 
@@ -327,6 +345,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 if (enemy->ApplyDamage(attack_power * motion_value))
                 {
                     HitStopON(0.15f);
+                    slash->Play(nodePosition);
                     // todo これいる？
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);
                     enemy->DamageRender(attack_power * motion_value);

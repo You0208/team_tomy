@@ -375,7 +375,7 @@ void Enemy::BehaviorTreeInitialize_Level5()
 
     ai_tree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
     {
-#if 1 デバッグ用
+#if 0 デバッグ用
         //// 待機(デバッグ用)
         //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
         //// バックステップ

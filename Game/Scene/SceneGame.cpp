@@ -694,6 +694,7 @@ void GameScene::QuestClear()
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,true));
 	}
 
+
 }
 
 void GameScene::QuestFailed()
