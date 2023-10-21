@@ -90,6 +90,15 @@ public:
 
 };
 
+// 17.策士(負けても賭けたステータスが減らない)
+class Schemer :public BaseSkill
+{
+public:
+    Schemer(const wchar_t* ui_spr_filename):BaseSkill("Schemer", ui_spr_filename){}
+
+    // 名前検索で使用する
+};
+
 // 21.超人(戦闘時ステータスが2倍になる)
 class SuperMan:public BaseSkill
 {

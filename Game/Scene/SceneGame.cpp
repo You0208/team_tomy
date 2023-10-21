@@ -701,6 +701,7 @@ void GameScene::QuestFailed()
 {
 	if (player->death_anim_end)
 	{
+
 		// ƒXƒLƒ‹‚Ì‰e‹¿‚ðŽó‚¯‚È‚¢ó‘Ô‚Å‚ÌÅ‘åHP‚ÉÝ’èB
 		player->SkillFin();
 	    player->health = player->max_health;

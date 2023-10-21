@@ -136,6 +136,7 @@ private:
 	float max_magnification;
 
 	float player_status[3];
+	float player_status_bet[3];// プレイヤー側かけたステータスポイント
 	float player_status_max[3];
 
 private:/*---------------- スキル関係 -----------------*/
