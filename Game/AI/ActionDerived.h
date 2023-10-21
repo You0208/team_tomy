@@ -144,14 +144,18 @@ public:
 class BackStepAction : public ActionBase
 {
 public:
-	BackStepAction(Enemy* enemy) :ActionBase(enemy){}
+	BackStepAction(Enemy* enemy) :ActionBase(enemy) {}
 	ActionBase::State Run(float elapsedTime)override;
 
 	// 下がる距離
-	float length = 10.0f;
+	float length = 13.0f;
 
-	float easing_time = 1.5f;
-	float easing_timer;
+	int jump_anim_start_frame = 30;
+	int jump_anim_end_frame = 138;
+
+	// イージングする時間(秒)
+	float easing_time_ms = static_cast<float>(jump_anim_end_frame - jump_anim_start_frame)/60;
+	float easing_timer_ms;
 
 	// バックステップ開始座標
 	DirectX::XMFLOAT3 start_pos;

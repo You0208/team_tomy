@@ -576,26 +576,33 @@ ActionBase::State BackStepAction::Run(float elapsedTime)
 
 		DirectX::XMFLOAT3 front;
 		DirectX::XMStoreFloat3(&front, Forward);
-		start_pos = owner->GetPosition();
+
+	    start_pos = owner->GetPosition();
+		// 現在の位置から前方向の逆ベクトルにlength分下がる。
 		end_pos = { start_pos.x - front.x * length, start_pos.y,start_pos.z - front.z * length };
 
-		easing_timer = 0;
+		easing_timer_ms = 0;
 
 		step++;
 		break;
 	case 1:
 
-		// todo ほかのイージング試す
-		owner->SetPosition(
-			// イージングによるX座標の更新
-			Easing::OutCubic(easing_timer, easing_time, end_pos.x, start_pos.x),
-			owner->GetPosition().y,
-			Easing::OutCubic(easing_timer, easing_time, end_pos.z, start_pos.z)
+		if (owner->GetFrameIndex() >= jump_anim_start_frame)
+		{
+			// todo ほかのイージング試す
+			owner->SetPosition(
+				// イージングによるX座標の更新
+				Easing::OutSine(easing_timer_ms, easing_time_ms, end_pos.x, start_pos.x),
+				owner->GetPosition().y,
+				Easing::OutSine(easing_timer_ms, easing_time_ms, end_pos.z, start_pos.z)
 			);
+
+			easing_timer_ms += high_resolution_timer::Instance().time_interval();
+
+		}
 		// todo ここで壁レイキャスト
 
 
-		easing_timer += high_resolution_timer::Instance().time_interval();
 		if (owner->GetEndAnimation())
 		{
 			step = 0;

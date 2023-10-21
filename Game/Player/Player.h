@@ -124,6 +124,9 @@ public:
             health = max_health;
     }
 
+    // 喰らいダメージ補正設定
+    void SetDamageCorrection(const float damage_correction_) { damage_correction = damage_correction_; }
+
     void CalcSPAttackTime();
     bool can_SP_attack = false;
 
@@ -167,6 +170,10 @@ private:
 
     // 特殊攻撃でカウンターを受付してるか
     bool can_counter;
+
+    // スキルの影響でダメージを多く喰らう補正
+    float damage_correction;
+
     /* --------スキルによって影響を受ける前のパラメータを保持する---------
      * --------------スキル解除の時に代入パラメータに代入-----------------*/
 
