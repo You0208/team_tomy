@@ -33,6 +33,7 @@ namespace Nero::Component::AI
         return nullptr;
     }
 
+
     void StateMachine::ChangeState()
     {
         if (!next_state)return;

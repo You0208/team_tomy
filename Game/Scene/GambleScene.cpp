@@ -22,20 +22,24 @@ void GambleScene::set_skill_data()
 	wcscpy_s(skill_data[1].contents, L"Skill_ContentsB");
 	wcscpy_s(skill_data[2].title, L"–‚Œ•");
 	wcscpy_s(skill_data[2].contents, L"Skill_ContentsC");
+
 	wcscpy_s(skill_data[3].title, L"Žc“");
 	wcscpy_s(skill_data[4].title, L"•œQ");
-	wcscpy_s(skill_data[5].title, L"‹zŒŒ");
-	wcscpy_s(skill_data[6].title, L"Ž¾‘–");
-	wcscpy_s(skill_data[7].title, L"‰Á‘¬");
-	wcscpy_s(skill_data[8].title, L"‰ä–");
-	wcscpy_s(skill_data[9].title, L"Ä¶");
-	wcscpy_s(skill_data[10].title, L"’´l");
-	wcscpy_s(skill_data[11].title, L"Œ•¹");
-	wcscpy_s(skill_data[12].title, L"Ž¾•—");
-	wcscpy_s(skill_data[13].title, L"”ì–ž");
-	wcscpy_s(skill_data[14].title, L"“¤•…");
-	wcscpy_s(skill_data[15].title, L"Žôæf");
-	wcscpy_s(skill_data[16].title, L"˜ü–");
+	wcscpy_s(skill_data[5].title, L"‹¶—");
+	wcscpy_s(skill_data[19].title, L"‹Zp");
+	wcscpy_s(skill_data[6].title, L"‹zŒŒ");
+	wcscpy_s(skill_data[7].title, L"Ž¾‘–");
+	wcscpy_s(skill_data[8].title, L"‰Á‘¬");
+	wcscpy_s(skill_data[9].title, L"‰ä–");
+	wcscpy_s(skill_data[10].title, L"Ä¶");
+	wcscpy_s(skill_data[18].title, L"‹xŒe");
+	wcscpy_s(skill_data[11].title, L"’´l");
+	wcscpy_s(skill_data[12].title, L"Œ•¹");
+	wcscpy_s(skill_data[13].title, L"Ž¾•—");
+	wcscpy_s(skill_data[14].title, L"”ì–ž");
+	wcscpy_s(skill_data[15].title, L"“¤•…");
+	wcscpy_s(skill_data[16].title, L"Žôæf");
+	wcscpy_s(skill_data[17].title, L"˜ü–");
 }
 
 void GambleScene::set_quest_data()
@@ -100,11 +104,14 @@ void GambleScene::Initialize()
 		player->SetSkill<MagicSword>(L"./resources/Image/–‚Œ•.png");
 		player->SetSkill<Cruel>(L"./resources/Image/Žc“.png");
 		player->SetSkill<Revenge>(L"./resources/Image/•œQ.png");
+		player->SetSkill<Frenzy>(L"./resources/Image/‹¶—.png");
+		player->SetSkill<Technique>(L"./resources/Image/‹Zp.png");
 		player->SetSkill<BloodSucking>(L"./resources/Image/‹zŒŒ.png");
 		player->SetSkill<Sprint>(L"./resources/Image/Ž¾‘–.png");
 		player->SetSkill<Acceleration>(L"./resources/Image/‰Á‘¬.png");
 		player->SetSkill<Patience>(L"./resources/Image/‰ä–.png");
 		player->SetSkill<Regeneration>(L"./resources/Image/Ä¶.png");
+		player->SetSkill<Rest>(L"./resources/Image/‹xŒe.png");
 		player->SetSkill<SuperMan>(L"./resources/Image/’´l.png");
 		player->SetSkill<SwordSaint>(L"./resources/Image/Œ•¹.png");
 		player->SetSkill<Gale>(L"./resources/Image/Ž¾•—.png");
@@ -192,7 +199,6 @@ void GambleScene::Initialize()
 
 	/*--------------- ‚±‚êƒfƒoƒbƒO—p --------------*/
     //Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
-	player->TestSkillSet("Arrogance");
 
 
 }
@@ -496,6 +502,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	case Loading_Transition:
 
 		// todo ‚±‚±‚È‚ñ‚©ŠÈ’P‚È‰‰oì‚Á‚Ä‚à‚¢‚¢‚©‚à(—]—T‚ ‚ê‚Î)
+		//player->TestSkillSet("Rest");
+		//player->TestSkillSet("Technique");
 
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
 

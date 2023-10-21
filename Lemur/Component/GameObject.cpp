@@ -5,6 +5,7 @@
 
 void GameObject::AnimationUpdate(float elapsedTime)
 {
+    // todo 一回死んだらアニメーションバグる
     //todo ヒットストップどっちにするか決める
     // ヒットストップ中なら更新しない
     //if (is_hit_stop) return;
@@ -14,7 +15,6 @@ void GameObject::AnimationUpdate(float elapsedTime)
         frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
         if (frame_index > animation.sequence.size() - 1)
         {
-            // todo アニメーションループじゃないなら＝０のとこセットしない
             end_animation = true;
             frame_index = 0;
             animation_tick = 0;

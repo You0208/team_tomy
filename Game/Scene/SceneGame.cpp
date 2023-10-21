@@ -18,6 +18,7 @@
 #include "..\Enemy\Spider_ABC.h"
 #include "Game/Enemy/Spider_DEF.h"
 #include "Game/Enemy/Spider_GH.h"
+#include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Scene/SceneManager.h"
 extern QuestPattern quest_pattern;
 
@@ -635,54 +636,52 @@ void GameScene::CreateEnemy_KARI()
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
 
-    switch (quest_pattern)
-    {
-    case QuestPattern::A:
+	switch (quest_pattern)
+	{
+	case QuestPattern::A:
 
 		// todo ここでベットレートの設定
 		for (int i = 0; i < 1; ++i)
 		{
-			//Enemy* enemy = CreateEnemy<>();
-			//enemy->Initialize();
-			//enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
-			//enemyManager.Register(enemy);
-
-			//ColliderManager::Instance().SetCollider(enemy);
-		}
-
-		break;
-    case QuestPattern::B:
-
-		bet_rate = 2.0f;
-
-        for (int i = 0; i < 1; ++i)
-		{
-			Enemy* enemy = CreateEnemy<Spider_H>();
+			Enemy* enemy = CreateEnemy<Spider_A>();
 			enemy->Initialize();
-			enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
+			enemy->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, 40.0f));
 			enemyManager.Register(enemy);
 
 			ColliderManager::Instance().SetCollider(enemy);
 		}
 
 		break;
-    
-    case QuestPattern::C:
+	case QuestPattern::B:
 
 		bet_rate = 2.0f;
 
-        for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
-			boss_enemy = CreateEnemy<BossSpider>();
-			boss_enemy->Initialize();
-			boss_enemy->SetPosition({ DirectX::XMFLOAT3(i * 2.0f, 0, 5) });
-			enemyManager.Register(boss_enemy);
+			Enemy* enemy = CreateEnemy<Spider_H>();
+			enemy->Initialize();
+			enemy->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, 40.0f));
+			enemyManager.Register(enemy);
 
-			ColliderManager::Instance().SetCollider(boss_enemy);
+			ColliderManager::Instance().SetCollider(enemy);
 		}
 
 		break;
-    }
+
+	case QuestPattern::C:
+
+		bet_rate = 2.0f;
+
+		boss_enemy = CreateEnemy<BossSpider>();
+		boss_enemy->Initialize();
+		boss_enemy->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, 40.0f));
+		enemyManager.Register(boss_enemy);
+
+		ColliderManager::Instance().SetCollider(boss_enemy);
+
+
+		break;
+	}
 }
 
 void GameScene::QuestClear()
@@ -701,12 +700,20 @@ void GameScene::QuestFailed()
 {
 	if (player->death_anim_end)
 	{
+		// スキルの影響を受けない状態での最大HPに設定。
+		player->SkillFin();
+	    player->health = player->max_health;
+
 		if (player->down_count < 0)
 		{
 			Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
 		}
 		else
 		{
+			player->animStop = true;
+			player->death_anim_end = false;
+			player->death = false;
+			player->GetStateMachine()->SetNextState(player->Idle_State);
 			Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,false));
 		}
 	}

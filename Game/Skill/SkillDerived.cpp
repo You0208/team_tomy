@@ -50,14 +50,19 @@ void Patience::Update()
 
 void Regeneration::Update()
 {
-    heal_timer += high_resolution_timer::Instance().time_interval();
-    if (heal_timer >= heal_time)
+    heal_timer_ms += high_resolution_timer::Instance().time_interval();
+    if (heal_timer_ms >= heal_time_ms)
     {
         owner->health += heal_power;
-        heal_timer = 0.0f;
+        heal_timer_ms = 0.0f;
     }
 
     owner->MaxHealthCheck();
+}
+
+void Rest::Fin()
+{
+    owner->health += static_cast<int>(static_cast<float>(owner->max_health) * 0.3f);
 }
 
 void Reverse::Update()

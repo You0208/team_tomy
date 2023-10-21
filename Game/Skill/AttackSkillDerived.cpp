@@ -93,14 +93,36 @@ void Revenge::Update()
     if (old_health == owner->health)
         return;
 
+    // HPå∏è≠ó¶
+    float decrease_rate = 0;
+
     // HPå∏è≠ó¶ = (ç≈ëÂHP - HP) ÅÄ 100.0f
-    float decrease_rate = (static_cast<float>(owner->max_health) - static_cast<float>(owner->health))/owner->max_health;
+    decrease_rate = (static_cast<float>(owner->max_health) - static_cast<float>(owner->health))/owner->max_health;
+    // çUåÇóÕ = äÓñ{çUåÇóÕ Å~ (HPå∏è≠ó¶ Å~ 5.0f)    :ç≈ëÂëùâ¡ó ÇÕ5î{ÇƒÇ±Ç∆
     owner->attack_power = basic_AP * (decrease_rate * 5.0f);
 
     power_up_value = owner->attack_power - basic_AP;
 
     old_health = owner->health;
 }
+
+void Frenzy::Init()
+{
+    // ì¡éÍçUåÇÇÃÉÇÅ[ÉVÉáÉìílÇÕSPAttackStateë§Ç≈ñºëOåüçıÇ≈ê›íËÇ∑ÇÈ
+
+    // ãÚÇÁÇ¢É_ÉÅÅ[ÉWî{ó¶ê›íË
+    owner->SetDamageCorrection(1.1f);
+}
+
+void Technique::Init()
+{
+    // ì¡éÍçUåÇÇÃÉÇÅ[ÉVÉáÉìílÇÕSPAttackStateë§Ç≈ñºëOåüçıÇ≈ê›íËÇ∑ÇÈ
+
+    float nowTime = owner->GetSPAttackCoolTime_ms();
+    //ÉNÅ[ÉãÉ^ÉCÉÄêLÇŒÇ∑(åªÉ^ÉCÉÄÇÃ1.15î{)
+    owner->SetSPAttackCoolTime_ms(nowTime * 1.15f);
+}
+
 
 void HolySword::Init()
 {

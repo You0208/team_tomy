@@ -131,7 +131,6 @@ namespace Nero::Component::AI
         // todo 死亡後の処理どうするか
         if(owner->GetEndAnimation())
         {
-            owner->animStop = true;
             owner->down_count--;
             owner->death_anim_end = true;
 
@@ -140,6 +139,7 @@ namespace Nero::Component::AI
 
     void DeathState::End()
     {
+        
     }
 
     void FearState::Begin()
@@ -332,6 +332,9 @@ namespace Nero::Component::AI
                 owner->SetAnimationIndex(owner->CounterAttack_Anim);
                 step = Attack;
 
+                //モーション値の設定
+                CalcMotionValue();
+
                 // カウンター中は無敵にする
                 owner->invincible = true;
                 break;
@@ -343,7 +346,6 @@ namespace Nero::Component::AI
             break;
         case Attack:
 
-            owner->motion_value = motion_value;
             owner->CollisionNodeVsEnemies("wepon", "J_wepon", owner->GetAttackCollisionRange());
 
             if (owner->GetEndAnimation())
@@ -363,5 +365,22 @@ namespace Nero::Component::AI
 
         owner->can_SP_attack = false;
         owner->ResetSPAttackTimer();
+    }
+
+    void SPAttackState::CalcMotionValue()
+    {
+        //スキル [狂乱] か [技術] を持ってたらモーション値1.5倍
+        if (owner->HaveSkill("Frenzy") || owner->HaveSkill("Technique"))
+        {
+            // todo さすがにやりすぎ？
+            // もし二つとも持ってたら4.0倍
+            if (owner->HaveSkill("Frenzy") && owner->HaveSkill("Technique"))
+                owner->motion_value = motion_value * 4.0f;
+            else
+                owner->motion_value = motion_value * 1.5f;
+        }
+        // どちらも持ってなかったら通常のモーション値
+        else owner->motion_value = motion_value;
+
     }
 }

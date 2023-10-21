@@ -123,7 +123,7 @@ namespace Nero::Component::AI
     class SPAttackState :public StateBase
     {
     public:
-        SPAttackState(Player* player) :StateBase(player, "FearState") {}
+        SPAttackState(Player* player) :StateBase(player, "SPAttackState") {}
 
         void Begin() override;
         void Update() override;
@@ -138,8 +138,14 @@ namespace Nero::Component::AI
             Attack,// カウンター攻撃
         };
 
+
+    private:
+
         float motion_value = 2.5f;
         int step = Waiting;
+
+        //モーション値の計算,設定
+        void CalcMotionValue();
     };
 
 }

@@ -35,7 +35,8 @@ void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3
 void Player::DebugImgui()
 {
     ImGui::Begin("Player");
-    ImGui::DragFloat("ui_offset_y", &ui_offset_y);
+    ImGui::DragFloat("skill_ui_offset_y", &skill_ui_offset_y);
+    ImGui::DragFloat("skill_ui_scale", &skill_ui_scale,0.1);
     ImGui::DragInt("down_count", &down_count);
     if(ImGui::TreeNode("Transform"))
     {
@@ -90,11 +91,13 @@ void Player::DebugImgui()
     if(ImGui::TreeNode("Attack & Hit"))
     {
         ImGui::DragFloat("near_attack_range", &attack_collision_range);
+        ImGui::DragFloat("motion_value", &motion_value);
         ImGui::Checkbox("attack_collision_flag", &attack_collision_flag);
         ImGui::Checkbox("is_hit_stop", &is_hit_stop);
         ImGui::Checkbox("invincible", &invincible);
         ImGui::DragInt("invincible_frame", &invincible_frame);
         ImGui::Checkbox("can_SP_attack", &can_SP_attack);
+        ImGui::DragFloat("SP_attack_cool_time_ms", &SP_attack_cool_time_ms);
         ImGui::TreePop();
     }
     if(ImGui::TreeNode("Animation"))
@@ -440,6 +443,10 @@ void Player::SkillUpdate()
 
 void Player::SkillFin()
 {
+    for (auto& skill : skills)
+    {
+        skill->Fin();
+    }
     skills.clear();
     RetentionParamGet();
 }
@@ -450,7 +457,7 @@ void Player::SkillUIRender()
     ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
     for (int skill_i = 0; skill_i < skills.size(); skill_i++)
     {
-        skills.at(skill_i)->UI_spr->render(dc, 421*skill_i, ui_offset_y, 421, 402);
+        skills.at(skill_i)->UI_spr->render(dc, 421*skill_ui_scale * skill_i, skill_ui_offset_y, 421 * skill_ui_scale, 402 * skill_ui_scale);
     }
 
 }

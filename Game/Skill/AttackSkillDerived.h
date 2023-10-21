@@ -66,6 +66,26 @@ public:
     float power_up_value;
 };
 
+// 6.狂乱(特殊攻撃の与えるダメージが上がるが受けるダメージも上がる)
+class Frenzy :public BaseSkill
+{
+public:
+    Frenzy(const wchar_t* ui_spr_filename) :BaseSkill("Frenzy", ui_spr_filename){}
+
+    void Init() override;
+
+};
+
+// 7.技術(特殊攻撃のダメージが上がるが、クールタイムが伸びる)
+class Technique :public BaseSkill
+{
+public:
+    Technique(const wchar_t* ui_spr_filename) :BaseSkill("Technique", ui_spr_filename){}
+
+    void Init() override;
+
+};
+
 // 8.聖剣(通常攻撃のダメージが上がる)
 class HolySword :public BaseSkill
 {

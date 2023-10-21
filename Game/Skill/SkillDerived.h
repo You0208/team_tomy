@@ -41,6 +41,7 @@ public:
     Patience(const wchar_t* ui_spr_filename):BaseSkill("Patience", ui_spr_filename){}
 
     void Update() override;
+    // スキル使用したか
     bool is_used = false;
 };
 
@@ -51,9 +52,21 @@ public:
     Regeneration(const wchar_t* ui_spr_filename):BaseSkill("Regeneration", ui_spr_filename){}
 
     void Update() override;
-    float heal_time = 20.0f;
-    float heal_timer = 0.0f;
+    // 回復のクールタイム
+    float heal_time_ms = 20.0f;
+    // タイマー、タイムに達したら回復
+    float heal_timer_ms = 0.0f;
+    // 回復量
     int heal_power = 5;
+};
+
+// 15.休憩(戦闘終了後３０ % 回復する)
+class Rest:public BaseSkill
+{
+public:
+    Rest(const wchar_t* ui_spr_filename):BaseSkill("Rest", ui_spr_filename){}
+
+    void Fin() override;
 };
 
 // 16.逆転(敵を倒した３０秒間だけステータスが全体的に上がる)

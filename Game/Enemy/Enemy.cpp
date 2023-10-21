@@ -378,8 +378,10 @@ void Enemy::BehaviorTreeInitialize_Level5()
 #if 1 デバッグ用
         //// 待機(デバッグ用)
         //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
-                        // バックステップ
-        ai_tree->AddNode("Root", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+        //// バックステップ
+        //ai_tree->AddNode("Root", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
+        // 何もしない
+        ai_tree->AddNode("Root", "null", 0, BehaviorTree::SelectRule::Non, nullptr, nullptr);
 
         //// 両腕攻撃(デバッグ用)
         //ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
@@ -569,8 +571,8 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        if (player->CounterJudge(nodePosition)){}
-        else if (player->ApplyDamage(attack_power))
+        if (player->CounterJudge(nodePosition)) {}
+        else if (player->ApplyDamage(attack_power * player->GetDamageCorrection()))
         {
             // 豆腐スキル持ってたら強制的にHP0にする
             if (player->HaveSkill("Tofu"))

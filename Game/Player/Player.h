@@ -63,7 +63,7 @@ public:
 
 
         speed_power = 30;
-        speed_power = 300;// デバッグ用
+        speed_power = 100;// デバッグ用
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);
@@ -80,8 +80,6 @@ public:
 
     bool InputMove();
 
-    // 引数のスキル持ってるか検索する関数
-    bool HaveSkill(const char* search_skill_name);
     /*-------------- 入力状態の取得を関数化 --------------*/
 
     bool GetButtonDownB_AND_MouseLeft()
@@ -126,6 +124,8 @@ public:
 
     // 喰らいダメージ補正設定
     void SetDamageCorrection(const float damage_correction_) { damage_correction = damage_correction_; }
+    // 喰らいダメージ補正取得
+    float GetDamageCorrection() const { return damage_correction ; }
 
     void CalcSPAttackTime();
     bool can_SP_attack = false;
@@ -143,11 +143,17 @@ public:
     void ResetSPAttackTimer() { SP_attack_cool_timer_ms = 0.0f; }
     // 攻撃時の角度補間
     void AttackAngleInterpolation();
+
+    // 特殊攻撃のクールタイム設定
+    void SetSPAttackCoolTime_ms(const float cool_time) { SP_attack_cool_time_ms = cool_time; }
+    // 特殊攻撃のクールタイム取得
+    float GetSPAttackCoolTime_ms() const { return SP_attack_cool_time_ms; }
 private:
     
     //特殊攻撃のクールタイム(秒)
     // タイマーがこれを超えないと特殊攻撃は使えない
-    float SP_attack_cool_time_ms = 15.0f;
+    //float SP_attack_cool_time_ms = 15.0f;
+    float SP_attack_cool_time_ms = 1.0f;// デバッグ用
 
     // 特殊攻撃用の計測して値が動くタイマー(秒)
     float SP_attack_cool_timer_ms;
@@ -171,8 +177,8 @@ private:
     // 特殊攻撃でカウンターを受付してるか
     bool can_counter;
 
-    // スキルの影響でダメージを多く喰らう補正
-    float damage_correction;
+    // スキルの影響でダメージを多く喰らう補正(合計ダメージにかける)
+    float damage_correction = 1.0f;
 
     /* --------スキルによって影響を受ける前のパラメータを保持する---------
      * --------------スキル解除の時に代入パラメータに代入-----------------*/
@@ -291,8 +297,13 @@ public:/*----------------- スキル関係 -----------------*/
     // 所持スキルのUI描画
     void SkillUIRender();
 
+    // 引数のスキル持ってるか検索する関数
+    bool HaveSkill(const char* search_skill_name);
+
     /*--------- デバッグ用 ----------*/
-    float ui_offset_y = 120;
+    float skill_ui_offset_y = 120;
+
+    float skill_ui_scale = 0.5f;
 private:
     // 所持してるスキル
     std::vector<BaseSkill*> skills;
