@@ -24,6 +24,8 @@ public:
     // 描画処理
     void Render(float elapsedTime);
 
+    // ダメージ描画処理
+    void DamageRender();
     // エネミー登録
     void Register(Enemy* enemy);
 

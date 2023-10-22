@@ -76,6 +76,8 @@ private:// ゲーム関連
 
     // 勝利時にかけたステータスの増える倍率
     float bet_rate = 1.0f;
+    // 勝利時にかけたステータスの増える倍率の最高値
+    float bet_rate_max = 1.0f;
 
     //ポーズ
     void Pause()

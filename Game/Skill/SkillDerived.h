@@ -74,8 +74,9 @@ public:
 class Reverse:public BaseSkill
 {
 public:
-    Reverse(const wchar_t* ui_spr_filename):BaseSkill("Reverse", ui_spr_filename){}
+    Reverse(const wchar_t* ui_spr_filename):BaseSkill("Reverse", ui_spr_filename,-1){}
 
+    void Init() override;
     void Update() override;
 
     int kill_count = 0;

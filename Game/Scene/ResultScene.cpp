@@ -53,3 +53,14 @@ void ResultScene::GiveReward()
     player->speed_power   += player->bet_SP * bet_rate;
     player->max_health    += static_cast<int>(player->bet_MHP * bet_rate);
 }
+
+
+
+// todo エフェクト
+// todo ルートモーション
+// todo ギャンブルシーンのベットレートらへん
+// todo スキル
+// todo UIのずれ
+// todo テクスチャ
+
+// todo あとなんかいろいろ

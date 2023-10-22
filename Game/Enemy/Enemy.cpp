@@ -19,7 +19,7 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
+    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number3.png");
 
     if (enemy->enemy_type == "BossSpider")
     {
@@ -600,39 +600,80 @@ void Enemy::SetRandomTargetPosition()
 
 }
 
-void Enemy::DamageRender(const float damage)
+void Enemy::DamageRenderSet(const float damage,DirectX::XMFLOAT3 pos)
 {
-    // ビューポート
-    D3D11_VIEWPORT viewport;
-    UINT numViewports = 1;
-    ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
-    dc->RSGetViewports(&numViewports, &viewport);
+    auto Movement = [this]()
+    {
 
-    // 変換行列 (計算しやすいように行列に変換)
-    DirectX::XMMATRIX V = Camera::Instance().GetViewMatrix();
-    DirectX::XMMATRIX P = Camera::Instance().GetProjectionMatrix();
-    DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+    };
+    // ダメージ保持用配列に与えたダメージをセット
+    spr_damages.at(damage_value_index).spr_damage_values = damage;
 
-    // ベクトル変換
-    DirectX::XMVECTOR Pos = DirectX::XMLoadFloat3(&position);
+    float offset = 1.0f;
+    DirectX::XMFLOAT3 render_pos = { Mathf::RandomRange(pos.x - offset,pos.x + offset), Mathf::RandomRange(pos.y - offset,pos.y + offset), Mathf::RandomRange(pos.z - offset,pos.z + offset) };
+    // 
+    spr_damages.at(damage_value_index).render_pos =render_pos ;
 
-    DirectX::XMVECTOR ScreenPosition;
+    // ダメージ保持用配列にセットするインデックスを変えてる。
+    damage_value_index++;
+    if (damage_value_index > spr_damages.size()-1)
+        damage_value_index = 0;
 
-    ScreenPosition = DirectX::XMVector3Project(Pos,
-        viewport.TopLeftX,
-        viewport.TopLeftY,
-        viewport.Width,
-        viewport.Height,
-        viewport.MinDepth,
-        viewport.MaxDepth,
-        P,
-        V,
-        World
-    );
-    DirectX::XMFLOAT3 screenPosition;
-    DirectX::XMStoreFloat3(&screenPosition, ScreenPosition);
-    damage_spr->textout(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), std::to_string(damage), screenPosition.x, screenPosition.y, 50, 50, 1, 1, 1, 1);
+}
 
+void Enemy::DamageRender()
+{
+
+
+    for (auto& spr_damage : spr_damages)
+    {
+        // ダメージが設定されてなかったら処理しない
+        if (spr_damage.spr_damage_values < 0)continue;
+
+        // タイム制限超えてなかったら描画
+        if (spr_damage.sprite_timer_ms < spr_damage.sprite_time_ms)
+        {
+            /*----------- 3D→2D座標変換 ----------*/
+
+            // ビューポート
+            D3D11_VIEWPORT viewport;
+            UINT numViewports = 1;
+            ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+            dc->RSGetViewports(&numViewports, &viewport);
+
+            // 変換行列 (計算しやすいように行列に変換)
+            DirectX::XMMATRIX V = Camera::Instance().GetViewMatrix();
+            DirectX::XMMATRIX P = Camera::Instance().GetProjectionMatrix();
+            DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
+
+            // ベクトル変換
+            DirectX::XMVECTOR Pos = DirectX::XMLoadFloat3(&spr_damage.render_pos);
+
+            DirectX::XMVECTOR ScreenPosition;
+
+            ScreenPosition = DirectX::XMVector3Project(Pos,
+                viewport.TopLeftX,
+                viewport.TopLeftY,
+                viewport.Width,
+                viewport.Height,
+                viewport.MinDepth,
+                viewport.MaxDepth,
+                P,
+                V,
+                World
+            );
+            DirectX::XMFLOAT3 screenPosition;
+            DirectX::XMStoreFloat3(&screenPosition, ScreenPosition);
+
+            damage_spr->textout(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), spr_damage.spr_damage_values, screenPosition.x, screenPosition.y, 25, 50, 1, 1, 1, 1);
+            spr_damage.sprite_timer_ms += high_resolution_timer::Instance().time_interval();
+        }
+        //指定時間描画したらリセット
+        else
+        {
+            spr_damage.ReSet();
+        }
+    }
 }
 
 void Enemy::DebugImgui()

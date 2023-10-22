@@ -683,6 +683,9 @@ void GambleScene::Render(float elapsedTime)
 void GambleScene::DebugImGui()
 {
 	ImGui::Begin("Scene");
+	int quest_pattern_int = static_cast<int>(quest_pattern);
+	ImGui::InputInt("quest_pattern", &quest_pattern_int);
+	quest_pattern = static_cast<QuestPattern>(quest_pattern_int);
 	ImGui::SliderFloat2("Poo", &Poo.x,0,100);
 	ImGui::SliderInt("last_num", &last_num,0,100);
 	ImGui::Checkbox("is_first_set_player", &is_first_set_player);

@@ -65,6 +65,12 @@ void Rest::Fin()
     owner->health += static_cast<int>(static_cast<float>(owner->max_health) * 0.3f);
 }
 
+void Reverse::Init()
+{
+    basic_max_health = owner->max_health;
+    basic_attack_power = owner->attack_power;
+    basic_speed_power = owner->speed_power;
+}
 void Reverse::Update()
 {
     power_up_timer -= high_resolution_timer::Instance().time_interval();

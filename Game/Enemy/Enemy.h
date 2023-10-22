@@ -3,6 +3,28 @@
 #include "Game/AI/BehaviorTree.h"
 #include "Lemur/Component/GameObject.h"
 
+// ダメージ表示用構造体
+struct DamageSpr
+{
+    // 描画する時間(秒)
+    //もし表示する時間を各自で変えたい時用にメンバ化(例えばダメージ量とか？)
+    float sprite_time_ms = 5.0f;
+    // 値を動かすタイマー
+    float sprite_timer_ms;
+
+
+    // 表示するダメージ量
+    float spr_damage_values;
+
+    DirectX::XMFLOAT3 render_pos;
+    void ReSet()
+    {
+        sprite_timer_ms = 0.0f;
+        sprite_time_ms = 5.0f;
+        spr_damage_values = 0.0f;
+        render_pos = {};
+    }
+};
 
 //こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。
 
@@ -64,9 +86,12 @@ public:
         near_attack_range = 1.5f;
         middle_attack_range = 5.0f;
 
+        // 初期位置を範囲内でランダム設定
         position.x = Mathf::RandomRange(-18, 22);
         position.z = Mathf::RandomRange(3, 50);
 
+        // ダメージ表示用の配列を十個にリサイズ
+        spr_damages.resize(10);
     }
 
     // 攻撃当たり判定で使う
@@ -121,7 +146,6 @@ public:
     // ターゲット位置をランダム設定
     void SetRandomTargetPosition();
 
-    void DamageRender(const float damage);
     void DebugImgui() override;
 
     // 破棄
@@ -141,7 +165,6 @@ public:
     bool turned = false;
 
 protected:
-
     // todo ここら辺の変数と値は企画が決まってないから仮です
 
     // 目標地点
@@ -184,7 +207,18 @@ public:
     // 通常サイズのクモ用の当たり判定配列セットアップ
     //よく使うから関数化
     void SetUpHitCollisionNormalSize();
-public:
+
+public:/*---------- ダメージ量表示関係 ----------*/
+
     std::unique_ptr<sprite> damage_spr;
+    void DamageRenderSet(const float damage,DirectX::XMFLOAT3 pos);
+    void DamageRender();
+private:
+
+    // ダメージ表示用構造体コンテナ
+    //同時に十個まで出せる
+    std::vector<DamageSpr> spr_damages;
+
+    int damage_value_index = 0;
 };
 

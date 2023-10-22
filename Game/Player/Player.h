@@ -297,9 +297,6 @@ public:/*----------------- スキル関係 -----------------*/
     // ゲームに存在する全スキル
     std::vector<std::unique_ptr<BaseSkill>> all_skills;
 
-    // 所持スキルのUI描画
-    void SkillUIRender();
-
     // 引数のスキル持ってるか検索する関数
     bool HaveSkill(const char* search_skill_name);
 
@@ -315,11 +312,22 @@ private:
 private:
     Nero::Component::AI::StateMachine* state_machine = nullptr;
 
-
 public:/*----------- エフェクト関係 ------------*/
 
     std::unique_ptr<Effect> slash;
 
+public:/*--------------- UI関係 ----------------*/
+    // ダメージ表示
+    std::unique_ptr<sprite>spr_damage;
+
+    void UIRender();
+
+private:
+    // 所持スキルのUI描画
+    void SkillUIRender();
+
+    // 与ダメージの描画
+    void DamageRender(DirectX::XMFLOAT3 hit_pos);
 };
 
 //こいつらは実体にはならない。コンポーネントとして実体になるやつに搭載される。

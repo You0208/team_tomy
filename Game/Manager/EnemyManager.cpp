@@ -41,6 +41,15 @@ void EnemyManager::Render(float elapsedTime)
     }
 }
 
+void EnemyManager::DamageRender()
+{
+    for (Enemy* enemy : enemies)
+    {
+        enemy->DamageRender();
+    }
+
+}
+
 void EnemyManager::Register(Enemy* enemy)
 {
     enemies.emplace_back(enemy);

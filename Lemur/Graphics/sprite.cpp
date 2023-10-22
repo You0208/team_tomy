@@ -205,7 +205,7 @@ void sprite::textout(ID3D11DeviceContext* immediate_context, int n, float x, flo
     float sw = static_cast<float>(texture2d_desc.Width / 10);
     float sh = static_cast<float>(texture2d_desc.Height);
     float carriage = 0;
-    for (int i = n; i > 0; i / 10)
+    for (int i = n; i > 0; i /= 10)
     {
         render(immediate_context, x + carriage, y, w, h, r, g, b, a, 0, sw * i, 0, sw, sh);
         carriage += w;

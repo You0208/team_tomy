@@ -15,6 +15,7 @@ public:
         health = max_health;
         attack_power = 5.0f;
 
+        scaleFactor = 0.7f;
         meshName = "polySurface1";
         enemy_type = "SmallSpider";
     }

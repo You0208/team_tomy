@@ -584,6 +584,7 @@ void GameScene::Render(float elapsedTime)
 		immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
 
 		UIRender();
+		EnemyManager::Instance().DamageRender();
 		camera.RenderEnemyHP(player_hp_gauge.get());
 	}
 #endif
@@ -641,15 +642,20 @@ void GameScene::CreateEnemy_KARI()
 	case QuestPattern::A:
 
 		// todo ここでベットレートの設定
+		bet_rate = 1.2f;
+		bet_rate_max = 1.5f;
+
+		// 小クモ
 		for (int i = 0; i < 3; ++i)
 		{
-			Enemy* enemy = CreateEnemy<SmallSpider>();
-			enemy->Initialize();
-			enemyManager.Register(enemy);
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
 
-			ColliderManager::Instance().SetCollider(enemy);
+			ColliderManager::Instance().SetCollider(small_spider);
 		}
 
+		// Aクモ
 		{
 			Enemy* spider_a = CreateEnemy<Spider_A>();
 			spider_a->Initialize();
@@ -661,33 +667,399 @@ void GameScene::CreateEnemy_KARI()
 		break;
 	case QuestPattern::B:
 
-		bet_rate = 2.0f;
+		bet_rate = 1.2f;
+		bet_rate_max = 1.5f;
 
-		for (int i = 0; i < 1; ++i)
+		// 小クモ
+		for (int i = 0; i < 3; ++i)
 		{
-			Enemy* enemy = CreateEnemy<Spider_H>();
-			enemy->Initialize();
-			enemy->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, 40.0f));
-			enemyManager.Register(enemy);
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
 
-			ColliderManager::Instance().SetCollider(enemy);
+			ColliderManager::Instance().SetCollider(small_spider);
 		}
+
+		// Bクモ
+		{
+			Enemy* spider_b = CreateEnemy<Spider_B>();
+			spider_b->Initialize();
+			enemyManager.Register(spider_b);
+
+			ColliderManager::Instance().SetCollider(spider_b);
+		}
+
+
 
 		break;
 
 	case QuestPattern::C:
 
-		bet_rate = 2.0f;
+		bet_rate = 1.2f;
+		bet_rate_max = 1.5f;
 
-		boss_enemy = CreateEnemy<BossSpider>();
-		boss_enemy->Initialize();
-		boss_enemy->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, 40.0f));
-		enemyManager.Register(boss_enemy);
+		// 小クモ
+		for (int i = 0; i < 3; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
 
-		ColliderManager::Instance().SetCollider(boss_enemy);
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Cクモ
+		{
+			Enemy* spider_c = CreateEnemy<Spider_C>();
+			spider_c->Initialize();
+			enemyManager.Register(spider_c);
+
+			ColliderManager::Instance().SetCollider(spider_c);
+		}
 
 
 		break;
+
+	case QuestPattern::D:
+
+		bet_rate = 1.2f;
+		bet_rate_max = 1.5f;
+
+		// 小クモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
+
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Dクモ
+		{
+			Enemy* spider_d = CreateEnemy<Spider_D>();
+			spider_d->Initialize();
+			enemyManager.Register(spider_d);
+
+			ColliderManager::Instance().SetCollider(spider_d);
+		}
+
+
+		break;
+	case QuestPattern::E:
+
+		bet_rate = 1.2f;
+		bet_rate_max = 1.5f;
+
+		// 小クモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
+
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Eクモ
+		{
+			Enemy* spider_e = CreateEnemy<Spider_E>();
+			spider_e->Initialize();
+			enemyManager.Register(spider_e);
+
+			ColliderManager::Instance().SetCollider(spider_e);
+		}
+
+
+		break;
+	case QuestPattern::F:
+
+		bet_rate = 1.5f;
+		bet_rate_max = 2.5f;
+
+		// 小クモ
+		for (int i = 0; i < 4; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
+
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Dクモ
+		{
+			Enemy* spider_d = CreateEnemy<Spider_D>();
+			spider_d->Initialize();
+			enemyManager.Register(spider_d);
+
+			ColliderManager::Instance().SetCollider(spider_d);
+		}
+
+
+		break;
+	case QuestPattern::G:
+
+		bet_rate = 1.5f;
+		bet_rate_max = 2.5f;
+
+		// 小クモ
+		for (int i = 0; i < 3; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
+
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Eクモ
+		{
+			Enemy* spider_e = CreateEnemy<Spider_E>();
+			spider_e->Initialize();
+			enemyManager.Register(spider_e);
+
+			ColliderManager::Instance().SetCollider(spider_e);
+		}
+
+
+		break;
+	case QuestPattern::H:
+
+		bet_rate = 1.5f;
+		bet_rate_max = 2.5f;
+
+		// 小クモ
+		for (int i = 0; i < 3; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
+
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Fクモ
+		{
+			Enemy* spider_f = CreateEnemy<Spider_F>();
+			spider_f->Initialize();
+			enemyManager.Register(spider_f);
+
+			ColliderManager::Instance().SetCollider(spider_f);
+		}
+
+		break;
+
+	case QuestPattern::I:
+
+		bet_rate = 1.5f;
+		bet_rate_max = 2.5f;
+
+		// 小クモ
+		for (int i = 0; i < 5; ++i)
+		{
+			Enemy* small_spider = CreateEnemy<SmallSpider>();
+			small_spider->Initialize();
+			enemyManager.Register(small_spider);
+
+			ColliderManager::Instance().SetCollider(small_spider);
+		}
+
+		// Gクモ
+		{
+			Enemy* spider_g = CreateEnemy<Spider_G>();
+			spider_g->Initialize();
+			enemyManager.Register(spider_g);
+
+			ColliderManager::Instance().SetCollider(spider_g);
+		}
+
+		break;
+	case QuestPattern::J:
+
+		bet_rate = 1.5f;
+		bet_rate_max = 2.5f;
+
+		// Aクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* spider_a = CreateEnemy<Spider_A>();
+			spider_a->Initialize();
+			enemyManager.Register(spider_a);
+
+			ColliderManager::Instance().SetCollider(spider_a);
+		}
+
+		// Bクモ
+		{
+			Enemy* spider_b = CreateEnemy<Spider_B>();
+			spider_b->Initialize();
+			enemyManager.Register(spider_b);
+
+			ColliderManager::Instance().SetCollider(spider_b);
+		}
+
+		break;
+
+	case QuestPattern::K:
+
+		bet_rate = 2.0f;
+		bet_rate_max = 3.5f;
+
+		// Dクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* spider_d = CreateEnemy<Spider_D>();
+			spider_d->Initialize();
+			enemyManager.Register(spider_d);
+
+			ColliderManager::Instance().SetCollider(spider_d);
+		}
+
+		// Eクモ
+		{
+			Enemy* spider_e = CreateEnemy<Spider_E>();
+			spider_e->Initialize();
+			enemyManager.Register(spider_e);
+
+			ColliderManager::Instance().SetCollider(spider_e);
+		}
+
+		break;
+	case QuestPattern::L:
+
+		bet_rate = 2.0f;
+		bet_rate_max = 3.5f;
+
+		// Cクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* spider_c = CreateEnemy<Spider_C>();
+			spider_c->Initialize();
+			enemyManager.Register(spider_c);
+
+			ColliderManager::Instance().SetCollider(spider_c);
+		}
+
+		// Dクモ
+		{
+			Enemy* spider_d = CreateEnemy<Spider_D>();
+			spider_d->Initialize();
+			enemyManager.Register(spider_d);
+
+			ColliderManager::Instance().SetCollider(spider_d);
+		}
+
+		break;
+	case QuestPattern::M:
+
+		bet_rate = 2.0f;
+		bet_rate_max = 3.5f;
+
+		// Aクモ
+		for (int i = 0; i < 2; ++i)
+		{
+			Enemy* spider_a = CreateEnemy<Spider_A>();
+			spider_a->Initialize();
+			enemyManager.Register(spider_a);
+
+			ColliderManager::Instance().SetCollider(spider_a);
+		}
+
+		// Gクモ
+		{
+			Enemy* spider_g = CreateEnemy<Spider_G>();
+			spider_g->Initialize();
+			enemyManager.Register(spider_g);
+
+			ColliderManager::Instance().SetCollider(spider_g);
+		}
+
+		break;
+	case QuestPattern::N:
+
+		bet_rate = 2.0f;
+		bet_rate_max = 3.5f;
+
+		// Dクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* spider_d = CreateEnemy<Spider_D>();
+			spider_d->Initialize();
+			enemyManager.Register(spider_d);
+
+			ColliderManager::Instance().SetCollider(spider_d);
+		}
+
+		// Fクモ
+		{
+			Enemy* spider_f = CreateEnemy<Spider_F>();
+			spider_f->Initialize();
+			enemyManager.Register(spider_f);
+
+			ColliderManager::Instance().SetCollider(spider_f);
+		}
+
+		break;
+
+	case QuestPattern::O:
+
+		bet_rate = 2.0f;
+		bet_rate_max = 3.5f;
+
+		// Gクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* spider_g = CreateEnemy<Spider_G>();
+			spider_g->Initialize();
+			enemyManager.Register(spider_g);
+
+			ColliderManager::Instance().SetCollider(spider_g);
+		}
+
+		// Eクモ
+		{
+			Enemy* spider_e = CreateEnemy<Spider_E>();
+			spider_e->Initialize();
+			enemyManager.Register(spider_e);
+
+			ColliderManager::Instance().SetCollider(spider_e);
+		}
+
+		break;
+
+	case QuestPattern::P:
+
+		bet_rate = 5.0f;
+		bet_rate_max = 10.0f;
+
+		// Hクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* spider_h = CreateEnemy<Spider_H>();
+			spider_h->Initialize();
+			enemyManager.Register(spider_h);
+
+			ColliderManager::Instance().SetCollider(spider_h);
+		}
+
+		break;
+
+	case QuestPattern::BOSS:
+
+
+		// ボスクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			Enemy* boss_spider = CreateEnemy<BossSpider>();
+			boss_spider->Initialize();
+			enemyManager.Register(boss_spider);
+
+			ColliderManager::Instance().SetCollider(boss_spider);
+		}
+
+		break;
+		
 	}
 }
 
@@ -748,5 +1120,5 @@ void GameScene::UIRender()
 			0, 0, 619.0f * rate, 124);
 	}
 
-	player->SkillUIRender();
+	player->UIRender();
 }

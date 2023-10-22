@@ -17,7 +17,13 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v009.fbx"));
-    player->slash = std::make_unique<Effect>("./resources/Effect/poison.efkpkg");
+
+    /*----------------- スプライト ---------------*/
+    player->spr_damage = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
+
+    /*----------------- エフェクト ---------------*/
+    player->slash = std::make_unique<Effect>("./resources/Effect/poison.efk");
+
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -359,10 +365,10 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 if (enemy->ApplyDamage(attack_power * motion_value))
                 {
                     HitStopON(0.15f);
-                    slash->Play(nodePosition, 10);
+                    slash->Play(nodePosition, 0.10);
                     // todo これいる？
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);
-                    enemy->DamageRender(attack_power * motion_value);
+                    enemy->DamageRenderSet(attack_power * motion_value,node_pos);
 
                     // このフレームで与えたダメージを保持
                     add_damage += attack_power * motion_value;
@@ -380,6 +386,12 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
         }
 
     }
+
+}
+
+void Player::UIRender()
+{
+    SkillUIRender();
 
 }
 
@@ -493,6 +505,11 @@ void Player::SkillUIRender()
     {
         skills.at(skill_i)->UI_spr->render(dc, 421*skill_ui_scale * skill_i, skill_ui_offset_y, 421 * skill_ui_scale, 402 * skill_ui_scale);
     }
+
+}
+
+void Player::DamageRender(DirectX::XMFLOAT3 hit_pos)
+{
 
 }
 
