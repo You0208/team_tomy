@@ -260,8 +260,8 @@ void DemoScene::Render(float elapsedTime)
 
 		DirectX::XMStoreFloat4x4(&scene_constants.view_projection, V * P);
 		scene_constants.light_view_projection = scene_constants.view_projection;
-		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &scene_constants, 0, 0);
-		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+		immediate_context->UpdateSubresource(constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::SCENE)].Get(), 0, 0, &scene_constants, 0, 0);
+		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::SCENE), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::SCENE)].GetAddressOf());
 
 		double_speed_z->clear(immediate_context, 1.0f);
 		double_speed_z->activate(immediate_context);
@@ -298,7 +298,7 @@ void DemoScene::Render(float elapsedTime)
 		{
 			// FOG
 			DirectX::XMStoreFloat4x4(&scene_constants.inverse_projection, DirectX::XMMatrixInverse(NULL, P));
-			DirectX::XMStoreFloat4x4(&scene_constants.inverse_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
+			DirectX::XMStoreFloat4x4(&scene_constants.inv_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
 			scene_constants.time = high_resolution_timer::Instance().time_stamp();
 		}
 	}
@@ -378,6 +378,7 @@ void DemoScene::Render(float elapsedTime)
 	{
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+		
 		{
 			const DirectX::XMFLOAT4X4 coordinate_system_transforms[]{
 				{ -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	// 0:RHS Y-UP

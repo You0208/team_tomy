@@ -140,7 +140,6 @@ private:
         DirectX::XMFLOAT4 camera_position;
         // FOG
         DirectX::XMFLOAT4X4 inverse_projection;
-        DirectX::XMFLOAT4X4 inverse_view_projection;
         float time;
         float pads[3];
         // SKYMAP

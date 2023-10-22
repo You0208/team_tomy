@@ -331,7 +331,9 @@ void skinned_mesh::create_com_objects(ID3D11Device* device, const char* fbx_file
         ::_makepath_s(filename, 256, nullptr, dirname, iterator->second.texture_filenames[0].c_str(), nullptr);
 
         //TODO materil実験
-        LoadTexture(device, filename, "_MS", true, iterator->second.roughness.GetAddressOf(), 0x00FFFF00);
+        LoadTexture(device, filename, "_MS", true, iterator->second.metalness_smoothness.GetAddressOf(), 0x00FFFF00);
+        LoadTexture(device, filename, "_M", true, iterator->second.metalness.GetAddressOf(), 0x00FFFF00);
+        LoadTexture(device, filename, "_R", true, iterator->second.roughness.GetAddressOf(), 0x00FFFF00);
     }
 
     HRESULT hr = S_OK;
@@ -430,7 +432,9 @@ void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT4
             //TODO EMISSIVE
             immediate_context->PSSetShaderResources(2, 1, material.shader_resource_views[2].GetAddressOf());
             //TODO material実験
-            immediate_context->PSSetShaderResources(3, 1, material.roughness.GetAddressOf());
+            immediate_context->PSSetShaderResources(3, 1, material.metalness_smoothness.GetAddressOf());
+            immediate_context->PSSetShaderResources(4, 1, material.metalness.GetAddressOf());
+            immediate_context->PSSetShaderResources(5, 1, material.roughness.GetAddressOf());
 
 
             // 使用するインデックスバッファの範囲を指定して描画する
@@ -1284,7 +1288,9 @@ size_t static_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT
             immediate_context->PSSetShaderResources(0, 1, material.shader_resource_views[0].GetAddressOf());
             immediate_context->PSSetShaderResources(1, 1, material.shader_resource_views[1].GetAddressOf());
             immediate_context->PSSetShaderResources(2, 1, material.shader_resource_views[2].GetAddressOf());
-            immediate_context->PSSetShaderResources(3, 1, material.roughness.GetAddressOf());
+            immediate_context->PSSetShaderResources(3, 1, material.metalness_smoothness.GetAddressOf());
+            immediate_context->PSSetShaderResources(4, 1, material.metalness.GetAddressOf());
+            immediate_context->PSSetShaderResources(5, 1, material.roughness.GetAddressOf());
 
             immediate_context->DrawIndexed(subset.index_count, subset.start_index_location, 0);
             drawcall_count++;
