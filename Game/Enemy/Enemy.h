@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/MathHelper.h"
 #include "Game/AI/BehaviorTree.h"
 #include "Lemur/Component/GameObject.h"
 
@@ -58,15 +59,13 @@ public:
         radius = 0.5f;
 
 
-        max_health = 1000;
-        health = max_health;
-
-        attack_power = 1;
         attack_collision_range = 0.3f;
 
         near_attack_range = 1.5f;
         middle_attack_range = 5.0f;
 
+        position.x = Mathf::RandomRange(-18, 22);
+        position.z = Mathf::RandomRange(3, 50);
 
     }
 

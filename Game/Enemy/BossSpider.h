@@ -10,8 +10,6 @@ public:
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :Enemy(input_, physics_, graphics_)
     {
-        position.z += 150;
-        rotation.y = 180;
         max_health = 5000;
         health = max_health;
 

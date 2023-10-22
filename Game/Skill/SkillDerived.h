@@ -69,6 +69,7 @@ public:
     void Fin() override;
 };
 
+// todo たまに何かのスキルをとったらパラメータがバグる。多分逆転。
 // 16.逆転(敵を倒した３０秒間だけステータスが全体的に上がる)
 class Reverse:public BaseSkill
 {

@@ -641,14 +641,21 @@ void GameScene::CreateEnemy_KARI()
 	case QuestPattern::A:
 
 		// todo ここでベットレートの設定
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < 3; ++i)
 		{
-			Enemy* enemy = CreateEnemy<Spider_A>();
+			Enemy* enemy = CreateEnemy<SmallSpider>();
 			enemy->Initialize();
-			enemy->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, 40.0f));
 			enemyManager.Register(enemy);
 
 			ColliderManager::Instance().SetCollider(enemy);
+		}
+
+		{
+			Enemy* spider_a = CreateEnemy<Spider_A>();
+			spider_a->Initialize();
+			enemyManager.Register(spider_a);
+
+			ColliderManager::Instance().SetCollider(spider_a);
 		}
 
 		break;
@@ -725,6 +732,7 @@ void GameScene::UIRender()
 {
 	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
 
+    //todo このUIなんかずれてる 
 	/*------------- プレイヤーのHPゲージ ------------*/
 	player_hp_gauge_zabuton->render(dc, 0, 0, 619, 124);
 	rate = static_cast<float>(player->health) / static_cast<float>(player->max_health);
