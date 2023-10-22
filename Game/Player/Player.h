@@ -4,6 +4,7 @@
 #include "Game/Enemy/Enemy.h"
 #include "Game/StateMachine/StateDerived.h"
 #include "Lemur/Component/GameObject.h"
+#include "Lemur/Effekseer/Effect.h"
 //#include "Game/StateMachine/StateMachine.h"
 
 namespace Nero::Component::AI
@@ -197,6 +198,8 @@ private:
     // スキル無しMaxHP
     int retention_basicMHP;
 
+    // 攻撃時の角度補正してくれる距離
+    float can_attack_interpolation_length = 7.0f;
 
 public:
     // 一回初期設定したらtrue。
@@ -276,7 +279,7 @@ public:/*----------------- スキル関係 -----------------*/
     void SkillInit();
     // 所持スキルのupdateを呼ぶ
     void SkillUpdate();
-    // スキルをリセット
+    // スキルをリセット(中でスキルによって増えた値もリセット)
     void SkillFin();
 
     // 所持できるスキル数
@@ -311,6 +314,11 @@ private:
 
 private:
     Nero::Component::AI::StateMachine* state_machine = nullptr;
+
+
+public:/*----------- エフェクト関係 ------------*/
+
+    std::unique_ptr<Effect> slash;
 
 };
 

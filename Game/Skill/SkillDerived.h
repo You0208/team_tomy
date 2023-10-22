@@ -69,6 +69,7 @@ public:
     void Fin() override;
 };
 
+// todo たまに何かのスキルをとったらパラメータがバグる。多分逆転。
 // 16.逆転(敵を倒した３０秒間だけステータスが全体的に上がる)
 class Reverse:public BaseSkill
 {
@@ -88,6 +89,15 @@ public:
     float basic_defense_power;
     float basic_speed_power;
 
+};
+
+// 17.策士(負けても賭けたステータスが減らない)
+class Schemer :public BaseSkill
+{
+public:
+    Schemer(const wchar_t* ui_spr_filename):BaseSkill("Schemer", ui_spr_filename){}
+
+    // 名前検索で使用する
 };
 
 // 21.超人(戦闘時ステータスが2倍になる)

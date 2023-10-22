@@ -1,6 +1,8 @@
 #include "GameObject.h"
 
 #include "Game/Easing.h"
+#include "Game/MathHelper.h"
+#include "Lemur/Collision/Collision.h"
 
 
 void GameObject::AnimationUpdate(float elapsedTime)
@@ -296,6 +298,122 @@ void GameObject::UpdateHorizontalMove(float elapsedTime)
     // 移動処理
     position.x += velocity.x * elapsedTime;
     position.z += velocity.z * elapsedTime;
+
+    if (position.x < -20)
+        position.x = -20;
+    else if (position.x > 22)
+        position.x = 22;
+
+    if (position.z < 3)
+        position.z = 3;
+    else if (position.z > 50)
+        position.z = 50;
+
+#if 0
+    // 移動量取得
+    float VecX = position.x + velocity.x - position.x;
+    float VecZ = position.z + velocity.z - position.z;
+
+    // 水平速力量計算
+    float velocityLengthXZ = sqrtf((VecX * VecX) + (VecZ * VecZ));
+
+    if (velocityLengthXZ > 0.0f)
+    {
+        // 水平移動値
+        float mx = velocity.x * elapsedTime;
+        float mz = velocity.z * elapsedTime;
+
+        // レイの開始位置と終点位置設定
+        DirectX::XMFLOAT4 start = { position.x,position.y,position.z,1 };
+        DirectX::XMFLOAT4 end = {
+            position.x + mx,
+            position.y ,
+            position.z + mz,
+            1
+        };
+        start.y += 0.1;
+        end.y += 0.1;
+        // レイ始点
+        DirectX::XMVECTOR Start = DirectX::XMLoadFloat4(&start);
+        // レイ終点
+        DirectX::XMVECTOR End = DirectX::XMLoadFloat4(&end);
+
+        // レイの方向
+        DirectX::XMVECTOR RayVec = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(End, Start));
+        DirectX::XMFLOAT4 ray_vec;
+        DirectX::XMStoreFloat4(&ray_vec, RayVec);
+
+        // レイキャストによる壁判定
+
+        // 交点
+        DirectX::XMFLOAT4 hit_pos;
+
+        std::string intersected_mesh;
+        std::string intersected_material;
+        DirectX::XMFLOAT3 hit_normal;
+
+        if(Model->raycast(start, ray_vec, world, hit_pos, hit_normal, intersected_mesh, intersected_material))
+        {
+            DirectX::XMVECTOR Hit = DirectX::XMLoadFloat4(&hit_pos);
+            DirectX::XMVECTOR Start_to_Hit = DirectX::XMVectorSubtract(Hit, Start);
+            float ray_length = DirectX::XMVectorGetX(DirectX::XMVector4Length(Start_to_Hit));
+
+
+            // ヒットした
+            if (ray_length < velocityLengthXZ)
+            {
+                // 移動量ベクトル終点
+                DirectX::XMVECTOR MoveVecEnd = DirectX::XMVectorScale(DirectX::XMVector3Normalize(Start), velocityLengthXZ);
+
+                // ヒットしたポリゴンの法線
+                DirectX::XMVECTOR Normal = DirectX::XMLoadFloat3(&hit_normal);
+
+                DirectX::XMVECTOR Hit_To_MoveVecEnd = DirectX::XMVectorSubtract(MoveVecEnd, Hit);
+                // 射影ベクトルを算出
+                DirectX::XMVECTOR Projection = DirectX::XMVectorScale(Normal,
+                    DirectX::XMVectorGetX(DirectX::XMVector3Dot(DirectX::XMVectorNegate(Hit_To_MoveVecEnd), Normal)));
+
+                // 多めに補正するためにちょっと大きくする
+                Projection = DirectX::XMVectorScale(Projection, 1.01f);
+
+                // 進行ベクトルの終点と射影ベクトルを足して補正後の位置ベクトル算出。
+                DirectX::XMVECTOR CollectPosition = DirectX::XMVectorMultiplyAdd(Normal, Projection, MoveVecEnd);
+
+                // 補正後の位置
+                DirectX::XMFLOAT4 new_pos;
+                DirectX::XMStoreFloat4(&new_pos, CollectPosition);
+
+                /*------------ 交点から補正後の位置の間でもっかいレイキャスト ----------*/
+
+                // 交点から補正後の位置までのベクトル
+                DirectX::XMVECTOR Hit_To_NewPos = DirectX::XMVectorSubtract(CollectPosition, Hit);
+                Hit_To_NewPos = DirectX::XMVector3Normalize(Hit_To_NewPos);
+
+                DirectX::XMStoreFloat4(&ray_vec, Hit_To_NewPos);
+                if (Model->raycast(new_pos, ray_vec, world, hit_pos, hit_normal, intersected_mesh, intersected_material))
+                {
+                    position.x = hit_pos.x;
+                    position.y = hit_pos.y;
+                    position.z = hit_pos.z;
+                }
+                else
+                {
+                    position.x = new_pos.x;
+                    position.y = new_pos.y;
+                    position.z = new_pos.z;
+                }
+
+            }
+        }
+        else
+        {
+            position.x += mx;
+            position.z += mz;
+        }
+    }
+#endif
+
+
 }
 
 void GameObject::HitStopCalc()

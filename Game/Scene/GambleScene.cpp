@@ -33,6 +33,8 @@ void GambleScene::set_skill_data()
 	wcscpy_s(skill_data[9].title, L"我慢");
 	wcscpy_s(skill_data[10].title, L"再生");
 	wcscpy_s(skill_data[18].title, L"休憩");
+	wcscpy_s(skill_data[20].title, L"逆転");
+	wcscpy_s(skill_data[21].title, L"策士");
 	wcscpy_s(skill_data[11].title, L"超人");
 	wcscpy_s(skill_data[12].title, L"剣聖");
 	wcscpy_s(skill_data[13].title, L"疾風");
@@ -112,6 +114,8 @@ void GambleScene::Initialize()
 		player->SetSkill<Patience>(L"./resources/Image/我慢.png");
 		player->SetSkill<Regeneration>(L"./resources/Image/再生.png");
 		player->SetSkill<Rest>(L"./resources/Image/休憩.png");
+		player->SetSkill<Reverse>(L"./resources/Image/逆転.png");
+		player->SetSkill<Schemer>(L"./resources/Image/策士.png");
 		player->SetSkill<SuperMan>(L"./resources/Image/超人.png");
 		player->SetSkill<SwordSaint>(L"./resources/Image/剣聖.png");
 		player->SetSkill<Gale>(L"./resources/Image/疾風.png");
@@ -435,8 +439,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		// プレイヤーのbet_○○にプレイヤーのかける値を入れて、その同じ量をパラメータから引く処理を作って欲しいです。
 		//例えば攻撃力に10ポイントベットするなら下の処理みたいになります。今は処理がないからマジックナンバーでattack_powerを設定してるけど
 		//そこの処理も作ってくれたらうれしいぽよ。
-		player->bet_AP = 10;
-		player->attack_power = 40;
+		//player->bet_AP = 10;
+		//player->attack_power = 40;
 		//small_arrow_up_pos[0] = Poo;
 		// 上下
 
@@ -451,6 +455,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 						if (player_status[i] > 1)
 						{
 							bet_num[i]++;
+							player_status_bet[i]++;
 							player_status[i]--;
 							total_point = bet_num[0] + bet_num[1] + bet_num[2];
 							if (total_point % 10 == 0 && total_point >= 10 && magnification <= max_magnification)
@@ -467,6 +472,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 						if (player_status[i] < player_status_max[i])
 						{
 							if (bet_num[i] > 0)bet_num[i]--;
+							player_status_bet[i]--;
 							player_status[i]++;
 							total_point = bet_num[0] + bet_num[1] + bet_num[2];
 							if (total_point % 10 == 0 && total_point >= 10 && magnification >= min_magnification)
@@ -491,9 +497,15 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				// ポイントを倍率分かけておく
 				total_point *= magnification;
 				// 元のステータスを減らす
-				player->health = player_status[0];
+				//player->health = player_status[0];
+				// たぶんこう
+				player->max_health = player_status[0];
 				player->attack_power = player_status[1];
 				player->speed_power = player_status[2];
+
+				player->bet_MHP = player_status_bet[0];
+				player->bet_AP = player_status_bet[1];
+				player->bet_SP = player_status_bet[2];
 				step++;
 			}
 		}
@@ -503,7 +515,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 		// todo ここなんか簡単な演出作ってもいいかも(余裕あれば)
 		//player->TestSkillSet("Rest");
-		//player->TestSkillSet("Technique");
+		//player->TestSkillSet("Schemer");
 
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
 

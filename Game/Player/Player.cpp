@@ -17,6 +17,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v009.fbx"));
+    player->slash = std::make_unique<Effect>("./resources/Effect/poison.efkpkg");
 }
 
 void PlayerGraphicsComponent::Update(GameObject* gameobj)
@@ -228,36 +229,52 @@ void Player::AttackAngleInterpolation()
     float player_to_enemy = FLT_MAX;
     DirectX::XMFLOAT3 enemy_pos;
 
-    // 全エネミーとの距離判定
-    for (auto enemy : EnemyManager::Instance().GetEnemies())
-    {
-        float length = Length(position, enemy->GetPosition());
+    // ロックオンしてたらロックオンした敵に向くように補正
+    if (Camera::Instance().GetLockONEnemy())enemy_pos = Camera::Instance().GetLockONEnemy()->GetPosition();
 
-        if (player_to_enemy > length)
+    // してなかったら一番近いやつに向く補正
+    else
+    {
+        // 全エネミーとの距離判定
+        for (auto enemy : EnemyManager::Instance().GetEnemies())
         {
-            enemy_pos = enemy->GetPosition();
-            player_to_enemy = length;
+            float length = Length(position, enemy->GetPosition());
+
+            if (player_to_enemy > length)
+            {
+                enemy_pos = enemy->GetPosition();
+                player_to_enemy = length;
+            }
         }
+
+        // 距離判定、離れすぎてたら補正しない
+        if (player_to_enemy > can_attack_interpolation_length)return;
     }
 
     // todo Nero ここから下をモジュール化。enemy_posは引数にするか
     // この値より内積が小さかったら補間できない
-    float theta = 0.75f;
+    float theta = 0.7f;
     DirectX::XMVECTOR Pos = DirectX::XMLoadFloat3(&position);
     DirectX::XMVECTOR Enemy_pos = DirectX::XMLoadFloat3(&enemy_pos);
 
+    // プレイヤーから敵の位置
+    DirectX::XMVECTOR Pos_To_EnemyPos = DirectX::XMVectorSubtract(Enemy_pos, Pos);
+    Pos_To_EnemyPos = DirectX::XMVector3Normalize(Pos_To_EnemyPos);
+
+    // 回転行列の作成
+    DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+    // 前方向ベクトル取得
+    DirectX::XMVECTOR Forward = rotation_matrix.r[2];
+
     // 内積判定
-    if(CalcAngle(Pos,Enemy_pos,theta))
+    if(CalcAngle(Forward,Pos_To_EnemyPos,theta))
     {
         /*-------- 判定クリアしたら補間 --------*/
 
-        // プレイヤーから敵の位置
-        DirectX::XMVECTOR Pos_to_EnemyPos = DirectX::XMVectorSubtract(Enemy_pos, Pos);
-        Pos_to_EnemyPos = DirectX::XMVector3Normalize(Pos_to_EnemyPos);
 
         // プレイヤーから敵の位置
         DirectX::XMFLOAT3 pos_to_enemy_pos;
-        DirectX::XMStoreFloat3(&pos_to_enemy_pos, Pos_to_EnemyPos);
+        DirectX::XMStoreFloat3(&pos_to_enemy_pos, Pos_To_EnemyPos);
 
 
         // プレイヤーの前方向
@@ -266,11 +283,17 @@ void Player::AttackAngleInterpolation()
 
         float dot = (pos_to_enemy_pos.x * front_x) + (pos_to_enemy_pos.z * front_z);
 
-        // todo 攻撃時の角度補正の続き
         float angle = std::acosf(dot);
 
-        rotation.y += angle;
-        //Turn(pos_to_enemy_pos.x, pos_to_enemy_pos.z, 3.0f);
+        float cross = (pos_to_enemy_pos.x * front_z) - (pos_to_enemy_pos.z * front_x);
+        if(cross<0.0f)
+        {
+            rotation.y -= angle;
+        }
+        else
+        {
+            rotation.y += angle;
+        }
     }
 }
 
@@ -290,6 +313,15 @@ void Player::RetentionParamGet()
     max_health    = retention_basicMHP;
     if (health > max_health)
         health = max_health;
+
+    // スキル策士があればベットした分を戻す
+    if (HaveSkill("Schemer"))
+    {
+        max_health += bet_MHP;
+        attack_power += bet_AP;
+        speed_power += bet_SP;
+    }
+
 }
 
 void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name, float node_radius)
@@ -327,6 +359,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 if (enemy->ApplyDamage(attack_power * motion_value))
                 {
                     HitStopON(0.15f);
+                    slash->Play(nodePosition, 10);
                     // todo これいる？
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);
                     enemy->DamageRender(attack_power * motion_value);
@@ -447,8 +480,9 @@ void Player::SkillFin()
     {
         skill->Fin();
     }
-    skills.clear();
+
     RetentionParamGet();
+    skills.clear();
 }
 
 void Player::SkillUIRender()

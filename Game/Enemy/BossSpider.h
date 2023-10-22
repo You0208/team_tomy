@@ -10,8 +10,6 @@ public:
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :Enemy(input_, physics_, graphics_)
     {
-        position.z += 150;
-        rotation.y = 180;
         max_health = 5000;
         health = max_health;
 
@@ -67,6 +65,9 @@ public:
         PutInCollisions("J_leg_D_end_R", 0.5f, hit_collisions);
         PutInCollisions("J_lowbody", 1.0f, hit_collisions);
         PutInCollisions("J_lowbody_end", 1.0f, hit_collisions);
+
+        //PutInCollisions("subJ_leg_D_03_L", 0.8f, hit_collisions);
+        //PutInCollisions("subJ_leg_D_03_R", 0.8f, hit_collisions);
 
         /*--------------- 両腕攻撃の当たり判定配列のセット ------------*/
         PutInCollisions("J_leg_A_01_L", 0.8f, arm_attack_collisions);

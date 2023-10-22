@@ -3,7 +3,7 @@
 
 #include <directxmath.h>
 #include <utility>
-
+#include "Lemur/Collision/Collision.h"
 int intersect_ray_triangles
 (
 	const float* positions, // vertices
@@ -42,3 +42,4 @@ inline bool intersect_ray_aabb(const float p[3], const float d[3], const float m
 	}
 	return true;
 }
+

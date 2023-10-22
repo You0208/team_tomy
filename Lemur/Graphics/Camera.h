@@ -56,6 +56,7 @@ public:
     DirectX::XMVECTOR GetEye() { return Eye; }   // projections—ñæ“¾
     DirectX::XMVECTOR GetFocus() { return Focus; }
 
+    Enemy* GetLockONEnemy()const { return lock_on_enemy; }
 
 private:
     // views—ñ
