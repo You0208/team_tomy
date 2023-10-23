@@ -7,7 +7,6 @@ public:
     Stage() {}
     ~Stage() {}
 
-    // ToDo レイキャスト
     void Init();
 
     void Render();

@@ -4,7 +4,7 @@
 #include "Lemur/Input/Input.h"
 #include "Lemur/Scene/SceneManager.h"
 
-extern bool is_first_set_player;
+extern int wave_count;
 
 void TitleScene::Initialize()
 {
@@ -23,7 +23,7 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
         mouse.GetButtonDown()&Mouse::BTN_RIGHT)
     {
         // タイトルから行くときは初めから。
-        is_first_set_player = false;
+        wave_count = 1;
 
         Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
     }

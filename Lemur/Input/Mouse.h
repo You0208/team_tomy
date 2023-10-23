@@ -35,6 +35,12 @@ public:
     int GetWheel() const { return wheel[1]; }
 
     // マウスカーソルX座標取得
+    void SetPositionX(const int position_x) { positionX[0] = positionX[1] = position_x; }
+
+    // マウスカーソルY座標取得
+    void SetPositionY(const int position_y)  { positionY[0] = positionY[1] = position_y; }
+
+    // マウスカーソルX座標取得
     int GetPositionX() const { return positionX[0]; }
 
     // マウスカーソルY座標取得

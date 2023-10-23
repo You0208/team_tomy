@@ -40,7 +40,6 @@ namespace Nero::Component::AI
             State* state = new State(player);
             states.emplace_back(state);
 
-            // todo 自動で最初のステートを設定できるようにしたい。今はデフォルト引数で妥協
             // 初めのステートならセットする
             if (is_first_state)
             {

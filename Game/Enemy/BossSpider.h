@@ -20,7 +20,7 @@ public:
         scaleFactor = 3.0f;
 
         // メッシュの名前違うからここで再設定
-        meshName = "spider_boss_spider_boss";
+        meshName = "spider_boss_spider_boss1";
 
         enemy_type = "BossSpider";
     }
@@ -66,8 +66,8 @@ public:
         PutInCollisions("J_lowbody", 1.0f, hit_collisions);
         PutInCollisions("J_lowbody_end", 1.0f, hit_collisions);
 
-        //PutInCollisions("subJ_leg_D_03_L", 0.8f, hit_collisions);
-        //PutInCollisions("subJ_leg_D_03_R", 0.8f, hit_collisions);
+        PutInCollisions("subJ_leg_D_03_L", 0.8f, hit_collisions);
+        PutInCollisions("subJ_leg_D_03_R", 0.8f, hit_collisions);
 
         /*--------------- 両腕攻撃の当たり判定配列のセット ------------*/
         PutInCollisions("J_leg_A_01_L", 0.8f, arm_attack_collisions);

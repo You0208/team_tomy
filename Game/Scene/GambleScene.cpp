@@ -14,6 +14,9 @@
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::C;
 
+// 現在何ウェーブ目か
+int wave_count = 1;
+
 void GambleScene::set_skill_data()
 {
 	wcscpy_s(skill_data[0].title, L"剛腕");
@@ -69,23 +72,30 @@ void GambleScene::set_quest_data()
 
 
 
+	// クエストパターンの設定
+	for (int quest_num_i = QuestPattern::A; quest_num_i < QuestPattern::MAX_QUEST; quest_num_i++)
+		quest_data[quest_num_i].pattern = quest_num_i;
 
-	quest_data[0].min_magnification = 1.2f;
-	quest_data[1].min_magnification = 1.5f;
-	quest_data[2].min_magnification = 2.0f;
+	// クエストのベット倍率をセット
+	for (int quest_num_i = QuestPattern::A; quest_num_i < QuestPattern::F; quest_num_i++)
+	{
+		quest_data[quest_num_i].min_magnification = 1.2f;
+		quest_data[quest_num_i].max_magnification = 1.5f;
+	}
+	for (int quest_num_i = QuestPattern::F; quest_num_i < QuestPattern::K; quest_num_i++)
+	{
+		quest_data[quest_num_i].min_magnification = 1.5f;
+		quest_data[quest_num_i].max_magnification = 2.5f;
+	}
+	for (int quest_num_i = QuestPattern::K; quest_num_i < QuestPattern::P; quest_num_i++)
+	{
+		quest_data[quest_num_i].min_magnification = 2.0f;
+		quest_data[quest_num_i].max_magnification = 3.5f;
+	}
+	quest_data[QuestPattern::P].min_magnification = 2.0f;
+	quest_data[QuestPattern::P].max_magnification = 3.5f;
 
-	quest_data[0].max_magnification = 1.5f;
-	quest_data[1].max_magnification = 2.5f;
-	quest_data[2].max_magnification = 3.5f;
-
-
-	quest_data[0].pattern = QuestPattern::A;
-	quest_data[1].pattern = QuestPattern::B;
-	quest_data[2].pattern = QuestPattern::C;
 }
-
-// 一番初めのプレイヤーを生成したか(二週目移行か)
-bool is_first_set_player = false;
 
 void GambleScene::Initialize()
 {
@@ -93,14 +103,16 @@ void GambleScene::Initialize()
 	SetState();
 
 
-    // todo 牟田さん　アセットロードして背景などの描画をお願いします。
+	// todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
-	if(!is_first_set_player)
+
+	// 一週目ならプレイヤー生成
+	if (wave_count == 1)
 	{
 		// プレイヤーの生成
-	    player = CreatePlayer();
+		player = CreatePlayer();
 
-        // ゲームの全スキルの設定
+		// ゲームの全スキルの設定
 		player->SetSkill<StrongArm>(L"./resources/Image/剛腕.png");
 		player->SetSkill<DemonPower>(L"./resources/Image/鬼力.png");
 		player->SetSkill<MagicSword>(L"./resources/Image/魔剣.png");
@@ -125,10 +137,10 @@ void GambleScene::Initialize()
 		player->SetSkill<Curse>(L"./resources/Image/呪詛.png");
 		player->SetSkill<Arrogance>(L"./resources/Image/傲慢.png");
 
-		is_first_set_player = true;
+		wave_count = true;
 
-	    // ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
-	    CharacterManager::Instance().SetPlayer(player);
+		// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
+		CharacterManager::Instance().SetPlayer(player);
 	}
 	else
 	{
@@ -170,22 +182,51 @@ void GambleScene::Initialize()
 			skillCard[i].wcText = skill_data[skillCard[i].category].title;
 		}
 
-		// クエストカード設定
-		{
-			//TODO 配り方考える（ひとまず順番で）
-			questCard[i].category = i;
-			// 配布された番号に合わせた文
-			//wcscpy_s(questCard[i].wcText, quest_data[questCard[i].category].title);
-			skillCard[i].wcText = skill_data[skillCard[i].category].title;
-		}
-
 		bet_boxpos[i] = { 100 + float(i * 500),800 };
-		small_arrow_up_pos[i] = { 425 + float(i *500),830 };
-		small_arrow_down_pos[i] = { 425 + float(i *500),930 };
+		small_arrow_up_pos[i] = { 425 + float(i * 500),830 };
+		small_arrow_down_pos[i] = { 425 + float(i * 500),930 };
 		char_bet_pos[i] = { 6 + float(i * 25),71 };
 		num_bet_pos[i] = { 300 + float(i * 500),900 };
 		coin_bet_pos[i] = { 300 + float(i * 500),700 };
 	}
+	// クエストカード設定
+	switch (wave_count)
+	{
+		// ウェーブ１、２
+	case 1:
+	case 2:
+		for (int quest_i = 0; quest_i < 3; quest_i++)
+		{
+			questCard[quest_i].category = Mathf::RandomRange(quest_data[A].pattern, quest_data[E].pattern);
+			//TODO 配り方考える（ひとまず順番で）
+		}
+			break;
+	case 3:
+		for (int quest_i = 0; quest_i < 2; quest_i++)
+		{
+			questCard[quest_i].category = Mathf::RandomRange(static_cast<float>(QuestPattern::F), static_cast<float>(QuestPattern::J));
+		}
+		questCard[2].category = Mathf::RandomRange(static_cast<float>(QuestPattern::K), static_cast<float>(QuestPattern::O));
+		break;
+	case 4:
+		for (int quest_i = 0; quest_i < 2; quest_i++)
+		{
+			questCard[quest_i].category = Mathf::RandomRange(static_cast<float>(QuestPattern::F), static_cast<float>(QuestPattern::O));
+		}
+		questCard[2].category = QuestPattern::P;
+		break;
+	case 5:
+		questCard[1].category = QuestPattern::BOSS;
+
+			break;
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		// 配布された番号に合わせた文
+		skillCard[i].wcText = skill_data[skillCard[i].category].title;
+		questCard[i].wcText = quest_data[questCard[i].category].title;
+	}
+
 
 	// アセットのロード
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
@@ -202,7 +243,7 @@ void GambleScene::Initialize()
 
 
 	/*--------------- これデバッグ用 --------------*/
-    //Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 
 
 }
@@ -365,7 +406,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 				{
 					IsDirection = true;
-					selection_card = 1;
+					selection_card =1;
 				}
 			}
 			break;
@@ -385,7 +426,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 				{
 					IsDirection = true;
-					selection_card = 0;
+					selection_card =0;
 				}
 			}
 			arrow_position[1] = { 1280,410 };
@@ -422,7 +463,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 		if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
 		{
-			quest_pattern = QuestPattern(quest_data[selection_card].pattern);
+			quest_pattern = static_cast<QuestPattern>(questCard[selection_card].category);
 			magnification = quest_data[selection_card].min_magnification;
 			min_magnification = quest_data[selection_card].min_magnification;
 			max_magnification = quest_data[selection_card].max_magnification;
@@ -499,9 +540,9 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				// 元のステータスを減らす
 				//player->health = player_status[0];
 				// たぶんこう
-				player->max_health = player_status[0];
-				player->attack_power = player_status[1];
-				player->speed_power = player_status[2];
+				player->max_health = player_status[0] * magnification;
+				player->attack_power = player_status[1] * magnification;
+				player->speed_power = player_status[2] * magnification;
 
 				player->bet_MHP = player_status_bet[0];
 				player->bet_AP = player_status_bet[1];
@@ -604,7 +645,7 @@ void GambleScene::Render(float elapsedTime)
 
 			// テキスト
 
-			Lemur::Graphics::Font::Instance().render(questCard[0].wcText.c_str(), questCard[0].wcText.size(), { 16,10 }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(questCard[0].wcText.c_str(), questCard[0].wcText.size()+1, { 16,10 }, 600, 72);
 		//	Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
 			break;
 		case 1:
@@ -619,7 +660,7 @@ void GambleScene::Render(float elapsedTime)
 
 
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[1].wcText.c_str(), questCard[1].wcText.size(), { 40,10 }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(questCard[1].wcText.c_str(), questCard[1].wcText.size()+1, { 40,10 }, 600, 72);
 			break;
 		case 2:
 			// カード１
@@ -632,7 +673,7 @@ void GambleScene::Render(float elapsedTime)
 			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
 
 			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[2].wcText.c_str(), questCard[2].wcText.size(), { 63,10 }, 600, 72);
+			Lemur::Graphics::Font::Instance().render(questCard[2].wcText.c_str(), questCard[2].wcText.size()+1, { 63,10 }, 600, 72);
 			break;
 		}
 
@@ -688,7 +729,7 @@ void GambleScene::DebugImGui()
 	quest_pattern = static_cast<QuestPattern>(quest_pattern_int);
 	ImGui::SliderFloat2("Poo", &Poo.x,0,100);
 	ImGui::SliderInt("last_num", &last_num,0,100);
-	ImGui::Checkbox("is_first_set_player", &is_first_set_player);
+	ImGui::InputInt("wave_count", &wave_count);
 	for(auto& skill:lottery_skills)
 	{
 		ImGui::Text(skill->GetName().c_str());

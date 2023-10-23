@@ -19,11 +19,11 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number3.png");
+    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number4.png");
 
     if (enemy->enemy_type == "BossSpider")
     {
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v004.fbx"));
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v006.fbx"));
     }
     else
     {
@@ -571,7 +571,7 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        if (player->CounterJudge(nodePosition)) {}
+        if (player->CounterJudge(position)) {}
         else if (player->ApplyDamage(attack_power * player->GetDamageCorrection()))
         {
             // 豆腐スキル持ってたら強制的にHP0にする
@@ -591,12 +591,12 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
 void Enemy::SetRandomTargetPosition()
 {
     // territory_rangeの大きさの円でランダムな値をとる。
-    float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
-    float range = Mathf::RandomRange(0.0f, territory_range);
+    //float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
+    //float range = Mathf::RandomRange(0.0f, territory_range);
 
-    target_position.x = territory_origin.x + sinf(theta) * range;
+    target_position.x = Mathf::RandomRange(-15000,20);
     target_position.y = territory_origin.y;
-    target_position.z = territory_origin.z + cosf(theta) * range;
+    target_position.z = Mathf::RandomRange(-100000, 45);
 
 }
 
@@ -665,7 +665,12 @@ void Enemy::DamageRender()
             DirectX::XMFLOAT3 screenPosition;
             DirectX::XMStoreFloat3(&screenPosition, ScreenPosition);
 
-            damage_spr->textout(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), spr_damage.spr_damage_values, screenPosition.x, screenPosition.y, 25, 50, 1, 1, 1, 1);
+            /*------- ダメージ量(float) を 文字列(string) に変換 ------*/
+            std::ostringstream stream;
+            stream << std::fixed << std::setprecision(1) << spr_damage.spr_damage_values;
+            std::string result = stream.str();
+
+            damage_spr->textout(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), result, screenPosition.x, screenPosition.y, 25.0f, 50, 1, 1, 1, 1);
             spr_damage.sprite_timer_ms += high_resolution_timer::Instance().time_interval();
         }
         //指定時間描画したらリセット

@@ -137,7 +137,7 @@ public:
 	void CalcTargetPos();
 
 	// 走り去る距離
-	float run_over_length = 3.0f;
+	float run_over_length = 5.0f;
 };
 
 // バックステップ

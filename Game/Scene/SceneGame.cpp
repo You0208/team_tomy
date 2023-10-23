@@ -21,6 +21,7 @@
 #include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Scene/SceneManager.h"
 extern QuestPattern quest_pattern;
+extern int wave_count;
 
 void GameScene::Initialize()
 {
@@ -514,7 +515,20 @@ void GameScene::Render(float elapsedTime)
 			stage->Render();
 	}
 
-	
+	// 3Dエフェクト描画
+	{
+		DirectX::XMFLOAT4X4 view{};
+		DirectX::XMFLOAT4X4 projection{};
+
+		DirectX::XMStoreFloat4x4(&view, camera.GetViewMatrix());
+		DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
+
+		EffectManager::Instance().Render(view, projection);
+
+		player->DrawDebugPrimitive();
+		EnemyManager::Instance().DrawDebugPrimitive();
+	}
+
 
 	if (enableFog)	framebuffers[static_cast<size_t>(FRAME_BUFFER::FOG_1)]->deactivate(immediate_context);
 	if (enableFog)
@@ -597,19 +611,6 @@ void GameScene::Render(float elapsedTime)
 		DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
 		graphics.GetDebugRenderer()->Render(immediate_context, view, projection);
 	}
-	// 3Dエフェクト描画
-	{
-		DirectX::XMFLOAT4X4 view{};
-		DirectX::XMFLOAT4X4 projection{};
-
-		DirectX::XMStoreFloat4x4(&view, camera.GetViewMatrix());
-		DirectX::XMStoreFloat4x4(&projection, camera.GetProjectionMatrix());
-
-		EffectManager::Instance().Render(view, projection);
-
-		player->DrawDebugPrimitive();
-		EnemyManager::Instance().DrawDebugPrimitive();
-	}
 
 	// 2Dデバッグ描画　
 	{
@@ -623,11 +624,14 @@ void GameScene::Render(float elapsedTime)
 void GameScene::DebugImGui()
 {
 	float a = 619.0f * rate;
+
 	ImGui::Begin("Scene");
+	int quest_pattern_int = static_cast<int>(quest_pattern);
+	ImGui::InputInt("quest_pattern", &quest_pattern_int);
 	ImGui::Checkbox("is_update", &is_update);
 	ImGui::DragFloat("bet_rate", &bet_rate);
 	ImGui::DragFloat("rate", & rate );
-	ImGui::DragFloat3("ene_HP_gauge_pos", & ene_HP_gauge_pos.x );
+	//ImGui::DragFloat3("ene_HP_gauge_pos", & ene_HP_gauge_pos.x );
 	ImGui::DragFloat("a", & a );
 	ImGui::End();
 }
@@ -636,12 +640,11 @@ void GameScene::CreateEnemy_KARI()
 {
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
-
+	quest_pattern = BOSS;
 	switch (quest_pattern)
 	{
 	case QuestPattern::A:
 
-		// todo ここでベットレートの設定
 		bet_rate = 1.2f;
 		bet_rate_max = 1.5f;
 
@@ -663,6 +666,16 @@ void GameScene::CreateEnemy_KARI()
 
 			ColliderManager::Instance().SetCollider(spider_a);
 		}
+		// ボスクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			boss_enemy = CreateEnemy<BossSpider>();
+			boss_enemy->Initialize();
+			enemyManager.Register(boss_enemy);
+
+			ColliderManager::Instance().SetCollider(boss_enemy);
+		}
+
 
 		break;
 	case QuestPattern::B:
@@ -687,9 +700,16 @@ void GameScene::CreateEnemy_KARI()
 			enemyManager.Register(spider_b);
 
 			ColliderManager::Instance().SetCollider(spider_b);
+		}	
+		// ボスクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			boss_enemy = CreateEnemy<BossSpider>();
+			boss_enemy->Initialize();
+			enemyManager.Register(boss_enemy);
+
+			ColliderManager::Instance().SetCollider(boss_enemy);
 		}
-
-
 
 		break;
 
@@ -716,7 +736,15 @@ void GameScene::CreateEnemy_KARI()
 
 			ColliderManager::Instance().SetCollider(spider_c);
 		}
+		// ボスクモ
+		for (int i = 0; i < 1; ++i)
+		{
+			boss_enemy = CreateEnemy<BossSpider>();
+			boss_enemy->Initialize();
+			enemyManager.Register(boss_enemy);
 
+			ColliderManager::Instance().SetCollider(boss_enemy);
+		}
 
 		break;
 
@@ -1047,17 +1075,15 @@ void GameScene::CreateEnemy_KARI()
 
 	case QuestPattern::BOSS:
 
-
 		// ボスクモ
 		for (int i = 0; i < 1; ++i)
 		{
-			Enemy* boss_spider = CreateEnemy<BossSpider>();
-			boss_spider->Initialize();
-			enemyManager.Register(boss_spider);
+			boss_enemy = CreateEnemy<BossSpider>();
+			boss_enemy->Initialize();
+			enemyManager.Register(boss_enemy);
 
-			ColliderManager::Instance().SetCollider(boss_spider);
+			ColliderManager::Instance().SetCollider(boss_enemy);
 		}
-
 		break;
 		
 	}
@@ -1070,6 +1096,7 @@ void GameScene::QuestClear()
 	if (enemy_count <= 0)
 	{
 		player->SkillFin();
+		wave_count++;
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,true));
 	}
 
@@ -1108,7 +1135,7 @@ void GameScene::UIRender()
 	/*------------- プレイヤーのHPゲージ ------------*/
 	player_hp_gauge_zabuton->render(dc, 0, 0, 619, 124);
 	rate = static_cast<float>(player->health) / static_cast<float>(player->max_health);
-	player_hp_gauge->render(dc, 0, 0, 619.0f * rate, 124, 1, 1, 1, 1, 1,
+	player_hp_gauge->render(dc, 0, 0, 619.0f * rate, 124, 1, 1, 1, 1,0 ,
 		0, 0, 619.0f * rate, 124);
 
 	/*--------------- 敵ボスのHPゲージ --------------*/
@@ -1116,7 +1143,7 @@ void GameScene::UIRender()
 	{
 		enemy_hp_gauge_zabuton->render(dc, ene_HP_gauge_pos.x, ene_HP_gauge_pos.y, 619, 124);
 		rate = static_cast<float>(boss_enemy->health) / static_cast<float>(boss_enemy->max_health);
-		enemy_hp_gauge->render(dc, ene_HP_gauge_pos.x, ene_HP_gauge_pos.y, 619.0f * rate, 124, 1, 1, 1, 1, 1,
+		enemy_hp_gauge->render(dc, ene_HP_gauge_pos.x-10.0f, ene_HP_gauge_pos.y, 619.0f * rate, 124, 1, 1, 1, 1, 0,
 			0, 0, 619.0f * rate, 124);
 	}
 

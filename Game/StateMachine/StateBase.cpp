@@ -5,7 +5,7 @@
 void Nero::Component::AI::StateBase::ChangeJudgeAvoidState()
 {
     GamePad& game_pad = Input::Instance().GetGamePad();
-    // todo ここのキーは今はテキトー
+
     if (game_pad.GetButtonDown() & GamePad::BTN_A||
         GetAsyncKeyState(VK_SPACE) & 0x8000)
     {

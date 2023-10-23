@@ -179,17 +179,23 @@ namespace Nero::Component::AI
 
         owner->SetAnimationIndex(owner->FirstAttack_Anim);
 
-        // todo アニメーションから攻撃判定時間を決める
-        owner->attack_collision_flag = true;
+        owner->attack_collision_flag = false;
 
         attack_step = first_attack;
 
 
         EnemyManager::Instance().HitClear();
+
+        //エフェクト
+        owner->slash->Play(owner->GetPosition(), 1.0f);
+
     }
 
     void AttackState::Update()
     {
+
+        SetAttackCollisionFrag();
+
         // 死んだら死亡ステートに移行する
         ChangeJudgeDeathState();
 
@@ -213,6 +219,7 @@ namespace Nero::Component::AI
         switch (attack_step)
         {
         case first_attack:
+
 
             // todo ここ先行入力受付時間考える
 
@@ -273,6 +280,33 @@ namespace Nero::Component::AI
     {
         owner->attack_collision_flag = false;
         EnemyManager::Instance().HitClear();
+    }
+
+    void AttackState::SetAttackCollisionFrag()
+    {
+        owner->attack_collision_flag = false;
+        switch (attack_step)
+        {
+        case first_attack:
+            
+            if (owner->GetFrameIndex() >= CollisionControlFrame::FirstAttack_Start)
+                owner->attack_collision_flag = true;
+
+            break;
+        case second_attack:
+            
+            if (owner->GetFrameIndex() >= CollisionControlFrame::SecondAttack_Start)
+                owner->attack_collision_flag = true;
+
+            break;
+        case third_attack:
+
+            if (owner->GetFrameIndex() >= CollisionControlFrame::ThirdAttack_Start &&
+                owner->GetFrameIndex() <= CollisionControlFrame::ThirdAttack_End)
+                owner->attack_collision_flag = true;
+
+            break;
+        }
     }
 
     void AttackState::BufferedInputCheck()

@@ -500,7 +500,7 @@ ActionBase::State RushAttackAction::Run(float elapsedTime)
 
 		if (owner->GetEndAnimation())
 		{
-			if (owner->DistanceJudge(owner->GetPosition(), owner->GetTargetPosition(), owner->GetNearAttackRange()))
+			if (owner->DistanceJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
 			{
 				step = 0;
 				owner->SetAnimCalcRate(1.0f);
@@ -546,6 +546,17 @@ void RushAttackAction::CalcTargetPos()
 	Target_pos = DirectX::XMVectorAdd(Target_pos, Player_pos);
 	DirectX::XMFLOAT3 target_pos;
 	DirectX::XMStoreFloat3(&target_pos, Target_pos);
+
+    if (target_pos.x < -20)
+		target_pos.x = -20;
+	else if (target_pos.x > 22)
+		target_pos.x = 22;
+
+	if (target_pos.z < 3)
+		target_pos.z = 3;
+	else if (target_pos.z > 50)
+		target_pos.z = 50;
+
 	owner->SetTargetPosition(target_pos);
 
 }

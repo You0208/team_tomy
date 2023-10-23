@@ -97,6 +97,18 @@ namespace Nero::Component::AI
             Second_Judge = 60,
 
         };
+        enum CollisionControlFrame
+        {
+            FirstAttack_Start=25,
+            SecondAttack_Start=55,
+            ThirdAttack_Start=45,
+            ThirdAttack_End=68,
+        };
+
+        //  アニメーションから攻撃判定時間を決める
+        void SetAttackCollisionFrag();
+
+        // 何撃目か
         int attack_step = first_attack;
 
         // 各モーション値

@@ -22,7 +22,9 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
     player->spr_damage = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
     /*----------------- エフェクト ---------------*/
-    player->slash = std::make_unique<Effect>("./resources/Effect/poison.efk");
+    //player->slash = std::make_unique<Effect>("./resources/Effect/test/bigLightnigv001.efk");
+    player->slash = std::make_unique<Effect>("./resources/Effect/slash.efk");
+    //player->slash = std::make_unique<Effect>("./resources/Effect/test/hit/Hit.efk");
 
 }
 
@@ -359,15 +361,23 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 node->node_radius
             ))
             {
+                // 多段ヒット防止用
                 enemy->is_hit = true;
+
+                // まだ交戦状態じゃなかったら交戦状態にする
+                if (!enemy->belligerency)enemy->belligerency = true;
 
                 // ダメージを与える判定
                 if (enemy->ApplyDamage(attack_power * motion_value))
                 {
+                    // ヒットストップ
                     HitStopON(0.15f);
-                    slash->Play(nodePosition, 0.10);
+                    ////エフェクト
+                    //slash->Play(position, 1.0f);
                     // todo これいる？
+                    //画面振動
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);
+                    // ダメージ量描画
                     enemy->DamageRenderSet(attack_power * motion_value,node_pos);
 
                     // このフレームで与えたダメージを保持
@@ -376,6 +386,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                     // もし倒したら撃破数を増やす。
                     if (enemy->death)
                         kill_count++;
+
                     if (is_counter)
                         enemy->fear_frag = true;
 

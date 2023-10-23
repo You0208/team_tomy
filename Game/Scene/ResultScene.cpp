@@ -62,5 +62,6 @@ void ResultScene::GiveReward()
 // todo スキル
 // todo UIのずれ
 // todo テクスチャ
+// todo カメラワーク
 
 // todo あとなんかいろいろ

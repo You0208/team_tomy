@@ -227,8 +227,11 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     float mouse_pos_x = static_cast<int> (mouse.GetPositionX() - mouse.GetOldPositionX());
     float mouse_pos_y = static_cast<int> (mouse.GetPositionY() - mouse.GetOldPositionY());
 
+    //if (mouse_pos_x < 10.0f&& mouse_pos_x > -10.0f)mouse_pos_x = 0.0f;
+    //if (mouse_pos_y < 5.0f&& mouse_pos_y > -5.0f)mouse_pos_y = 0.0f;
+
     // マウスでの感度の補正値、rollSpeedにかける。
-    float speed_fit = 1.0f;
+    float speed_fit = 0.1f;
 
     // カメラの回転速度。
     speed = speed_fit * rollSpeed * elapsedTime;
