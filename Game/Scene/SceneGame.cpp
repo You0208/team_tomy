@@ -457,6 +457,13 @@ void GameScene::Render(float elapsedTime)
 		immediate_context->PSSetShaderResources(10/*slot(1番にセットします)*/, 1, BaseColor.GetAddressOf());//TODO
 		immediate_context->PSSetShaderResources(11/*slot(1番にセットします)*/, 1, Normal.GetAddressOf());//TODO
 		immediate_context->PSSetShaderResources(12/*slot(1番にセットします)*/, 1, Roughness.GetAddressOf());//TODO
+		//for (auto enemy : EnemyManager::Instance().GetEnemies())
+		//{
+		//	immediate_context->PSSetShaderResources(0, 13, enemy->spider_color.GetAddressOf());
+		//	immediate_context->PSSetShaderResources(0, 14, enemy->spider_normal.GetAddressOf());
+		//	immediate_context->PSSetShaderResources(0, 15, enemy->spider_roughness.GetAddressOf());
+		//	immediate_context->PSSetShaderResources(0, 16, enemy->spider_metalness.GetAddressOf());
+		//}
 		// シャドウ
 		immediate_context->PSSetShaderResources(8, 1, double_speed_z->shader_resource_view.GetAddressOf());
 	}

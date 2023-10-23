@@ -19,55 +19,15 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+    ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
+
     enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
 
-    if (enemy->enemy_type == "BossSpider")
-    {
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v004.fbx"));
-    }
-    else
-    {
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v006.fbx"));
-    }
-
-    // シェーダー
-    // カラー
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_color.png", enemy->spider_small_color.GetAddressOf(), graphics.GetTexture2D());
-    
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_A_Color.png", enemy->spider_middle_color_A.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_B_Color.png", enemy->spider_middle_color_B.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_C_Color.png", enemy->spider_middle_color_C.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_D_Color.png", enemy->spider_middle_color_D.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_E_Color.png", enemy->spider_middle_color_E.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_F_Color.png", enemy->spider_middle_color_F.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_G_Color.png", enemy->spider_middle_color_G.GetAddressOf(), graphics.GetTexture2D());
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_H_Color.png", enemy->spider_middle_color_H.GetAddressOf(), graphics.GetTexture2D());
-    
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_color.png", enemy->spider_boss_color.GetAddressOf(), graphics.GetTexture2D());
-
-    // ノーマル
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_Normal.png", enemy->spider_small_normal.GetAddressOf(), graphics.GetTexture2D());
-
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_Normal.png", enemy->spider_middle_normal.GetAddressOf(), graphics.GetTexture2D());
-   
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Normal.png", enemy->spider_boss_normal.GetAddressOf(), graphics.GetTexture2D());
-
-    // ラフネス
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_Roughness.png", enemy->spider_small_roughness.GetAddressOf(), graphics.GetTexture2D());
-
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_smallmiddle_Roughness.png", enemy->spider_middle_roughness.GetAddressOf(), graphics.GetTexture2D());
-
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Roughness.png", enemy->spider_boss_roughness.GetAddressOf(), graphics.GetTexture2D());
-
-    // メタルネス
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_Metallic.png", enemy->spider_small_metalness.GetAddressOf(), graphics.GetTexture2D());
-
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_Metallic.png", enemy->spider_middle_metalness.GetAddressOf(), graphics.GetTexture2D());
-
-    load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Metallic.png", enemy->spider_boss_metalness.GetAddressOf(), graphics.GetTexture2D());
 
 
+    create_ps_from_cso(graphics.GetDevice(), "./Shader/spider_ps.cso", enemy->spider_ps.GetAddressOf());
 
+    enemy->SetPixelShader(enemy->spider_ps.Get());
     //switch (enemy->enemy_type)
     //{
     //case Enemy::SmallSpider:
@@ -88,7 +48,14 @@ void EnemyGraphicsComponent::Update(GameObject* gameobj)
 void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
-    
+    Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+    ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
+
+    immediate_context->PSSetShaderResources(0, 13, enemy->spider_color.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 14, enemy->spider_normal.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 15, enemy->spider_roughness.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 16, enemy->spider_metalness.GetAddressOf());
+
     enemy->Render(elapsedTime, replaced_pixel_shader);
 
     enemy->DebugImgui();

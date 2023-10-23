@@ -89,6 +89,15 @@ private:// ゲーム関連
 
     float timer;
 
+
+    // シェーダー
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_color;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_normal;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_metalness;
+
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> spider_ps;
+
     //DemoPlayer
     Player* player = nullptr;
     // ボス敵
