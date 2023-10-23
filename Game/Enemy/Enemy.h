@@ -186,5 +186,35 @@ public:
     void SetUpHitCollisionNormalSize();
 public:
     std::unique_ptr<sprite> damage_spr;
+
+    // シェーダー
+    // カラー
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_small_color;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_A;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_B;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_C;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_D;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_E;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_F;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_G;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_color_H;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_boss_color;
+
+    // ノーマル
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_small_normal;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_normal;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_boss_normal;
+
+    // ラフネス
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_small_roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_boss_roughness;
+
+    // メタルネス
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_small_metalness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_middle_metalness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_boss_metalness;
 };
 
