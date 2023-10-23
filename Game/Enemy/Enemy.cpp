@@ -88,10 +88,10 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
 
-    immediate_context->PSSetShaderResources(0, 13, spider_color.GetAddressOf());
-    immediate_context->PSSetShaderResources(0, 14, spider_normal.GetAddressOf());
-    immediate_context->PSSetShaderResources(0, 15, spider_roughness.GetAddressOf());
-    immediate_context->PSSetShaderResources(0, 16, spider_metalness.GetAddressOf());
+    immediate_context->PSSetShaderResources( 13,1, spider_color.GetAddressOf());
+    immediate_context->PSSetShaderResources( 14,1, spider_normal.GetAddressOf());
+    immediate_context->PSSetShaderResources( 15,1, spider_roughness.GetAddressOf());
+    immediate_context->PSSetShaderResources( 16,1, spider_metalness.GetAddressOf());
 
     enemy->Render(elapsedTime, replaced_pixel_shader);
 
