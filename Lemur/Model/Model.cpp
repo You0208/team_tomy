@@ -334,6 +334,8 @@ void skinned_mesh::create_com_objects(ID3D11Device* device, const char* fbx_file
         LoadTexture(device, filename, "_MS", true, iterator->second.metalness_smoothness.GetAddressOf(), 0x00FFFF00);
         LoadTexture(device, filename, "_M", true, iterator->second.metalness.GetAddressOf(), 0x00FFFF00);
         LoadTexture(device, filename, "_R", true, iterator->second.roughness.GetAddressOf(), 0x00FFFF00);
+        LoadTexture(device, filename, "_N", true, iterator->second.nomal.GetAddressOf(), 0x00FFFF00);
+        LoadTexture(device, filename, "_N", true, iterator->second.baseColor.GetAddressOf(), 0x00FFFF00);
     }
 
     HRESULT hr = S_OK;

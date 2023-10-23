@@ -198,6 +198,8 @@ struct material
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metalness_smoothness;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metalness;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> nomal;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> baseColor;
 
     // UNIT.30
     template<class T>
