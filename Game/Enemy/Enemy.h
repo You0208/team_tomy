@@ -27,6 +27,14 @@ class EnemyGraphicsComponent :public GraphicsComponent
     void Update(GameObject* gameobj) override;
     void Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader) override;
 private:
+    // シェーダー
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_color;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_normal;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_metalness;
+
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> spider_ps;
+
 
 };
 
@@ -187,13 +195,13 @@ public:
 public:
     std::unique_ptr<sprite> damage_spr;
 
-    // シェーダー
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_color;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_normal;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_roughness;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_metalness;
+    //// シェーダー
+    //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_color;
+    //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_normal;
+    //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_roughness;
+    //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_metalness;
 
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> spider_ps;
+    //Microsoft::WRL::ComPtr<ID3D11PixelShader> spider_ps;
 
     //// カラー
     //Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_small_color;

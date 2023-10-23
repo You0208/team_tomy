@@ -23,11 +23,48 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
 
     enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
 
+    if (enemy->enemy_type == "BossSpider")
+    {
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v004.fbx"));
+        load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+        load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Normal.png", spider_normal.GetAddressOf(), graphics.GetTexture2D());
+        load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Roughness.png", spider_roughness.GetAddressOf(), graphics.GetTexture2D());
+        load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Metallic.png", spider_metalness.GetAddressOf(), graphics.GetTexture2D());
+    }
+    else
+    {
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v006.fbx"));
+        if (enemy->enemy_type == "SmallSpider")
+        {
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_Normal.png", spider_normal.GetAddressOf(), graphics.GetTexture2D());
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_Roughness.png", spider_roughness.GetAddressOf(), graphics.GetTexture2D());
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_Metallic.png", spider_metalness.GetAddressOf(), graphics.GetTexture2D());
+        }
+        else
+        {
+            // ノーマル
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_Normal.png", spider_normal.GetAddressOf(), graphics.GetTexture2D());
+            // ラフネス
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_Roughness.png",spider_roughness.GetAddressOf(), graphics.GetTexture2D());
+            // メタルネス
+            load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_Metallic.png", spider_metalness.GetAddressOf(), graphics.GetTexture2D());
+
+            if (enemy->enemy_type == "A_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_A_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "B_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_B_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "C_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_C_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "D_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_D_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "E_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_E_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "F_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_F_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "G_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_G_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+            else if (enemy->enemy_type == "H_Spider")load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_middle\\spider_middle_H_Color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
+        }
+    }
 
 
-    create_ps_from_cso(graphics.GetDevice(), "./Shader/spider_ps.cso", enemy->spider_ps.GetAddressOf());
+    create_ps_from_cso(graphics.GetDevice(), "./Shader/spider_ps.cso", spider_ps.GetAddressOf());
 
-    enemy->SetPixelShader(enemy->spider_ps.Get());
+    enemy->SetPixelShader(spider_ps.Get());
     //switch (enemy->enemy_type)
     //{
     //case Enemy::SmallSpider:
@@ -51,10 +88,10 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
 
-    immediate_context->PSSetShaderResources(0, 13, enemy->spider_color.GetAddressOf());
-    immediate_context->PSSetShaderResources(0, 14, enemy->spider_normal.GetAddressOf());
-    immediate_context->PSSetShaderResources(0, 15, enemy->spider_roughness.GetAddressOf());
-    immediate_context->PSSetShaderResources(0, 16, enemy->spider_metalness.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 13, spider_color.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 14, spider_normal.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 15, spider_roughness.GetAddressOf());
+    immediate_context->PSSetShaderResources(0, 16, spider_metalness.GetAddressOf());
 
     enemy->Render(elapsedTime, replaced_pixel_shader);
 
