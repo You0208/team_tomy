@@ -144,6 +144,7 @@ public:
 
     // •`‰æİ’è
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
+    void Render(float elapsedTime, ID3D11PixelShader** replaced_pixel_shader);
 
     // ˆÚ“®ˆ—
     void Move(float vx, float vz, float speed);
@@ -176,7 +177,7 @@ protected:
     // €–S‚µ‚½‚ÉŒÄ‚Î‚ê‚é
     virtual void OnDead() {}
 
-private:
+public:
     void UpdateScale() {
         scale.x = scale.y = scale.z = scaleFactor;
     }
@@ -222,7 +223,7 @@ public:
 
     Microsoft::WRL::ComPtr<ID3D11PixelShader> PS;
 
-protected:
+public:
     DirectX::XMFLOAT4X4 World;
 
     DirectX::XMFLOAT3 velocity          ={ 0, 0, 0 };  // ‘¬“x

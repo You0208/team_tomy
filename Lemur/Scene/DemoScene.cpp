@@ -169,7 +169,10 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 
 	// STATIC_BATCHING
 	ImGui::Text("drawcall_count : %d", drawcall_count);
-
+	if (ImGui::TreeNode("camera"))
+	{
+		ImGui::TreePop();
+	}
 	if (ImGui::TreeNode("enable_shader"))
 	{
 		ImGui::Checkbox("enableShadow", &enableShadow);
@@ -210,6 +213,10 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	}
 	if (ImGui::TreeNode("direction_light"))
 	{
+		ImGui::SliderFloat("light_direction.x", &light_direction.x, -1.0f, +1.0f);
+		ImGui::SliderFloat("light_direction.y", &light_direction.y, -1.0f, +1.0f);
+		ImGui::SliderFloat("light_direction.z", &light_direction.z, -1.0f, +1.0f);
+
 		ImGui::SliderFloat("light_view_distance", &light_view_distance, 1.0f, +100.0f);
 		ImGui::SliderFloat("light_view_size", &light_view_size, 1.0f, +100.0f);
 		ImGui::SliderFloat("light_view_near_z", &light_view_near_z, 1.0f, light_view_far_z - 1.0f);
@@ -219,6 +226,7 @@ void DemoScene::Update(HWND hwnd, float elapsedTime)
 	if (ImGui::TreeNode("shadow"))
 	{
 		ImGui::Image(reinterpret_cast<void*>(double_speed_z->shader_resource_view.Get()), ImVec2(shadowmap_width / 5.0f, shadowmap_height / 5.0f));
+		ImGui::SliderFloat("shadow_depth_bias", &scene_constants.shadow_depth_bias,0.1f,0.01f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("bloom"))
@@ -252,7 +260,7 @@ void DemoScene::Render(float elapsedTime)
 		using namespace DirectX;
 
 		const float aspect_ratio = double_speed_z->viewport.Width / double_speed_z->viewport.Height;
-		XMVECTOR F{ XMLoadFloat4(&light_view_focus) };
+		XMVECTOR F{ camera.GetFocus() };
 		XMVECTOR E{ F - XMVector3Normalize(XMLoadFloat4(&light_direction)) * light_view_distance };
 		XMVECTOR U{ XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) };
 		XMMATRIX V{ XMMatrixLookAtLH(E, F, U) };
@@ -260,17 +268,17 @@ void DemoScene::Render(float elapsedTime)
 
 		DirectX::XMStoreFloat4x4(&scene_constants.view_projection, V * P);
 		scene_constants.light_view_projection = scene_constants.view_projection;
-		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &scene_constants, 0, 0);
-		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+		immediate_context->UpdateSubresource(constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::SCENE)].Get(), 0, 0, &scene_constants, 0, 0);
+		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::SCENE), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::SCENE)].GetAddressOf());
 
 		double_speed_z->clear(immediate_context, 1.0f);
 		double_speed_z->activate(immediate_context);
 
 		ID3D11PixelShader* null_pixel_shader{ NULL };
-		player->Render(elapsedTime);
-		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
-		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
-		skinned_meshes[2]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
+		player->Render(elapsedTime,&null_pixel_shader);
+		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
+		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
+		skinned_meshes[2]->render(immediate_context, { -1.0f, 0, 0, 0, 0, 1.0f, 0, 0, 0, 0, 1.0f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
 
 		double_speed_z->deactivate(immediate_context);
 	}
@@ -298,7 +306,7 @@ void DemoScene::Render(float elapsedTime)
 		{
 			// FOG
 			DirectX::XMStoreFloat4x4(&scene_constants.inverse_projection, DirectX::XMMatrixInverse(NULL, P));
-			DirectX::XMStoreFloat4x4(&scene_constants.inverse_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
+			DirectX::XMStoreFloat4x4(&scene_constants.inv_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
 			scene_constants.time = high_resolution_timer::Instance().time_stamp();
 		}
 	}
@@ -378,6 +386,7 @@ void DemoScene::Render(float elapsedTime)
 	{
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+		
 		{
 			const DirectX::XMFLOAT4X4 coordinate_system_transforms[]{
 				{ -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	// 0:RHS Y-UP

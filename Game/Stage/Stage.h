@@ -26,4 +26,11 @@ private:
     float scale_factor = 0.01f;
 
     std::unique_ptr<skinned_mesh> model;
+    std::unique_ptr<skinned_mesh> ceiling_model;
+    std::unique_ptr<skinned_mesh> wall_model;
+    std::unique_ptr<skinned_mesh> floor_model;
+    std::unique_ptr<skinned_mesh> gate_model;
+
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> stage_1;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> gate;
 };
