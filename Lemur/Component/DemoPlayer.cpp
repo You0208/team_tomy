@@ -15,11 +15,19 @@ void DemoPlayerGraphicsComponent::Update(GameObject* gameobj)
 {
 }
 
-void DemoPlayerGraphicsComponent::Render(GameObject* gameobj,float elapsedTime,ID3D11PixelShader* replaced_pixel_shader)
+void DemoPlayerGraphicsComponent::Render(GameObject* gameobj,float elapsedTime,ID3D11PixelShader* replaced_pixel_shader, bool shadow )
 {
 	DemoPlayer* demoPlayer = dynamic_cast<DemoPlayer*> (gameobj);
 
-	demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+	if (shadow)
+	{
+		ID3D11PixelShader* null_pixel_shader{ NULL };
+		demoPlayer->Render(elapsedTime, &null_pixel_shader);
+	}
+	else
+	{
+		demoPlayer->Render(elapsedTime, replaced_pixel_shader);
+	}
 	demoPlayer->DrawDebugPrimitive();
 }
 

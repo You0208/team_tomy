@@ -63,6 +63,9 @@ public:
 
 	int skill_num_max;
 
+	int select_num;
+
+	bool select;
 
 	struct Card
 	{
@@ -154,6 +157,10 @@ private:/*---------------- ƒXƒLƒ‹ŠÖŒW -----------------*/
 	std::shared_ptr<sprite> spr_betback;
 	std::shared_ptr<sprite> spr_small_arrow;
 	std::shared_ptr<sprite> spr_number;
+
+	std::shared_ptr<sprite> spr_skill_back;
+
+	std::shared_ptr<sprite> spr_skill[22];
 
 };
 

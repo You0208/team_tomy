@@ -1,10 +1,18 @@
 #include "Stage.h"
 #include "imgui.h"
+#include "Lemur/Graphics/shader.h"
 #include "Lemur/Graphics/Graphics.h"
 
 void Stage::Init()
 {
-    model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/stage.fbx");
+    ceiling_model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/ceiling.fbx");
+    wall_model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/wall.fbx");
+    floor_model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/floor.fbx");
+    gate_model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/gate.fbx");
+
+    Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+    create_ps_from_cso(graphics.GetDevice(), "./Shader/stage_ps.cso", stage_1.GetAddressOf());
+    create_ps_from_cso(graphics.GetDevice(), "./Shader/gate_ps.cso", gate.GetAddressOf());
 }
 
 void Stage::Render()
@@ -27,7 +35,10 @@ void Stage::Render()
     // ƒ[ƒ‹ƒh•ÏŠ·s—ñ‚ðì¬
     DirectX::XMStoreFloat4x4(&world, C* S * R * T);
 
-    model->render(immediate_context, world, material_color, nullptr, nullptr);
+    ceiling_model->render(immediate_context, world, material_color, nullptr, stage_1.Get());
+    wall_model->render(immediate_context, world, material_color, nullptr, stage_1.Get());
+    floor_model->render(immediate_context, world, material_color, nullptr, stage_1.Get());
+    gate_model->render(immediate_context, world, material_color, nullptr, gate.Get());
 }
 
 void Stage::DrawImGui()
@@ -36,6 +47,5 @@ void Stage::DrawImGui()
     ImGui::DragFloat3("position", &position.x);
     ImGui::DragFloat("scale_factor", &scale_factor);
     ImGui::End();
-
 }
 

@@ -91,6 +91,15 @@ private:// ゲーム関連
 
     float timer;
 
+
+    // シェーダー
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_color;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_normal;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_roughness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_metalness;
+
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> spider_ps;
+
     //DemoPlayer
     Player* player = nullptr;
     // ボス敵
@@ -189,6 +198,8 @@ private:// シェーダー関連
         DirectX::XMFLOAT4X4 inv_view_projection;
         // SHADOW
         DirectX::XMFLOAT4X4 light_view_projection;
+        float shadow_depth_bias;
+        float pads2[3];
     };
     scene_constants scene_constants;
 

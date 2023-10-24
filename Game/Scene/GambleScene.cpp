@@ -241,11 +241,33 @@ void GambleScene::Initialize()
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
+	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剛腕.png");
+	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/鬼力.png");
+	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/魔剣.png");
+	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/残酷.png");
+	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/狂乱.png");
+	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/技術.png");
+	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/吸血.png");
+	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾走.png");
+	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/加速.png");
+	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/我慢.png");
+	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/再生.png");
+	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/休憩.png");
+	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/逆転.png");
+	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/策士.png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剣聖.png");
+	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾風.png");
+	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/肥満.png");
+	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/豆腐.png");
+	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/呪詛.png");
+	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/傲慢.png");
+
+	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
+
 
 	/*--------------- これデバッグ用 --------------*/
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
-
-
 }
 
 void GambleScene::Finalize()
@@ -257,10 +279,54 @@ void GambleScene::Finalize()
 void GambleScene::Update(HWND hwnd, float elapsedTime)
 {
 	Mouse& mouse = Input::Instance().GetMouse();
+	GamePad& game_pad = Input::Instance().GetGamePad();
 	// todo 俺　抽選フラグリセットする。
 	switch (step)
 	{
 	case Skill_Lottery:
+
+		switch (select_num)
+		{
+		case 0:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num=1;
+			}
+			break;
+		case 1:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 2;
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 0;
+			}
+			break;
+		case 2:
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num=1;
+			}
+			break;
+		}
+		// コントローラー
+		if (game_pad.GetButtonDown() & GamePad::BTN_B)
+		{
+			if (!SelectCard[select_num])
+			{
+				last_num = select_num;
+				SelectCard[select_num] = true;
+				plusPos[select_num] = 50;
+				font_d[select_num] = 4;
+			}
+			else
+			{
+				SelectCard[select_num] = false;
+				plusPos[select_num] = 0;
+				font_d[select_num] = 0;
+			}
+		}
 		// カード
 		for (int i = 0; i < 3; i++)
 		{
@@ -270,7 +336,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				plusPos[i] = 0;
 				font_d[i] = 0;
 			}
-
+			// マウス
 			if (mouse.IsArea(skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y) && !IsDirection)
 			{
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -296,6 +362,26 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		if (can_lottery_count > 0)
 		{
 			// セレクト
+
+			if (game_pad.GetButtonDown() & GamePad::BTN_A)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					// スキルカードを再び配り直し
+					if (SelectCard[i])
+					{
+						skillCard[i].category = rand() % skill_num_max;
+						//wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
+						skillCard[i].wcText = skill_data[skillCard[i].category].title;
+						// カードを元に
+						SelectCard[i] = false;
+						plusPos[i] = 0;
+						font_d[i] = 0;
+						// 抽選回数を減算
+						can_lottery_count--;
+					}
+				}
+			}
 			if (mouse.IsArea(select_pos[1].x, select_pos[1].y, 400, 100))
 			{
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -321,6 +407,25 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 
 		// 決定
+
+		if (game_pad.GetButtonDown() & GamePad::BTN_Y)
+		{
+			int n = 0;//　対応する順番のスキルを入れる
+			for (const auto& skill : player->all_skills) {
+				if (n == skillCard[0].category || n == skillCard[1].category || n == skillCard[2].category)
+				{
+					lottery_skills.emplace_back(skill.get());
+				}
+				n++;
+			}
+			// 抽選されたスキルの配列をプレイヤーに持たせる。
+			player->SetSkill(lottery_skills);
+			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
+			player->SkillSort();
+			// 決定した時の処理
+			step++;
+		}
+
 		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 400, 100))
 		{
 			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -383,7 +488,32 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 	case Quest_Select:
 
-		// todo 牟田さん　ここでクエストの選択です。quest_patternに値を入れてstepをインクリメントしてください。お願いします。
+		switch (select_num)
+		{
+		case 0:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 1;
+			}
+			break;
+		case 1:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 2;
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 0;
+			}
+			break;
+		case 2:
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 1;
+			}
+			break;
+		}
+
 
 		switch (selection_card)
 		{
@@ -400,6 +530,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			// 矢印の位置変更
 			arrow_position[0] = { 820,410 };
 
+			// コントローラー
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				IsDirection = true;
+				selection_card = 1;
+			}
 			// 矢印をクリック
 			if (mouse.IsArea(arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y) && !IsDirection)
 			{
@@ -421,6 +557,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			questCard[2].size = { 440,565 };
 
 			arrow_position[0] = { 548,410 };
+			// コントローラー
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				IsDirection = true;
+				selection_card = 0;
+			}
 			if (mouse.IsArea(arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y) && !IsDirection)
 			{
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -428,6 +570,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					IsDirection = true;
 					selection_card =0;
 				}
+			}
+			// コントローラー
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				IsDirection = true;
+				selection_card = 2;
 			}
 			arrow_position[1] = { 1280,410 };
 			if (mouse.IsArea(arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y) && !IsDirection)
@@ -450,6 +598,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			questCard[2].size = { 600,780 };
 
 			arrow_position[1] = { 1000,410 };
+			// コントローラー
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				IsDirection = true;
+				selection_card = 1;
+			}
 			if (mouse.IsArea(arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y) && !IsDirection)
 			{
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -460,7 +614,15 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			}
 			break;
 		}
-
+		// コントローラー
+		if (game_pad.GetButtonDown() & GamePad::BTN_A)
+		{
+			quest_pattern = QuestPattern(quest_data[selection_card].pattern);
+			magnification = quest_data[selection_card].min_magnification;
+			min_magnification = quest_data[selection_card].min_magnification;
+			max_magnification = quest_data[selection_card].max_magnification;
+			step++;
+		}
 		if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
 		{
 			quest_pattern = static_cast<QuestPattern>(questCard[selection_card].category);
@@ -562,8 +724,6 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 		break;
 	}
-
-
   //  GamePad& game_pad = Input::Instance().GetGamePad();
   //  if (game_pad.GetButtonDown() & GamePad::BTN_START)
   //  {
@@ -614,14 +774,15 @@ void GambleScene::Render(float elapsedTime)
 	case Skill_Lottery:
 		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
+		spr_skill_back->render(immediate_context, skillCard[select_num].position.x - 126, skillCard[select_num].position.y - plusPos[select_num] - 178, 893, 1126);
 		for (int i = 0; i < 3; i++)
 		{
-			// カード２
-			spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
-			// テキスト
-			Lemur::Graphics::Font::Instance().render(skillCard[i].wcText.c_str(), skillCard[i].wcText.size() + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
-			//Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
+			//// カード２
+			//spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
+			//// テキスト
+			//Lemur::Graphics::Font::Instance().render(skillCard[i].wcText.c_str(), skillCard[i].wcText.size() + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
+			////Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
+			spr_skill[skillCard[i].category]->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 		}
 
 		for (int i = 0; i < 2; i++)spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100);

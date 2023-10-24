@@ -195,6 +195,8 @@ struct material
     std::string texture_filenames[4];
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_views[4];
    //TODO materialé¿å±
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metalness_smoothness;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metalness;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> roughness;
 
     // UNIT.30
@@ -341,6 +343,7 @@ public:
     virtual ~skinned_mesh() = default;
 
     void render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe, ID3D11PixelShader* replaced_pixel_shader);
+    void render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe, ID3D11PixelShader** replaced_pixel_shader);
     void update_animation(animation::keyframe& keyframe);
 
     bool append_animations(const char* animation_filename, float sampling_rate /*0:use default damage_value*/);

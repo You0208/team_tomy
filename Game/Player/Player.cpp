@@ -32,12 +32,19 @@ void PlayerGraphicsComponent::Update(GameObject* gameobj)
 {
 }
 
-void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
+void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader, bool shadow )
 {
     Player* player = dynamic_cast<Player*> (gameobj);
 
-    player->Render(elapsedTime, replaced_pixel_shader);
-
+    if (shadow)
+    {
+        ID3D11PixelShader* null_pixel_shader{ NULL };
+        player->Render(elapsedTime, &null_pixel_shader);
+    }
+    else
+    {
+        player->Render(elapsedTime, replaced_pixel_shader);
+    }
     player->DebugImgui();
 }
 
