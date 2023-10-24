@@ -634,6 +634,90 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//small_arrow_up_pos[0] = Poo;
 		// 上下
 
+
+		// コントローラー
+	{
+		switch (select_num)
+		{
+		case 0:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 1;
+			}
+			break;
+		case 1:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 2;
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 0;
+			}
+			break;
+		case 2:
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 1;
+			}
+			break;
+		}
+
+
+		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// 倍率が範囲内の時に動く
+		{
+			if (game_pad.GetButtonDown() & GamePad::BTN_UP)
+			{
+				if (player_status[select_num] > 1)
+				{
+					bet_num[select_num]++;
+					player_status_bet[select_num]++;
+					player_status[select_num]--;
+					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
+					{
+						bet_rate += 0.1f;
+					}
+				}
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_DOWN)
+			{
+				if (player_status[select_num] < player_status_max[select_num])
+				{
+					if (bet_num[select_num] > 0)bet_num[select_num]--;
+					player_status_bet[select_num]--;
+					player_status[select_num]++;
+					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate >= min_magnification)
+					{
+						bet_rate -= 0.1f;
+					}
+				}
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_B)
+			{
+				// ポイントを倍率分かけておく
+				//total_point *= bet_rate;
+				// 元のステータスを減らす
+
+				//player->health = player_status[0];
+				//player->max_health = player_status[0] * bet_rate;
+				//player->attack_power = player_status[1] * bet_rate;
+				//player->speed_power = player_status[2] * bet_rate;
+
+				// たぶんこう
+				player->max_health = player_status[0];
+				player->attack_power = player_status[1];
+				player->speed_power = player_status[2];
+
+				player->bet_MHP = player_status_bet[0];
+				player->bet_AP = player_status_bet[1];
+				player->bet_SP = player_status_bet[2];
+				step++;
+			}
+		}
+	}
+
 		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// 倍率が範囲内の時に動く
 		{
 			for (int i = 0; i < 3; i++)
