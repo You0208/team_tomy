@@ -159,6 +159,8 @@ void GameScene::Initialize()
 		player_hp_gauge_zabuton = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui.png");
 		enemy_hp_gauge = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\enemy_HPui_02.png");
 		enemy_hp_gauge_zabuton = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\enemy_HPui.png");
+
+		pause_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_back.png");
 	}
 
 	// ライト
@@ -224,7 +226,7 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	Camera& camera = Camera::Instance();
 	camera.Update(elapsedTime);
 
-	if (!is_update)return;
+	if (is_pause)return;
 
 	timer += elapsedTime;
 
@@ -509,10 +511,10 @@ void GameScene::Render(float elapsedTime)
 			skinned_meshes[2]->render(immediate_context, world, material_color, nullptr, Try.Get());
 		}
 #endif
-			// プレイヤー描画
-			player->Render(elapsedTime);
-			EnemyManager::Instance().Render(elapsedTime);
-			stage->Render();
+		// プレイヤー描画
+		player->Render(elapsedTime);
+		EnemyManager::Instance().Render(elapsedTime);
+		stage->Render();
 	}
 
 	// 3Dエフェクト描画
@@ -599,7 +601,9 @@ void GameScene::Render(float elapsedTime)
 
 		UIRender();
 		EnemyManager::Instance().DamageRender();
-		camera.RenderEnemyHP(player_hp_gauge.get());
+		//camera.RenderEnemyHP(player_hp_gauge.get());
+
+		PauseRender();
 	}
 #endif
 
@@ -623,16 +627,17 @@ void GameScene::Render(float elapsedTime)
 
 void GameScene::DebugImGui()
 {
-	float a = 619.0f * rate;
+	//float a = 619.0f * rate;
 
 	ImGui::Begin("Scene");
 	int quest_pattern_int = static_cast<int>(quest_pattern);
 	ImGui::InputInt("quest_pattern", &quest_pattern_int);
-	ImGui::Checkbox("is_update", &is_update);
+	ImGui::Checkbox("is_pause", &is_pause);
 	ImGui::DragFloat("bet_rate", &bet_rate);
 	ImGui::DragFloat("rate", & rate );
+    ImGui::DragFloat2("UI_pos", & UI_pos.x );
 	//ImGui::DragFloat3("ene_HP_gauge_pos", & ene_HP_gauge_pos.x );
-	ImGui::DragFloat("a", & a );
+	//ImGui::DragFloat("a", & a );
 	ImGui::End();
 }
 
@@ -640,7 +645,7 @@ void GameScene::CreateEnemy_KARI()
 {
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
-	quest_pattern = BOSS;
+
 	switch (quest_pattern)
 	{
 	case QuestPattern::A:
@@ -666,16 +671,6 @@ void GameScene::CreateEnemy_KARI()
 
 			ColliderManager::Instance().SetCollider(spider_a);
 		}
-		// ボスクモ
-		for (int i = 0; i < 1; ++i)
-		{
-			boss_enemy = CreateEnemy<BossSpider>();
-			boss_enemy->Initialize();
-			enemyManager.Register(boss_enemy);
-
-			ColliderManager::Instance().SetCollider(boss_enemy);
-		}
-
 
 		break;
 	case QuestPattern::B:
@@ -701,15 +696,6 @@ void GameScene::CreateEnemy_KARI()
 
 			ColliderManager::Instance().SetCollider(spider_b);
 		}	
-		// ボスクモ
-		for (int i = 0; i < 1; ++i)
-		{
-			boss_enemy = CreateEnemy<BossSpider>();
-			boss_enemy->Initialize();
-			enemyManager.Register(boss_enemy);
-
-			ColliderManager::Instance().SetCollider(boss_enemy);
-		}
 
 		break;
 
@@ -735,15 +721,6 @@ void GameScene::CreateEnemy_KARI()
 			enemyManager.Register(spider_c);
 
 			ColliderManager::Instance().SetCollider(spider_c);
-		}
-		// ボスクモ
-		for (int i = 0; i < 1; ++i)
-		{
-			boss_enemy = CreateEnemy<BossSpider>();
-			boss_enemy->Initialize();
-			enemyManager.Register(boss_enemy);
-
-			ColliderManager::Instance().SetCollider(boss_enemy);
 		}
 
 		break;
@@ -1097,8 +1074,11 @@ void GameScene::QuestClear()
 	{
 		player->SkillFin();
 		wave_count++;
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,true));
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 	}
+	player->SkillFin();
+	wave_count++;
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 
 
 }
@@ -1122,7 +1102,7 @@ void GameScene::QuestFailed()
 			player->death_anim_end = false;
 			player->death = false;
 			player->GetStateMachine()->SetNextState(player->Idle_State);
-			Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(bet_rate,false));
+			Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(false));
 		}
 	}
 }
@@ -1131,7 +1111,6 @@ void GameScene::UIRender()
 {
 	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
 
-    //todo このUIなんかずれてる 
 	/*------------- プレイヤーのHPゲージ ------------*/
 	player_hp_gauge_zabuton->render(dc, 0, 0, 619, 124);
 	rate = static_cast<float>(player->health) / static_cast<float>(player->max_health);
@@ -1141,11 +1120,19 @@ void GameScene::UIRender()
 	/*--------------- 敵ボスのHPゲージ --------------*/
 	if (boss_enemy)
 	{
-		enemy_hp_gauge_zabuton->render(dc, ene_HP_gauge_pos.x, ene_HP_gauge_pos.y, 619, 124);
+		enemy_hp_gauge_zabuton->render(dc, ene_HP_gauge_pos.x, ene_HP_gauge_pos.y, 768, 122);
 		rate = static_cast<float>(boss_enemy->health) / static_cast<float>(boss_enemy->max_health);
-		enemy_hp_gauge->render(dc, ene_HP_gauge_pos.x-10.0f, ene_HP_gauge_pos.y, 619.0f * rate, 124, 1, 1, 1, 1, 0,
-			0, 0, 619.0f * rate, 124);
+		enemy_hp_gauge->render(dc, ene_HP_gauge_pos.x-10.0f, ene_HP_gauge_pos.y, 768.0f * rate, 122, 1, 1, 1, 1, 0,
+			0, 0, 768.0f * rate, 122);
 	}
 
 	player->UIRender();
+}
+
+void GameScene::PauseRender()
+{
+	// todo 何で真っ黒？
+	if (!is_pause)return;
+	pause_back->render(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), UI_pos.x, UI_pos.y, 1920, 1080,1,1,1,1.0f,0);
+
 }

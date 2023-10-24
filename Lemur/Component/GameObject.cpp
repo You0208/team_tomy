@@ -229,6 +229,7 @@ void GameObject::UpdateVerticalMove(float elapsedTime)
     {
         isGround = false;
     }
+    position.y = 0.0f;
 }
 
 void GameObject::UpdataHorizontalVelocity(float elapsedFrame)
@@ -412,7 +413,7 @@ void GameObject::UpdateHorizontalMove(float elapsedTime)
         }
     }
 #endif
-
+    
 
 }
 

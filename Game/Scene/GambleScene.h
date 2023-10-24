@@ -103,7 +103,7 @@ public:
 	DirectX::XMFLOAT2 coin_bet_pos[3];
 
 	int bet_num[3];
-	int total_point;
+
 
 
 private:
@@ -131,7 +131,6 @@ private:
 	int last_num;
 
 	// ƒ|ƒCƒ“ƒg”{—¦
-	float magnification;
 	float min_magnification;
 	float max_magnification;
 

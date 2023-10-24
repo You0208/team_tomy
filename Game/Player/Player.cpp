@@ -16,8 +16,9 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v009.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v013.fbx"));
 
+    player->GetModel()->SetupRootMotion("polySurface1", "J_root");
     /*----------------- スプライト ---------------*/
     player->spr_damage = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
@@ -79,6 +80,7 @@ void Player::DebugImgui()
         ImGui::DragFloat("defense_power", &defense_power);
         ImGui::DragFloat("speed_power", &speed_power);
 
+        ImGui::InputInt("total_point", &total_point);
         ImGui::DragFloat("bet_AP", &bet_AP);
         ImGui::DragFloat("bet_DP", &bet_DP);
         ImGui::DragFloat("bet_SP", &bet_SP);
@@ -134,7 +136,7 @@ void Player::DrawDebugPrimitive()
 
     if(attack_collision_flag)
     {
-        DirectX::XMFLOAT3 position = Model->joint_position("wepon", "J_wepon", &keyframe, world);
+        DirectX::XMFLOAT3 position = Model->joint_position("polySurface1", "J_root", &keyframe, world);
         debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
     }
 }

@@ -9,6 +9,7 @@
 #include "Lemur/Scene/SceneManager.h"
 #include "SceneGame.h"
 #include "Quest.h"
+#include "ResultScene.h"
 #include "Game/Scene/SceneLoading.h"
 // todo 牟田さん こいつにQuestPattern型のどのクエストにするのか選択して値を入れる処理を作ってください。お願いします。
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
@@ -16,6 +17,9 @@ QuestPattern quest_pattern = QuestPattern::C;
 
 // 現在何ウェーブ目か
 int wave_count = 1;
+
+// 最終的なポイント倍率
+float bet_rate;
 
 void GambleScene::set_skill_data()
 {
@@ -464,7 +468,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
 		{
 			quest_pattern = static_cast<QuestPattern>(questCard[selection_card].category);
-			magnification = quest_data[selection_card].min_magnification;
+			bet_rate = quest_data[selection_card].min_magnification;
 			min_magnification = quest_data[selection_card].min_magnification;
 			max_magnification = quest_data[selection_card].max_magnification;
 			step++;
@@ -485,7 +489,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//small_arrow_up_pos[0] = Poo;
 		// 上下
 
-		if (magnification <= max_magnification && magnification >= min_magnification)// 倍率が範囲内の時に動く
+		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// 倍率が範囲内の時に動く
 		{
 			for (int i = 0; i < 3; i++)
 			{
@@ -498,10 +502,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 							bet_num[i]++;
 							player_status_bet[i]++;
 							player_status[i]--;
-							total_point = bet_num[0] + bet_num[1] + bet_num[2];
-							if (total_point % 10 == 0 && total_point >= 10 && magnification <= max_magnification)
+							player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+							if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
 							{
-								magnification += 0.1f;
+								bet_rate += 0.1f;
 							}
 						}
 					}
@@ -515,10 +519,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 							if (bet_num[i] > 0)bet_num[i]--;
 							player_status_bet[i]--;
 							player_status[i]++;
-							total_point = bet_num[0] + bet_num[1] + bet_num[2];
-							if (total_point % 10 == 0 && total_point >= 10 && magnification >= min_magnification)
+							player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+							if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate >= min_magnification)
 							{
-								magnification -= 0.1f;
+								bet_rate -= 0.1f;
 							}
 						}
 					}
@@ -526,7 +530,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 			}
 
-			total_point = bet_num[0] + bet_num[1] + bet_num[2];
+			player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
 		}
 
 
@@ -536,13 +540,18 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
 				// ポイントを倍率分かけておく
-				total_point *= magnification;
+				//total_point *= bet_rate;
 				// 元のステータスを減らす
+
 				//player->health = player_status[0];
-				// たぶんこう
-				player->max_health = player_status[0] * magnification;
-				player->attack_power = player_status[1] * magnification;
-				player->speed_power = player_status[2] * magnification;
+				//player->max_health = player_status[0] * bet_rate;
+				//player->attack_power = player_status[1] * bet_rate;
+				//player->speed_power = player_status[2] * bet_rate;
+
+			    // たぶんこう
+				player->max_health = player_status[0] ;
+				player->attack_power = player_status[1];
+				player->speed_power = player_status[2];
 
 				player->bet_MHP = player_status_bet[0];
 				player->bet_AP = player_status_bet[1];
@@ -558,7 +567,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//player->TestSkillSet("Rest");
 		//player->TestSkillSet("Schemer");
 
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
+		//Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 
 		break;
 	}
@@ -687,12 +697,12 @@ void GambleScene::Render(float elapsedTime)
 		spr_betback->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		{
 			std::ostringstream stream;
-			stream << std::fixed << std::setprecision(1) << magnification;
+			stream << std::fixed << std::setprecision(1) << bet_rate;
 			std::string result = stream.str();
 			spr_number->textout(immediate_context, result, select_decision_pos.x, 50.0f, 50, 50, 1, 1, 1, 1);
 		}
 		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
-		spr_number->textout(immediate_context, std::to_string(total_point), select_decision_pos.x, select_decision_pos.y - 70.0f, 50, 50, 1, 1, 1, 1);
+		spr_number->textout(immediate_context, std::to_string(player->total_point), select_decision_pos.x, select_decision_pos.y - 70.0f, 50, 50, 1, 1, 1, 1);
 
 		for (int i = 0; i < 3; i++)
 		{

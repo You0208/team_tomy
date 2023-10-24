@@ -335,6 +335,23 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer;
 
     void create_com_objects(ID3D11Device* device, const char* fbx_filename, bool used_as_collider/*RAYCAST*/);
+
+    // ルートモーションで使うから作りました。 by:tomy
+    int root_motion_boneNode_index = -1;
+    int root_motion_meshNode_index = -1;
+
+    // ルートモーションで移動した総量
+    DirectX::XMFLOAT3 cacheRootMotionTranslation = { 0,0,0 };
+
+    // 1フレームでルートモーションで移動した量
+    DirectX::XMFLOAT3 rootMotionTranslation = { 0,0,0 };
+
+    // ルートモーションするか
+    bool rootMotionFlag = false;
+
+    // ルートモーションするノードの位置
+    DirectX::XMFLOAT3 root_node_pos{0,0,0};
+
 public:
     skinned_mesh(ID3D11Device* device, const char* fbx_filename, bool triangulate = false, float sampling_rate = 0/*UNIT.25*/, bool used_as_collider = false/*RAYCAST*/);
     skinned_mesh(ID3D11Device* device, const char* fbx_filename, std::vector<std::string>& animation_filenames, bool triangulate = false, float sampling_rate = 0);
@@ -345,6 +362,99 @@ public:
 
     bool append_animations(const char* animation_filename, float sampling_rate /*0:use default damage_value*/);
     void blend_animations(const animation::keyframe* keyframes[2], float factor, animation::keyframe& keyframe);
+
+    /*------------------- ルートモーションで使うから作りました。 by:tomy --------------------*/
+    
+    // メッシュのインデックス番号検索
+    int FindMeshNodeIndex(const char* find_name)
+    {
+        for (int mesh_node_i = 0; mesh_node_i < meshes.size(); mesh_node_i++)
+        {
+            if (meshes.at(mesh_node_i).name == find_name)
+            {
+                return mesh_node_i;
+            }
+        }
+        _ASSERT_EXPR(false, L"メッシュが見つからんかった");
+    }
+    // ボーンのインデックス番号検索
+    int FindBoneNodeIndex(const char* find_name, const int mesh_index)
+    {
+        for (int bone_node_i = 0; bone_node_i < meshes.at(mesh_index).bind_pose.bones.size(); bone_node_i++)
+        {
+            if (meshes.at(mesh_index).bind_pose.bones.at(bone_node_i).name == find_name)
+            {
+                return bone_node_i;
+            }
+        }
+        _ASSERT_EXPR(false, L"ボーンノード見つからんかった");
+    }
+
+    void SetupRootMotion(const char* rootMotionMeshNodeName,const char* rootMotionBoneNodeName)
+    {
+        root_motion_meshNode_index = FindMeshNodeIndex(rootMotionMeshNodeName);
+        root_motion_boneNode_index = FindBoneNodeIndex(rootMotionBoneNodeName,root_motion_meshNode_index);
+    }
+
+    // joint_position関数で使うからやむを得ず引数に
+    void ComputeRootMotion(animation::keyframe keyframe,DirectX::XMFLOAT4X4 world)
+    {
+        if (!rootMotionFlag) return;
+        // ルートモーション設定されてなかったらreturnする。
+        if (root_motion_boneNode_index < 0)return;
+
+        // ルートモーションするノードデータ。
+        skeleton::bone& rootMotionBoneNode = meshes.at(root_motion_meshNode_index).bind_pose.bones.at(root_motion_boneNode_index);
+
+
+        std::string mesh_name = meshes.at(root_motion_meshNode_index).name;
+        std::string bone_name = meshes.at(root_motion_meshNode_index).bind_pose.bones.at(root_motion_boneNode_index).name;
+        root_node_pos = joint_position(mesh_name, bone_name, &keyframe, world);
+
+        // 前フレームと今回のフレームの移動値データの差分量を求める
+        rootMotionTranslation.x = root_node_pos.x - cacheRootMotionTranslation.x;
+        rootMotionTranslation.y = root_node_pos.y - cacheRootMotionTranslation.y;
+        rootMotionTranslation.z = root_node_pos.z - cacheRootMotionTranslation.z;
+
+        // 次のフレームに差分量を求めるために今回の移動値をキャッシュする
+        cacheRootMotionTranslation = root_node_pos;
+
+        //// アニメーション内で移動してほしくないのでルートモーション移動値をリセット
+        root_node_pos = { 0,0,0 };
+
+        // ルートモーションフラグをオフにする
+        rootMotionFlag = false;
+
+    }
+
+    void UpdateRootMotion(DirectX::XMFLOAT3& position, animation::keyframe keyframe, DirectX::XMFLOAT4X4 world)
+    {
+        if (root_motion_boneNode_index < 0)return;
+
+        // ルートモーションしてるノードデータ。
+        const skeleton::bone& root_motion_node = meshes.at(root_motion_meshNode_index).bind_pose.bones.at(root_motion_boneNode_index);
+
+        std::string mesh_name = meshes.at(root_motion_meshNode_index).name;
+        std::string bone_name = meshes.at(root_motion_meshNode_index).bind_pose.bones.at(root_motion_boneNode_index).name;
+        DirectX::XMFLOAT3 root_node_pos = joint_position(mesh_name, bone_name, &keyframe, world);
+        DirectX::XMMATRIX Node_World = DirectX::XMMatrixTranslation(root_node_pos.x, root_node_pos.y, root_node_pos.z);
+
+        // ルートモーションで移動する移動ベクトル
+        DirectX::XMVECTOR Translation = DirectX::XMLoadFloat3(&rootMotionTranslation);
+        //// ルートモーションしてるノードデータのワールド座標
+        //DirectX::XMMATRIX World = DirectX::XMLoadFloat4x4(&root_motion_node.worldTransform);
+
+        // ワールド座標から移動ベクトル分移動したとこが新しい位置になる。
+        DirectX::XMVECTOR Position = DirectX::XMVector3Transform(Translation, Node_World);
+        DirectX::XMStoreFloat3(&position, Position);
+
+        // 次フレームで引き継がれないようにリセット。
+        rootMotionTranslation = { 0,0,0 };
+    }
+
+
+    /*----------------------------------------------------------------------------------*/
+
 
     // RAYCAST
     // The coordinate system of all function arguments is world space.
@@ -373,7 +483,7 @@ public:
                         position.x = global_transform._41;
                         position.y = global_transform._42;
                         position.z = global_transform._43;
-                        DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&mesh.default_global_transform) * DirectX::XMLoadFloat4x4(&transform);
+                        DirectX::XMMATRIX M = DirectX::XMLoadFloat4x4(&mesh.default_global_transform) * DirectX::XMLoadFloat4x4(&transform); // todo　ルートモーションにこれ使える
                         DirectX::XMStoreFloat3(&position, DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&position), M));
                         return position;
                     }

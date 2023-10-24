@@ -206,7 +206,7 @@ namespace Nero::Component::AI
             // モーション値設定
             owner->motion_value = motion_value[attack_step];
 
-            owner->CollisionNodeVsEnemies("wepon", "J_wepon", owner->GetAttackCollisionRange());
+            owner->CollisionNodeVsEnemies("sickle", "J_wepon", owner->GetAttackCollisionRange());
         }
         
         // 特殊攻撃ボタン押されたら特殊攻撃ステート

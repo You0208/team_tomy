@@ -218,6 +218,9 @@ public:
     // かけるスピードのポイント量
     float bet_SP;
 
+    // ベットしたステータスの合計値
+    int total_point;
+
     // 死亡アニメーション終了フラグ
     // 終了したらシーン側でシーン切り替え。
     bool death_anim_end;

@@ -44,6 +44,8 @@ public:
     {
         UpdateScale();
         AnimationUpdate(elapsedTime);
+        Model->ComputeRootMotion(keyframe,world);
+        Model->UpdateRootMotion(position,keyframe,world);
         HitStopCalc();
         input->Update(this, elapsedTime);
         physics->Update(this, elapsedTime);

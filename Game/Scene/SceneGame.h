@@ -72,7 +72,7 @@ private:// ゲーム関連
     void QuestFailed();
 
     // 更新処理止める用
-    bool is_update = true;
+    bool is_pause = false;
 
     // 勝利時にかけたステータスの増える倍率
     float bet_rate = 1.0f;
@@ -82,13 +82,14 @@ private:// ゲーム関連
     //ポーズ
     void Pause()
     {
-        if (Input::Instance().GetGamePad().GetButtonDown() & GamePad::BTN_RIGHT_THUMB)
-            is_update = !is_update;
+        GamePad& game_pad = Input::Instance().GetGamePad();
+        if (game_pad.GetButtonDown() & GamePad::BTN_START)
+            is_pause = !is_pause;
     }
 
     // UI関係の描画
     void UIRender();
-
+    void PauseRender();
     float timer;
 
     //DemoPlayer
@@ -130,6 +131,13 @@ private:// ゲーム関連
     std::unique_ptr<sprite> enemy_hp_gauge_zabuton;
     // 敵のHPゲージの位置
     DirectX::XMFLOAT3 ene_HP_gauge_pos{640.0f,0.0f,0.0f};
+
+    // ポーズ画面の背景
+    std::unique_ptr<sprite>pause_back;
+
+
+    // UIデバッグ用
+    DirectX::XMFLOAT2 UI_pos;
 private:// シェーダー関連
     std::unique_ptr<framebuffer> framebuffers[8];
     enum class FRAME_BUFFER { FOG_1, FOG_2, BLOOM };
