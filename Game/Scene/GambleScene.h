@@ -141,9 +141,25 @@ private:
 	float player_status_bet[3];// プレイヤー側かけたステータスポイント
 	float player_status_max[3];
 
-private:/*---------------- スキル関係 -----------------*/
-
 	Player* player;
+private:/*---------------- スプライト関係 -----------------*/
+
+	// チュートリアルのページ
+
+	std::unique_ptr<sprite> spr_tutorial_01;
+	std::unique_ptr<sprite> spr_tutorial_02;
+	std::unique_ptr<sprite> spr_tutorial_03;
+	std::unique_ptr<sprite> spr_tutorial_04;
+	std::unique_ptr<sprite> spr_tutorial_05;
+	std::unique_ptr<sprite> spr_tutorial_06;
+	std::unique_ptr<sprite> spr_tutorial_07;
+	std::unique_ptr<sprite> spr_tutorial_08;
+	std::unique_ptr<sprite> spr_tutorial_09;
+
+	// チュートリアルページの位置(全員共通の使って、イージングするときに初期化)
+	DirectX::XMFLOAT2 spr_tutorial_pos = { 1920.0f,0.0f };
+
+	void TutorialRender();
 
 	std::shared_ptr<sprite>  spr_back;
 	std::shared_ptr<sprite>  spr_card;
@@ -161,5 +177,21 @@ private:/*---------------- スキル関係 -----------------*/
 
 	std::shared_ptr<sprite> spr_skill[22];
 
+
+	/*------- イージング関係 --------*/
+
+	// イージングする時間
+	float easing_time_ms = 1.0f;
+	// イージングしてる時間
+	float easing_timer_ms = 0.0f;
+
+	// チュートリアル画面がとどまる時間
+	float stop_time_ms = 3.0f;
+	// チュートリアル画面がとどまる処理の値が動くタイマー
+	float stop_timer_ms = 0.0f;
+
+	// チュートリアル画面がイージングする処理
+	//戻り値にはイージングが終了したかが返る
+	bool EasingTutorial();
 };
 

@@ -60,7 +60,8 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
     {
     case SceneStep::Result: // リザルト画面
 
-		if (game_pad.GetButtonDown() & GamePad::BTN_B)
+		if (game_pad.GetButtonDown() & GamePad::BTN_B&&
+			mouse.GetButtonDown()&Mouse::BTN_RIGHT)
 			step++;
 
 		break;
@@ -85,11 +86,6 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 					// ベットしたトータルポイントを消費してステータス上昇
 					player->total_point--;
 					player_status[i]++;
-					//player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-					//if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
-					//{
-					//	bet_rate += 0.1f;
-					//}
 				}
 			}
 			// 下矢印の範囲内でボタンが押されたら
@@ -101,14 +97,8 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 				{
 					player->total_point++;
 					player_status[i]--;
-					//player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-					//if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate >= min_magnification)
-					//{
-					//	bet_rate -= 0.1f;
-					//}
 				}
 			}
-
 		}
 
 		// 変動後のパラメータを実際のプレイヤーにセット
@@ -208,10 +198,7 @@ void ResultScene::GiveReward()
 
 // todo エフェクト
 // todo ルートモーション
-// todo ギャンブルシーンのベットレートらへん
 // todo スキル
-// todo UIのずれ
-// todo テクスチャ
 // todo カメラワーク
 
 // todo あとなんかいろいろ

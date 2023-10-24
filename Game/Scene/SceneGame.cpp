@@ -1092,9 +1092,9 @@ void GameScene::QuestClear()
 		wave_count++;
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 	}
-	player->SkillFin();
-	wave_count++;
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
+	//player->SkillFin();
+	//wave_count++;
+	//Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 
 
 }

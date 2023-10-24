@@ -1,5 +1,7 @@
 #include "GambleScene.h"
 
+#include <Game/Easing.h>
+
 #include "imgui.h"
 #include "Game/Manager/CharacterManager.h"
 #include "Game/Skill/AttackSkillDerived.h"
@@ -141,7 +143,6 @@ void GambleScene::Initialize()
 		player->SetSkill<Curse>(L"./resources/Image/呪詛.png");
 		player->SetSkill<Arrogance>(L"./resources/Image/傲慢.png");
 
-		wave_count = true;
 
 		// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 		CharacterManager::Instance().SetPlayer(player);
@@ -232,7 +233,20 @@ void GambleScene::Initialize()
 	}
 
 
-	// アセットのロード
+	/*-------------------------- アセットのロード -------------------------*/
+
+	// チュートリアルのページ
+	spr_tutorial_01 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/１.png");
+	spr_tutorial_02 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/２.png");
+	spr_tutorial_03 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/３.png");
+	spr_tutorial_04 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/４.png");
+	spr_tutorial_05 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/５.png");
+	spr_tutorial_06 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/６.png");
+	spr_tutorial_07 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/７.png");
+	spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/８.png");
+	spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/９.png");
+
+
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
 	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
 	spr_arrow = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
@@ -288,6 +302,9 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	switch (step)
 	{
 	case Skill_Lottery:
+
+		//if (EasingTutorial()) return;
+		EasingTutorial();
 
 		switch (select_num)
 		{
@@ -452,40 +469,6 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 		
 		
-//		// 抽選できる数だけ繰り返す
-//		if(can_lottery_count>0)
-//		{
-//			// todo 牟田さん ここで抽選するかどうかの判定をするからプレイヤーに選ばせれるようにしてください。お願いします。
-//			// もう一回抽選するときはほしいスキルはキープできるような処理もお願いします。is_selectをfalseにしたらまた抽選されます
-//			// ImGuiに抽選されてるスキルが表示されるようになってます。
-//
-//
-//		    // 今はバグるから強制的に三回抽選する
-//			if (can_lottery_count > 0/*todo 牟田さん ここのif文は(もっかい抽選が選ばれたら)にしてください*/)
-//			{
-//				SetLotterySkills();
-//				can_lottery_count--;
-//			}
-//			/*if(// このスキルで決定するを選択したら)
-//				can_lottery_count = 0;
-//				*/
-//		}
-//		// Todo　ここ最終的に演出が終了したらにしたい
-//		if (can_lottery_count <= 0)
-//		{
-//			// 抽選されたスキルの配列をプレイヤーに持たせる。
-//			player->SetSkill(lottery_skills);
-//
-//#if 0 /*----------- ここはテスト用 -----------*/
-//			player->TestSkillSet("StrongArm");
-//			player->TestSkillSet("SuperMan");
-//#endif
-//
-//			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
-//			player->SkillSort();
-//
-//			//step++;
-//		}
 
 
 		break;
@@ -622,7 +605,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		if (game_pad.GetButtonDown() & GamePad::BTN_A)
 		{
 			quest_pattern = QuestPattern(quest_data[selection_card].pattern);
-			magnification = quest_data[selection_card].min_magnification;
+			bet_rate = quest_data[selection_card].min_magnification;
 			min_magnification = quest_data[selection_card].min_magnification;
 			max_magnification = quest_data[selection_card].max_magnification;
 			step++;
@@ -729,8 +712,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//player->TestSkillSet("Rest");
 		//player->TestSkillSet("Schemer");
 
-		//Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
+		//Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 
 		break;
 	}
@@ -888,6 +871,8 @@ void GambleScene::Render(float elapsedTime)
 		break;
 	}
 
+	TutorialRender();
+
 	player->DebugImgui();
 	DebugImGui();
 }
@@ -937,6 +922,29 @@ void GambleScene::SetLotterySkills()
 
 
 
+}
+
+void GambleScene::TutorialRender()
+{
+	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+	spr_tutorial_09->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_08->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_07->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_06->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_05->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_04->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_03->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_02->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	spr_tutorial_01->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+bool GambleScene::EasingTutorial()
+{
+	spr_tutorial_pos.x = Easing::OutCubic(easing_timer_ms, easing_time_ms, static_cast<float>(SCREEN_WIDTH),0.0f);
+	easing_timer_ms += high_resolution_timer::Instance().time_interval();
+
+	if (easing_timer_ms >= easing_time_ms) return false;
+	else return true;
 }
 
 

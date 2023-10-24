@@ -22,7 +22,7 @@ public:
         scaleFactor = 1.0f;
 
         // メッシュの名前違うからここで再設定
-        meshName = "spider_middle_spider_middle";
+        meshName = "polySurface1";
 
         enemy_type = "D_Spider";
     }
@@ -59,7 +59,7 @@ public:
         scaleFactor = 1.0f;
 
         // メッシュの名前違うからここで再設定
-        meshName = "spider_middle_spider_middle";
+        meshName = "polySurface1";
 
         enemy_type = "E_Spider";
     }
@@ -96,7 +96,7 @@ public:
         scaleFactor = 1.0f;
 
         // メッシュの名前違うからここで再設定
-        meshName = "spider_middle_spider_middle";
+        meshName = "polySurface1";
 
         enemy_type = "F_Spider";
     }

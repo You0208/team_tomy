@@ -22,5 +22,6 @@ public:
 
 private:
     std::unique_ptr<sprite> title;
+    
 };
 

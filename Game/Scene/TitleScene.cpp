@@ -8,7 +8,7 @@ extern int wave_count;
 
 void TitleScene::Initialize()
 {
-    title = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/pic001.png");
+    title = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/titile.png");
 }
 
 void TitleScene::Finalize()
