@@ -25,7 +25,7 @@ class EnemyGraphicsComponent :public GraphicsComponent
 {
     void Initialize(GameObject* gameobj) override;
     void Update(GameObject* gameobj) override;
-    void Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader) override;
+    void Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader, bool shadow = false) override;
 private:
     // シェーダー
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> spider_color;

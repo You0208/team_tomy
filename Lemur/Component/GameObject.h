@@ -142,6 +142,7 @@ public:
 
     // •`‰æİ’è
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
+    void Render(float elapsedTime, ID3D11PixelShader** replaced_pixel_shader);
 
     // ˆÚ“®ˆ—
     void Move(float vx, float vz, float speed);

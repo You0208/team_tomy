@@ -17,9 +17,17 @@ void DemoEnemyGraphicsComponent::Update(GameObject* gameobj)
 {
 }
 
-void DemoEnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
+void DemoEnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader, bool shadow)
 {
 	DemoEnemy* demoEnemy = dynamic_cast<DemoEnemy*> (gameobj);
 
-	demoEnemy->Render(elapsedTime,replaced_pixel_shader);
+	if (shadow)
+	{
+		ID3D11PixelShader* null_pixel_shader{ NULL };
+		demoEnemy->Render(elapsedTime, &null_pixel_shader);
+	}
+	else
+	{
+		demoEnemy->Render(elapsedTime, replaced_pixel_shader);
+	}
 }

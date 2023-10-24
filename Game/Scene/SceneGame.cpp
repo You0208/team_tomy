@@ -151,7 +151,8 @@ void GameScene::Initialize()
 		stage = std::make_unique<Stage>();
 		stage->Init();
 
-		
+		skinned_meshes[0] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx", true);
+		skinned_meshes[2] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx", true);
 
 		/*------------------ UIä÷åW --------------------*/
 		player_hp_gauge = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui_02.png");
@@ -295,6 +296,10 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	}
 	if (ImGui::TreeNode("direction_light"))
 	{
+		ImGui::SliderFloat("light_direction.x", &light_direction.x, -1.0f, +1.0f);
+		ImGui::SliderFloat("light_direction.y", &light_direction.y, -1.0f, +1.0f);
+		ImGui::SliderFloat("light_direction.z", &light_direction.z, -1.0f, +1.0f);
+
 		ImGui::SliderFloat("light_view_distance", &light_view_distance, 1.0f, +100.0f);
 		ImGui::SliderFloat("light_view_size", &light_view_size, 1.0f, +100.0f);
 		ImGui::SliderFloat("light_view_near_z", &light_view_near_z, 1.0f, light_view_far_z - 1.0f);
@@ -304,6 +309,7 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	if (ImGui::TreeNode("shadow"))
 	{
 		ImGui::Image(reinterpret_cast<void*>(double_speed_z->shader_resource_view.Get()), ImVec2(shadowmap_width / 5.0f, shadowmap_height / 5.0f));
+		ImGui::SliderFloat("shadow_depth_bias", &scene_constants.shadow_depth_bias, 0.1f, 0.01f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("bloom"))
@@ -341,7 +347,7 @@ void GameScene::Render(float elapsedTime)
 		using namespace DirectX;
 
 		const float aspect_ratio = double_speed_z->viewport.Width / double_speed_z->viewport.Height;
-		XMVECTOR F{ XMLoadFloat4(&light_view_focus) };
+		XMVECTOR F{ camera.GetFocus() };
 		XMVECTOR E{ F - XMVector3Normalize(XMLoadFloat4(&light_direction)) * light_view_distance };
 		XMVECTOR U{ XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) };
 		XMMATRIX V{ XMMatrixLookAtLH(E, F, U) };
@@ -349,18 +355,20 @@ void GameScene::Render(float elapsedTime)
 
 		DirectX::XMStoreFloat4x4(&scene_constants.view_projection, V * P);
 		scene_constants.light_view_projection = scene_constants.view_projection;
-		immediate_context->UpdateSubresource(constant_buffers[0].Get(), 0, 0, &scene_constants, 0, 0);
-		immediate_context->VSSetConstantBuffers(1, 1, constant_buffers[0].GetAddressOf());
+		immediate_context->UpdateSubresource(constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::SCENE)].Get(), 0, 0, &scene_constants, 0, 0);
+		immediate_context->VSSetConstantBuffers(static_cast<size_t>(CONSTANT_BUFFER_R::SCENE), 1, constant_buffers[static_cast<size_t>(CONSTANT_BUFFER::SCENE)].GetAddressOf());
 
 		double_speed_z->clear(immediate_context, 1.0f);
 		double_speed_z->activate(immediate_context);
 
 		ID3D11PixelShader* null_pixel_shader{ NULL };
-		player->Render(elapsedTime);
-		skinned_meshes[1]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, null_pixel_shader);
+		player->Render(elapsedTime, &null_pixel_shader);
+		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
+		skinned_meshes[2]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
 
+		//EnemyManager::Instance().Render(elapsedTime, &null_pixel_shader);
 		double_speed_z->deactivate(immediate_context);
-}
+	}
 
 	//TODO óvèCê≥
 #if 1
@@ -480,7 +488,10 @@ void GameScene::Render(float elapsedTime)
 	}
 	//3Dï`âÊ
 	{
-#if 0
+		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
+		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
+
+#if 1
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
 		{
@@ -495,14 +506,13 @@ void GameScene::Render(float elapsedTime)
 #else
 			const float scale_factor = 0.01f; // To change the units from centimeters to meters, set 'scale_factor' to 0.01.
 #endif
+			// STATIC_BATCHING
 			DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transforms[0])* DirectX::XMMatrixScaling(scale_factor, scale_factor, scale_factor) };
 			DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x, scaling.y, scaling.z) };
 			DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
 			DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z) };
 			DirectX::XMFLOAT4X4 world;
 			DirectX::XMStoreFloat4x4(&world, C * S * R * T);
-			// STATIC_BATCHING
-			drawcall_count = static_meshes[0]->render(immediate_context, world, material_color);
 
 			scale_factor = 0.01f; // To change the units from centimeters to meters, set 'scale_factor' to 0.01.
 			C = { DirectX::XMLoadFloat4x4(&coordinate_system_transforms[0]) * DirectX::XMMatrixScaling(scale_factor, scale_factor, scale_factor) };
@@ -510,9 +520,8 @@ void GameScene::Render(float elapsedTime)
 			R = { DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
 			T = { DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z) };
 			DirectX::XMStoreFloat4x4(&world, C * S * R * T);
-			skinned_meshes[0]->render(immediate_context, world, material_color, nullptr, Try.Get());
-			skinned_meshes[1]->render(immediate_context, world, material_color, nullptr, Try.Get());
-			skinned_meshes[2]->render(immediate_context, world, material_color, nullptr, Try.Get());
+			skinned_meshes[0]->render(immediate_context,{ -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, Try.Get());
+			skinned_meshes[2]->render(immediate_context,{ -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, Try.Get());
 		}
 #endif
 			// ÉvÉåÉCÉÑÅ[ï`âÊ

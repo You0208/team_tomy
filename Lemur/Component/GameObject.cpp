@@ -114,6 +114,56 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_sha
     }
 }
 
+void GameObject::Render(float elapsedTime, ID3D11PixelShader** replaced_pixel_shader)
+{
+    Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
+    ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
+
+    // 左手系・Y 軸アップへ変換
+    const DirectX::XMFLOAT4X4 coordinate_system_transforms[]{
+        { -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },	// 0:RHS Y-UP
+        { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },		// 1:LHS Y-UP
+        { -1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },	// 2:RHS Z-UP
+        { 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1 },		// 3:LHS Z-UP
+    };
+#if 0
+    // 単位をセンチメートルからメートルに変更するには、「scale_factor」を 0.01 に設定
+    const float scale_factor = 1.0f; // To change the units from centimeters to meters, set 'scale_factor' to 0.01.
+#else
+    const float scale_factor = 0.01f; // To change the units from centimeters to meters, set 'scale_factor' to 0.01.
+#endif
+    // 変換用
+    DirectX::XMMATRIX C{ DirectX::XMLoadFloat4x4(&coordinate_system_transforms[0])* DirectX::XMMatrixScaling(scale_factor, scale_factor, scale_factor) };
+    DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) };
+    DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
+    DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(position.x, position.y, position.z) };
+    // ワールド変換行列を作成
+    DirectX::XMStoreFloat4x4(&world, C * S * R * T);
+
+
+    if (Model->animation_clips.size() > 0)
+    {
+#if 1
+
+#else
+        animation::keyframe keyframe;
+        const animation::keyframe* keyframes[2]{
+            &skinned_meshes[0]->animation_clips.at(0).sequence.at(40),
+            &skinned_meshes[0]->animation_clips.at(0).sequence.at(80)
+        };
+        skinned_meshes[0]->blend_animations(keyframes, factors[2], keyframe);
+        skinned_meshes[0]->update_animation(keyframe);
+
+# endif
+        Model->render(immediate_context, world, material_color, &keyframe, replaced_pixel_shader);
+    }
+    else
+    {
+        Model->render(immediate_context, world, material_color, nullptr, replaced_pixel_shader);
+    }
+}
+
 void GameObject::Move(float vx, float vz, float speed)
 {
     // 移動方向ベクトルを設定

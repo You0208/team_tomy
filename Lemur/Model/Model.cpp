@@ -444,6 +444,91 @@ void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const XMFLOAT4
 
 }
 
+void skinned_mesh::render(ID3D11DeviceContext* immediate_context, const DirectX::XMFLOAT4X4& world, const DirectX::XMFLOAT4& material_color, const animation::keyframe* keyframe, ID3D11PixelShader** replaced_pixel_shader)
+{
+    for (const mesh& mesh : meshes)
+    {
+        uint32_t stride{ sizeof(vertex) };
+        uint32_t offset{ 0 };
+        immediate_context->IASetVertexBuffers(0, 1, mesh.vertex_buffer.GetAddressOf(), &stride, &offset);
+        immediate_context->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+        immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        immediate_context->IASetInputLayout(input_layout.Get());
+
+        immediate_context->VSSetShader(vertex_shader.Get(), nullptr, 0);
+        if (replaced_pixel_shader)
+        {
+            immediate_context->PSSetShader(*replaced_pixel_shader, nullptr, 0);
+        }
+        else
+        {
+            immediate_context->PSSetShader(pixel_shader.Get(), nullptr, 0);
+        }
+
+        constants data;
+        data.threshold = dissolve;
+        if (keyframe && keyframe->nodes.size() > 0)
+        {
+            // メッシュ全体が動くように変更
+            //XMStoreFloat4x4(&data.world, XMLoadFloat4x4(&mesh.default_global_transform) * XMLoadFloat4x4(&world));
+            const animation::keyframe::node& mesh_node{ keyframe->nodes.at(mesh.node_index) };
+            XMStoreFloat4x4(&data.world, XMLoadFloat4x4(&mesh_node.global_transform) * XMLoadFloat4x4(&world));
+
+            const size_t bone_count{ mesh.bind_pose.bones.size() };
+            _ASSERT_EXPR(bone_count < MAX_BONES, L"The value of the 'bone_count' has exceeded MAX_BONES.");
+
+            for (size_t bone_index = 0; bone_index < bone_count; ++bone_index)
+            {
+                const skeleton::bone& bone{ mesh.bind_pose.bones.at(bone_index) };
+                const animation::keyframe::node& bone_node{ keyframe->nodes.at(bone.node_index) };
+                XMStoreFloat4x4(&data.bone_transforms[bone_index],
+                    XMLoadFloat4x4(&bone.offset_transform) *
+                    XMLoadFloat4x4(&bone_node.global_transform) *
+                    XMMatrixInverse(nullptr, XMLoadFloat4x4(&mesh.default_global_transform))
+                );
+            }
+        }
+        else
+        {
+            XMStoreFloat4x4(&data.world, XMLoadFloat4x4(&mesh.default_global_transform) * XMLoadFloat4x4(&world));
+
+            // Bind dummy bone transforms
+            for (size_t bone_index = 0; bone_index < MAX_BONES; ++bone_index)
+            {
+                data.bone_transforms[bone_index] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+            }
+        }
+
+        for (const mesh::subset& subset : mesh.subsets)
+        {
+            const material& material{ materials.at(subset.material_unique_id) };
+
+            // material 構造体のメンバ変数 Kd と  material_color を合成する
+            XMStoreFloat4(&data.material_color, XMLoadFloat4(&material_color) * XMLoadFloat4(&material.Kd));;
+
+            // サブリソースにデータをコピー
+            immediate_context->UpdateSubresource(constant_buffer.Get(), 0, 0, &data, 0, 0);
+            immediate_context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+            immediate_context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+
+            // テクスチャを設定する
+            immediate_context->PSSetShaderResources(0, 1, material.shader_resource_views[0].GetAddressOf());
+            // 法線マップのシェーダーリソースビューをバインド
+            immediate_context->PSSetShaderResources(1, 1, material.shader_resource_views[1].GetAddressOf());
+            //TODO EMISSIVE
+            immediate_context->PSSetShaderResources(2, 1, material.shader_resource_views[2].GetAddressOf());
+            //TODO material実験
+            immediate_context->PSSetShaderResources(3, 1, material.metalness_smoothness.GetAddressOf());
+            immediate_context->PSSetShaderResources(4, 1, material.metalness.GetAddressOf());
+            immediate_context->PSSetShaderResources(5, 1, material.roughness.GetAddressOf());
+
+
+            // 使用するインデックスバッファの範囲を指定して描画する
+            immediate_context->DrawIndexed(subset.index_count, subset.start_index_location, 0);
+        }
+    }
+}
+
 HRESULT skinned_mesh::LoadTexture(ID3D11Device* device, const char* filename, const char* suffix, bool dummy, ID3D11ShaderResourceView** srv, UINT dummy_color)
 {
     // パスを分解

@@ -146,6 +146,8 @@ private:
         DirectX::XMFLOAT4X4 inv_view_projection;
         // SHADOW
         DirectX::XMFLOAT4X4 light_view_projection;
+        float shadow_depth_bias;
+        float pads2[3];
     };
     scene_constants scene_constants;
 

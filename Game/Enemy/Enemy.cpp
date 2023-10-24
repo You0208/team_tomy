@@ -33,7 +33,7 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
     }
     else
     {
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v006.fbx"));
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v009.fbx"));
         if (enemy->enemy_type == "SmallSpider")
         {
             load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
@@ -82,7 +82,7 @@ void EnemyGraphicsComponent::Update(GameObject* gameobj)
 
 }
 
-void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader)
+void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D11PixelShader* replaced_pixel_shader, bool shadow)
 {
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
@@ -93,8 +93,15 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     immediate_context->PSSetShaderResources( 15,1, spider_roughness.GetAddressOf());
     immediate_context->PSSetShaderResources( 16,1, spider_metalness.GetAddressOf());
 
-    enemy->Render(elapsedTime, replaced_pixel_shader);
-
+    if (shadow)
+    {
+        ID3D11PixelShader* null_pixel_shader{ NULL };
+        enemy->Render(elapsedTime, &null_pixel_shader);
+    }
+    else
+    {
+        enemy->Render(elapsedTime, replaced_pixel_shader);
+    }
     enemy->DebugImgui();
 }
 
