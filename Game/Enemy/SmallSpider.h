@@ -17,6 +17,8 @@ public:
 
         scaleFactor = 0.7f;
         meshName = "polySurface1";
+        meshName = "spider_middle_spider_middle";
+
         enemy_type = "SmallSpider";
     }
 

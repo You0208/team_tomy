@@ -144,9 +144,14 @@ private:// ゲーム関連
     // ポーズ画面の背景
     std::unique_ptr<sprite>pause_back;
 
+    // 操作方法
+    std::unique_ptr<sprite>Method_A_Button;
+    std::unique_ptr<sprite>Method_B_Button;
+    std::unique_ptr<sprite>Method_Y_Button;
+    std::unique_ptr<sprite>Method_LBRB_Button;
 
     // UIデバッグ用
-    DirectX::XMFLOAT2 UI_pos;
+    DirectX::XMFLOAT2 UI_pos[4];
 private:// シェーダー関連
     std::unique_ptr<framebuffer> framebuffers[8];
     enum class FRAME_BUFFER { FOG_1, FOG_2, BLOOM };

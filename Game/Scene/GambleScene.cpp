@@ -236,15 +236,15 @@ void GambleScene::Initialize()
 	/*-------------------------- アセットのロード -------------------------*/
 
 	// チュートリアルのページ
-	spr_tutorial_01 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/１.png");
-	spr_tutorial_02 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/２.png");
-	spr_tutorial_03 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/３.png");
-	spr_tutorial_04 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/４.png");
-	spr_tutorial_05 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/５.png");
-	spr_tutorial_06 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/６.png");
-	spr_tutorial_07 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/７.png");
-	spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/８.png");
-	spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/９.png");
+	spr_tutorial_01 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/skill_page1.png");
+	spr_tutorial_02 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/skill_page2.png");
+	spr_tutorial_03 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/skill_page3.png");
+	//spr_tutorial_04 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/４.png");
+	//spr_tutorial_05 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/５.png");
+	//spr_tutorial_06 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/６.png");
+	//spr_tutorial_07 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/７.png");
+	//spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/８.png");
+	//spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/９.png");
 
 
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
@@ -298,13 +298,35 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 {
 	Mouse& mouse = Input::Instance().GetMouse();
 	GamePad& game_pad = Input::Instance().GetGamePad();
-	// todo 俺　抽選フラグリセットする。
-	switch (step)
+
+	// 一週目だけチュートリアル表示
+	//if (wave_count == 1)
+	//{
+	//	switch (easing_step)
+	//	{
+
+	//	case 0: // 1回目のイージング
+	//		if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+	//			return;
+
+	//		// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+	//		ResetEasingTime();
+	//		easing_step++;
+	//		return;
+
+	//		break;
+
+	//	case 1: // 2回目のイージング
+	//		if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+	//			return;
+
+
+	//		break;
+	//	}
+	//}
+    switch (step)
 	{
 	case Skill_Lottery:
-
-		//if (EasingTutorial()) return;
-		EasingTutorial();
 
 		switch (select_num)
 		{
@@ -883,9 +905,17 @@ void GambleScene::DebugImGui()
 	int quest_pattern_int = static_cast<int>(quest_pattern);
 	ImGui::InputInt("quest_pattern", &quest_pattern_int);
 	quest_pattern = static_cast<QuestPattern>(quest_pattern_int);
-	ImGui::SliderFloat2("Poo", &Poo.x,0,100);
-	ImGui::SliderInt("last_num", &last_num,0,100);
+
+	//ImGui::SliderFloat2("Poo", &Poo.x,0,100);
+	//ImGui::SliderFloat2("Poo", &Poo.x,0,100);
+	//ImGui::SliderInt("last_num", &last_num,0,100);
 	ImGui::InputInt("wave_count", &wave_count);
+	ImGui::DragFloat2("spr_tutorial_pos", &spr_tutorial_pos.x);
+	ImGui::DragFloat("easing_time_ms", &easing_time_ms);
+	ImGui::DragFloat("easing_timer_ms", &easing_timer_ms);
+	ImGui::DragFloat("stop_time_ms", &stop_time_ms);
+	ImGui::DragFloat("stop_timer_ms", &stop_timer_ms);
+	ImGui::DragFloat("hide_stop_time_ms", &hide_stop_time_ms);
 	for(auto& skill:lottery_skills)
 	{
 		ImGui::Text(skill->GetName().c_str());
@@ -927,24 +957,43 @@ void GambleScene::SetLotterySkills()
 void GambleScene::TutorialRender()
 {
 	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
-	spr_tutorial_09->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_08->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_07->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_06->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_05->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_04->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//spr_tutorial_09->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//spr_tutorial_08->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//spr_tutorial_07->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//spr_tutorial_06->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//spr_tutorial_05->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	//spr_tutorial_04->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
 	spr_tutorial_03->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
 	spr_tutorial_02->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
 	spr_tutorial_01->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
-bool GambleScene::EasingTutorial()
+bool GambleScene::EasingTutorial(int start_pos,int end_pos,float stop_time_ms,float easing_time_ms)
 {
-	spr_tutorial_pos.x = Easing::OutCubic(easing_timer_ms, easing_time_ms, static_cast<float>(SCREEN_WIDTH),0.0f);
-	easing_timer_ms += high_resolution_timer::Instance().time_interval();
+	/*----------- 最初の待機の部分 ----------*/
 
-	if (easing_timer_ms >= easing_time_ms) return false;
-	else return true;
+	// ストップする時間立ってなかったら
+	if (stop_timer_ms <= stop_time_ms) {
+		// 時間進める
+		stop_timer_ms += high_resolution_timer::Instance().time_interval();
+		return false;
+	}
+
+	/*------------ イージングでスライドする部分 -----------*/
+	spr_tutorial_pos.x = Easing::OutSine(easing_timer_ms, easing_time_ms, static_cast<float>(end_pos), static_cast<float>(start_pos));
+
+    easing_timer_ms += high_resolution_timer::Instance().time_interval();
+
+	// イージング到達したら
+	if (easing_timer_ms >= easing_time_ms)
+	{
+		// イージングのタイムを止める。
+		easing_timer_ms = easing_time_ms;
+
+		// 一回の処理終了
+		return true;
+	}
+	else return false;
 }
 
 

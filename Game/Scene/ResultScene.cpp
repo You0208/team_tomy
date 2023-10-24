@@ -60,9 +60,14 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
     {
     case SceneStep::Result: // ƒŠƒUƒ‹ƒg‰æ–Ê
 
-		if (game_pad.GetButtonDown() & GamePad::BTN_B&&
+		if (game_pad.GetButtonDown() & GamePad::BTN_B||
 			mouse.GetButtonDown()&Mouse::BTN_RIGHT)
-			step++;
+		{
+			if (clear)
+				step++;
+			else
+				Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+		}
 
 		break;
 

@@ -185,13 +185,26 @@ private:/*---------------- スプライト関係 -----------------*/
 	// イージングしてる時間
 	float easing_timer_ms = 0.0f;
 
-	// チュートリアル画面がとどまる時間
+	// チュートリアル画面が真ん中でとどまる時間
 	float stop_time_ms = 3.0f;
+	// チュートリアル画面が右でとどまる時間
+	float hide_stop_time_ms = 1.0f;
 	// チュートリアル画面がとどまる処理の値が動くタイマー
 	float stop_timer_ms = 0.0f;
 
 	// チュートリアル画面がイージングする処理
 	//戻り値にはイージングが終了したかが返る
-	bool EasingTutorial();
+	//第一引数、イージング始める座標
+	//第二引数、イージングで止まる座標
+	//第三引数、イージング始まるまでの時間
+	//第四引数、イージングにかける時間
+	bool EasingTutorial(int start_pos, int end_pos,float stop_time_ms, float easing_time_ms);
+
+	void ResetEasingTime()
+	{
+		easing_timer_ms = 0.0f;
+		stop_timer_ms = 0.0f;
+	}
+	int easing_step;
 };
 

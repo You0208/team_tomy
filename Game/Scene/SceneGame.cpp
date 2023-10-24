@@ -162,6 +162,11 @@ void GameScene::Initialize()
 		enemy_hp_gauge_zabuton = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\enemy_HPui.png");
 
 		pause_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_back.png");
+
+		Method_A_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\A.png");
+		Method_B_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\B.png");
+		Method_Y_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Y.png");
+		Method_LBRB_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\LBRB.png");
 	}
 
 	// ライト
@@ -651,7 +656,10 @@ void GameScene::DebugImGui()
 	ImGui::Checkbox("is_pause", &is_pause);
 	ImGui::DragFloat("bet_rate", &bet_rate);
 	ImGui::DragFloat("rate", & rate );
-    ImGui::DragFloat2("UI_pos", & UI_pos.x );
+    ImGui::DragFloat2("UI_pos", & UI_pos[0].x );
+    ImGui::DragFloat2("UI_pos1", & UI_pos[1].x );
+    ImGui::DragFloat2("UI_pos2", & UI_pos[2].x );
+    ImGui::DragFloat2("UI_pos3", & UI_pos[3].x );
 	//ImGui::DragFloat3("ene_HP_gauge_pos", & ene_HP_gauge_pos.x );
 	//ImGui::DragFloat("a", & a );
 	ImGui::End();
@@ -662,6 +670,7 @@ void GameScene::CreateEnemy_KARI()
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
 
+	//quest_pattern = BOSS;
 	switch (quest_pattern)
 	{
 	case QuestPattern::A:
@@ -1142,13 +1151,21 @@ void GameScene::UIRender()
 			0, 0, 768.0f * rate, 122);
 	}
 
+	/*-------------------- スキル -------------------*/
 	player->UIRender();
+
+
+	/*------------------- 操作方法 ------------------*/
+	Method_B_Button->render(dc, UI_pos[0].x, UI_pos[0].y, 212, 237);
+	Method_A_Button->render(dc, UI_pos[1].x, UI_pos[1].y, 212, 237);
+	Method_Y_Button->render(dc, UI_pos[2].x, UI_pos[2].y, 212, 237);
+	Method_LBRB_Button->render(dc, UI_pos[3].x, UI_pos[3].y, 212, 237);
 }
 
 void GameScene::PauseRender()
 {
 	// todo 何で真っ黒？
 	if (!is_pause)return;
-	pause_back->render(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), UI_pos.x, UI_pos.y, 1920, 1080,1,1,1,1.0f,0);
+	pause_back->render(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), 0,0, 1920, 1080,1,1,1,1.0f,0);
 
 }

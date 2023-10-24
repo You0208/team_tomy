@@ -20,11 +20,13 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 
     player->GetModel()->SetupRootMotion("polySurface1", "J_root");
     /*----------------- スプライト ---------------*/
-    player->spr_damage = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
+    //player->spr_damage = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number6.png");
 
     /*----------------- エフェクト ---------------*/
     //player->slash = std::make_unique<Effect>("./resources/Effect/test/bigLightnigv001.efk");
-    player->slash = std::make_unique<Effect>("./resources/Effect/slash.efk");
+    player->slash = std::make_unique<Effect>("./resources/Effect/team0925/slash.efk");
+    player->parry_spark = std::make_unique<Effect>("./resources/Effect/team0925/parry_spark.efk");
+    player->parry_slash = std::make_unique<Effect>("./resources/Effect/team0925/parry_slash.efk");
     //player->slash = std::make_unique<Effect>("./resources/Effect/test/hit/Hit.efk");
 
 }
@@ -58,6 +60,7 @@ void Player::DebugImgui()
     if(ImGui::TreeNode("Transform"))
     {
         ImGui::DragFloat3("position", &position.x);
+        ImGui::DragFloat3("rotation", &rotation.x);
         ImGui::DragFloat("scale_factor", &scaleFactor);
         ImGui::DragFloat("height", &height);
         ImGui::DragFloat("radius", &radius);
@@ -143,7 +146,7 @@ void Player::DrawDebugPrimitive()
 
     if(attack_collision_flag)
     {
-        DirectX::XMFLOAT3 position = Model->joint_position("polySurface1", "J_root", &keyframe, world);
+        DirectX::XMFLOAT3 position = Model->joint_position("sickle", "J_wepon", &keyframe, world);
         debug_renderer->DrawSphere(position, attack_collision_range, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f));
     }
 }
@@ -382,7 +385,7 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                     // ヒットストップ
                     HitStopON(0.15f);
                     ////エフェクト
-                    //slash->Play(position, 1.0f);
+                    slash->Play(position, 1.0f);
                     // todo これいる？
                     //画面振動
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);

@@ -186,9 +186,6 @@ namespace Nero::Component::AI
 
         EnemyManager::Instance().HitClear();
 
-        //エフェクト
-        owner->slash->Play(owner->GetPosition(), 1.0f);
-
     }
 
     void AttackState::Update()
@@ -284,28 +281,56 @@ namespace Nero::Component::AI
 
     void AttackState::SetAttackCollisionFrag()
     {
-        owner->attack_collision_flag = false;
         switch (attack_step)
         {
         case first_attack:
-            
-            if (owner->GetFrameIndex() >= CollisionControlFrame::FirstAttack_Start)
-                owner->attack_collision_flag = true;
+
+            // todo 散弾判定にしなくてイケル？
+            if (!owner->attack_collision_flag)
+            {
+                if (owner->GetFrameIndex() == CollisionControlFrame::FirstAttack_Start ||
+                    owner->GetFrameIndex() == CollisionControlFrame::FirstAttack_Start + 1 ||
+                    owner->GetFrameIndex() == CollisionControlFrame::FirstAttack_Start - 1
+                    )
+                {
+                    PlayEffect(DirectX::XMFLOAT3(0.0f, 180.0f, 70.0f),1.5f);
+                    owner->attack_collision_flag = true;
+                }
+            }
 
             break;
         case second_attack:
-            
-            if (owner->GetFrameIndex() >= CollisionControlFrame::SecondAttack_Start)
-                owner->attack_collision_flag = true;
-
+            if (!owner->attack_collision_flag)
+            {
+                if (owner->GetFrameIndex() == CollisionControlFrame::SecondAttack_Start ||
+                    owner->GetFrameIndex() == CollisionControlFrame::SecondAttack_Start + 1 ||
+                    owner->GetFrameIndex() == CollisionControlFrame::SecondAttack_Start - 1)
+                {
+                    // 前方向
+                    PlayEffect(DirectX::XMFLOAT3(-30.0f, 180.0f, 0.0f),1.5f);
+                    //後ろ方向
+                    PlayEffect(DirectX::XMFLOAT3(30.0f, 0.0f, 0.0f),-2.5f);
+                    owner->attack_collision_flag = true;
+                }
+            }
             break;
         case third_attack:
 
-            if (owner->GetFrameIndex() >= CollisionControlFrame::ThirdAttack_Start &&
-                owner->GetFrameIndex() <= CollisionControlFrame::ThirdAttack_End)
-                owner->attack_collision_flag = true;
+            if (!owner->attack_collision_flag)
+            {
+                if (owner->GetFrameIndex() == CollisionControlFrame::ThirdAttack_Start ||
+                    owner->GetFrameIndex() == CollisionControlFrame::ThirdAttack_Start + 1 ||
+                    owner->GetFrameIndex() == CollisionControlFrame::ThirdAttack_Start - 1)
+                {
+                    PlayEffect(DirectX::XMFLOAT3(0.0f, 180.0f, 90.0f), 1.5f);
+                    owner->attack_collision_flag = true;
+                }
+            }
+            if (owner->GetFrameIndex() >= CollisionControlFrame::ThirdAttack_End)
+                owner->attack_collision_flag = false;
 
             break;
+
         }
     }
 
@@ -321,8 +346,8 @@ namespace Nero::Component::AI
         //アニメーション
         owner->SetAnimationIndex(next_attack_anim);
 
-        // 攻撃判定フラグオン
-        owner->attack_collision_flag = true;
+        // 攻撃判定フラグオフ
+        owner->attack_collision_flag = false;
 
         // 当たり履歴消去
         EnemyManager::Instance().HitClear();
@@ -332,6 +357,43 @@ namespace Nero::Component::AI
 
         // 先行入力フラグ解除
         buffered_input = false;
+
+    }
+
+    void AttackState::PlayEffect(DirectX::XMFLOAT3 rotation,float offset_length)
+    {
+        /*--------------- エフェクト再生する座標の調整 ---------------*/
+
+        // 武器の座標
+        DirectX::XMFLOAT3 wepon_pos = owner->GetModel()->joint_position("sickle", "J_wepon", &owner->keyframe, owner->world);
+
+        // 回転行列の作成
+        DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationRollPitchYaw(owner->GetAngle().x, owner->GetAngle().y, owner->GetAngle().z);
+        // 前方向ベクトル取得
+        DirectX::XMVECTOR Forward = rotation_matrix.r[2];
+        DirectX::XMFLOAT3 forward;
+
+        // 前方向ベクトルからちょっと進んだベクトル作成
+        Forward = DirectX::XMVector3Normalize(Forward);
+        Forward = DirectX::XMVectorScale(Forward, offset_length);
+
+        // そのベクトルをエフェクト再生する座標にたす
+        DirectX::XMStoreFloat3(&forward, Forward);
+        wepon_pos += forward;
+
+        /*------------------- エフェクト再生 ------------------*/
+        Effekseer::Handle handle = owner->slash->Play(wepon_pos, 0.3f);
+
+
+        /*----------------- 攻撃の角度に傾ける ----------------*/
+
+        DirectX::XMFLOAT3 rot = owner->GetAngle();
+
+        rot.x += DirectX::XMConvertToRadians(rotation.x);
+        rot.y += DirectX::XMConvertToRadians(rotation.y);
+        rot.z += DirectX::XMConvertToRadians(rotation.z);
+
+        owner->slash->SetRotation(handle, rot);
 
     }
 
@@ -371,6 +433,9 @@ namespace Nero::Component::AI
 
                 // カウンター中は無敵にする
                 owner->invincible = true;
+
+                // エフェクト再生
+                owner->parry_spark->Play(owner->GetPosition());
                 break;
             }
 
@@ -380,8 +445,18 @@ namespace Nero::Component::AI
             break;
         case Attack:
 
-            owner->CollisionNodeVsEnemies("wepon", "J_wepon", owner->GetAttackCollisionRange());
+            // アニメーションによる攻撃判定の制限
+            if (owner->GetFrameIndex() >= CollisionControlFrame::Attack_Start&&
+                owner->GetFrameIndex()<=CollisionControlFrame::Attack_End)
+            {
+                // 斬撃エフェクト再生
+                DirectX::XMFLOAT3 wepon_pos = owner->GetModel()->joint_position("sickle", "J_wepon", &owner->keyframe, owner->world);
+                owner->parry_slash->Play(wepon_pos);
 
+                wepon_pos.y += 1.0f;
+                owner->attack_collision_flag = true;
+                owner->CollisionNodeVsEnemies("sickle", "J_wepon", owner->GetAttackCollisionRange());
+            }
             if (owner->GetEndAnimation())
                 owner->GetStateMachine()->SetNextState(owner->Idle_State);
             break;

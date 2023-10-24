@@ -74,6 +74,7 @@ public:
         Fear_Anim,
         JumpAttack_Anim,
         Death_Anim,
+        Idle_Anim,
 
         Max_Anim,
     };
@@ -141,6 +142,10 @@ public:
     void Move_to_Target(float elapsedTime, float move_speed_rate = 1.0f, float turn_speed_rate = 1.0f);
 
     void CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, float node_radius);
+    void CollisionSphereVsPlayer(DirectX::XMFLOAT3 sphere_pos, float sphere_radius);
+
+    // UŒ‚‚ª“–‚½‚Á‚½‚Ìˆ—
+    void AttackHit();
 
     DirectX::XMFLOAT3 GetTargetPosition()const { return target_position; }
     DirectX::XMFLOAT3 GetTerritoryOrigin()const { return territory_origin; }

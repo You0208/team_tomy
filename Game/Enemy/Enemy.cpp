@@ -20,13 +20,13 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
     Enemy* enemy = dynamic_cast<Enemy*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 
-    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number.png");
+    enemy->damage_spr = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number8.png");
 
     ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
 
     if (enemy->enemy_type == "BossSpider")
     {
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v004.fbx"));
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spiderboss_v006.fbx"));
         load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
         load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Normal.png", spider_normal.GetAddressOf(), graphics.GetTexture2D());
         load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_boss\\spider_boss_Roughness.png", spider_roughness.GetAddressOf(), graphics.GetTexture2D());
@@ -34,7 +34,7 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
     }
     else
     {
-        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v006.fbx"));
+        enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v009.fbx"));
         if (enemy->enemy_type == "SmallSpider")
         {
             load_texture_from_file(graphics.GetDevice(), L".\\resources\\Enemy\\spider_small\\spider_small_color.png", spider_color.GetAddressOf(), graphics.GetTexture2D());
@@ -179,6 +179,9 @@ void Enemy::BehaviorTreeInitialize_Level1()
             }
         }
 #endif
+        // ‹¯‚Ý
+        ai_tree->AddNode("Root", "Fear", 1, BehaviorTree::SelectRule::Non, new FearJudgment(this), new FearAction(this));
+
         // Ž€–S
         ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
 
@@ -248,6 +251,9 @@ void Enemy::BehaviorTreeInitialize_Level2()
             }
         }
 #endif
+        // ‹¯‚Ý
+        ai_tree->AddNode("Root", "Fear", 1, BehaviorTree::SelectRule::Non, new FearJudgment(this), new FearAction(this));
+
         // Ž€–S
         ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
 
@@ -321,6 +327,9 @@ void Enemy::BehaviorTreeInitialize_Level3()
             }
         }
 #endif
+        // ‹¯‚Ý
+        ai_tree->AddNode("Root", "Fear", 1, BehaviorTree::SelectRule::Non, new FearJudgment(this), new FearAction(this));
+
         // Ž€–S
         ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
 
@@ -408,6 +417,9 @@ void Enemy::BehaviorTreeInitialize_Level4()
             }
         }
 #endif
+        // ‹¯‚Ý
+        ai_tree->AddNode("Root", "Fear", 1, BehaviorTree::SelectRule::Non, new FearJudgment(this), new FearAction(this));
+
         // Ž€–S
         ai_tree->AddNode("Root", "Death", 0, BehaviorTree::SelectRule::Non, new DeathJudgment(this), new DeathAction(this));
 
@@ -427,8 +439,8 @@ void Enemy::BehaviorTreeInitialize_Level5()
         //ai_tree->AddNode("Root", "Idle(debug)", 0, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
         //// ƒoƒbƒNƒXƒeƒbƒv
         //ai_tree->AddNode("Root", "BackStep", 0, BehaviorTree::SelectRule::Non, nullptr, new BackStepAction(this));
-        // ‰½‚à‚µ‚È‚¢
-        ai_tree->AddNode("Root", "null", 0, BehaviorTree::SelectRule::Non, nullptr, nullptr);
+        // “ÅƒuƒŒƒX
+        ai_tree->AddNode("Root", "PoisonBreath", 0, BehaviorTree::SelectRule::Non, nullptr, new PoisonAttackAction(this));
 
         //// —¼˜rUŒ‚(ƒfƒoƒbƒO—p)
         //ai_tree->AddNode("Root", "TwinArmsAttack(debug)", 3, BehaviorTree::SelectRule::Non, nullptr, new TwinArmsAttackAction(this));
@@ -618,21 +630,50 @@ void Enemy::CollisionNodeVsPlayer(const char* mesh_name, const char* bone_name, 
         player->GetPosition(), player->GetRadius(), player->GetHeight())
         )
     {
-        if (player->CounterJudge(position)) {}
-        else if (player->ApplyDamage(attack_power * player->GetDamageCorrection()))
-        {
-            // “¤•…ƒXƒLƒ‹Ž‚Á‚Ä‚½‚ç‹­§“I‚ÉHP0‚É‚·‚é
-            if (player->HaveSkill("Tofu"))
-            {
-                player->health = 0;
-                player->death = true;
-                return;
-            }
-
-            player->GetStateMachine()->SetNextState(player->Fear_State);
-        }
+        // UŒ‚ƒqƒbƒgŽž‚Ìˆ—
+        AttackHit();
         return;
     }
+}
+
+void Enemy::CollisionSphereVsPlayer(DirectX::XMFLOAT3 sphere_pos, float sphere_radius)
+{
+    Player* player = CharacterManager::Instance().GetPlayer();
+
+    // –³“G’†‚È‚ç”»’è‚µ‚È‚¢
+    if (player->invincible)
+        return;
+
+    if (Collision::IntersectSphereVsCylinder(
+        sphere_pos, sphere_radius,
+        player->GetPosition(), player->GetRadius(), player->GetHeight())
+        )
+    {
+        // UŒ‚ƒqƒbƒgŽž‚Ìˆ—
+        AttackHit();
+        return;
+    }
+
+}
+
+void Enemy::AttackHit()
+{
+    Player* player = CharacterManager::Instance().GetPlayer();
+
+    if (player->CounterJudge(position)) {}
+    else if (player->ApplyDamage(attack_power * player->GetDamageCorrection()))
+    {
+        // “¤•…ƒXƒLƒ‹Ž‚Á‚Ä‚½‚ç‹­§“I‚ÉHP0‚É‚·‚é
+        if (player->HaveSkill("Tofu"))
+        {
+            player->health = 0;
+            player->death = true;
+            return;
+        }
+
+        player->GetStateMachine()->SetNextState(player->Fear_State);
+    }
+
 }
 
 void Enemy::SetRandomTargetPosition()

@@ -2,6 +2,7 @@
 #pragma once
 #include "ActionBase.h"
 #include <DirectXMath.h>
+#include "Lemur/Effekseer/Effect.h"
 
 // égÇ§Ç©ÇÌÇ©ÇÁÇÒ
 // úpújçsìÆ
@@ -116,11 +117,13 @@ class PoisonAttackAction : public ActionBase
 public:
 	PoisonAttackAction(Enemy* enemy) :ActionBase(enemy)
 	{
-		start_collision__frame = 60;
-		end_collision__frame = 100;
+
+		poison = std::make_unique<Effect>("./resources/Effect/team0925/poison_02.efk");
 	}
 	ActionBase::State Run(float elapsedTime)override;
 
+	DirectX::XMFLOAT3 poison_pos{};
+	std::unique_ptr<Effect> poison;
 };
 
 // ìÀêiçUåÇ

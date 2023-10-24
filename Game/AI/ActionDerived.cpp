@@ -9,6 +9,20 @@
 
 ActionBase::State WanderAction::Run(float elapsedTime)
 {
+	// 死亡してたら死亡アクションに移行
+	if (owner->death)
+		return ActionBase::State::Failed;
+
+	// 怯んだら終了
+	if (owner->fear_frag) {
+		step = 0;
+		return ActionBase::State::Failed;
+	}
+	// 戦闘中になったら終了
+	if(owner->belligerency) {
+		step = 0;
+		return ActionBase::State::Failed;
+	}
 	switch (step)
 	{
 	case 0:
@@ -23,11 +37,6 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 		if (owner->death)
 			return ActionBase::State::Failed;
 
-		// 怯んだら終了
-		if (owner->fear_frag) {
-			step = 0;
-			return ActionBase::State::Failed;
-		}
 
 		if (owner->DistanceJudge(owner->GetPosition(), owner->GetTargetPosition(), 1.0f))
 		{
@@ -52,30 +61,35 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 
 ActionBase::State IdleAction::Run(float elapsedTime)
 {
+	// 死亡してたら死亡アクションに移行
+	if (owner->death)
+		return ActionBase::State::Failed;
+
+	idleing_time -= elapsedTime;
+
+	// 怯んだら終了
+	if (owner->fear_frag) {
+		step = 0;
+		return ActionBase::State::Failed;
+	}
+	// 戦闘中になったら終了
+	if (owner->belligerency) {
+		step = 0;
+		return ActionBase::State::Failed;
+	}
+
+
     switch (step)
     {
     case 0:
 		// 数はテキトー
 		idleing_time = Mathf::RandomRange(1.0f, 3.0f);
 
-		// todo アニメーション
-
+		owner->SetAnimationIndex(owner->Idle_Anim);
 		step++;
 		break;
 
     case 1:
-		// 死亡してたら死亡アクションに移行
-		if (owner->death)
-			return ActionBase::State::Failed;
-
-		idleing_time -= elapsedTime;
-
-		// 怯んだら終了
-		if (owner->fear_frag) {
-			step = 0;
-			return ActionBase::State::Failed;
-		}
-
 		// 待機終了したら
 		if (idleing_time < 0.0f)
 		{
@@ -439,10 +453,18 @@ ActionBase::State PoisonAttackAction::Run(float elapsedTime)
 		owner->SetAnimationIndex(owner->ShotAttack_Anim);
 		step++;
 		break;
-	case 1:
 
-		// 限定フレームの間だけ攻撃判定可能
-		CollisionFragJudge();
+	case 1:
+		if(owner->GetFrameIndex()>=140)
+		{
+			poison_pos = owner->GetModel()->joint_position(owner->meshName.c_str(), "J_lowbody_end", &owner->keyframe, owner->world);
+			poison->Play(poison_pos);
+
+			step++;
+		}
+
+		break;
+	case 2:
 
 		if (owner->GetEndAnimation())
 		{
@@ -450,13 +472,13 @@ ActionBase::State PoisonAttackAction::Run(float elapsedTime)
 			return ActionBase::State::Complete;
 		}
 
-		// 当たり判定
-		if (owner->attack_collision_flag)
-		{
-			Player* player = CharacterManager::Instance().GetPlayer();
+		//// 当たり判定
+		//if (owner->attack_collision_flag)
+		//{
+		//	Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
-		}
+		//	owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+		//}
 	}
 
 	return ActionBase::State::Run;

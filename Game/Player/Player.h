@@ -56,15 +56,14 @@ public:
         // プレイヤーはスピードの補正を変える
         walk_speed = 0.1f;
 
-        //max_health = 20;
+        max_health = 20;
         max_health = 1000;
         health = max_health;
 
         attack_power = 20;
 
-
         speed_power = 30;
-        speed_power = 100;// デバッグ用
+        //speed_power = 100;// デバッグ用
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);
@@ -317,7 +316,12 @@ private:
 
 public:/*----------- エフェクト関係 ------------*/
 
+    // 斬撃エフェクト
     std::unique_ptr<Effect> slash;
+    // パリィ成功時のエフェクト
+    std::unique_ptr<Effect> parry_spark;
+    // パリィ成功時の斬撃エフェクト
+    std::unique_ptr<Effect> parry_slash;
 
 public:/*--------------- UI関係 ----------------*/
     // ダメージ表示

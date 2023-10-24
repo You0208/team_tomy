@@ -23,6 +23,7 @@ public:
 
         // メッシュの名前違うからここで再設定
         meshName = "polySurface1";
+        meshName = "spider_middle_spider_middle";
 
         enemy_type = "G_Spider";
     }
@@ -60,6 +61,7 @@ public:
 
         // メッシュの名前違うからここで再設定
         meshName = "polySurface1";
+        meshName = "spider_middle_spider_middle";
 
         enemy_type = "H_Spider";
     }

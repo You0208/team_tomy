@@ -20,8 +20,12 @@ public:
     // •`‰æˆ—
     void Render(float elapsedTime)override;
 
+    void DrawImGui();
 private:
     std::unique_ptr<sprite> title;
-    
+    std::unique_ptr<sprite> spider_anim;
+    float anim_timer = 0.0f;
+    int tex_pos_x = 0;
+    DirectX::XMFLOAT2 spider_pos{};
 };
 

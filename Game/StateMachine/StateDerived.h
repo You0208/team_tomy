@@ -3,6 +3,7 @@
 #include"StateBase.h"
 
 class Player;
+#include <DirectXMath.h>
 namespace Nero::Component::AI
 {
     class IdleState :public StateBase
@@ -129,7 +130,10 @@ namespace Nero::Component::AI
 
         // 次の攻撃に進む
         void NextStep(int next_attack_step, int next_attack_anim);
-    
+
+        // 斬撃に合わせた回転値を引数に入れる
+        //第二引数には武器の座標から前方向にどれだけずれた位置に再生するか
+        void PlayEffect(DirectX::XMFLOAT3 rotation,float offset_length);
     };
 
     class SPAttackState :public StateBase
@@ -142,7 +146,13 @@ namespace Nero::Component::AI
         void End() override;
 
         // 180フレームまでカウンター判定受け付ける
-        int can_counter_frame = 180;
+        int can_counter_frame = 95;
+
+        enum CollisionControlFrame
+        {
+            Attack_Start = 35,
+            Attack_End = 65,
+        };
 
         enum Step
         {

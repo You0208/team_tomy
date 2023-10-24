@@ -22,6 +22,10 @@ public:
     // ƒXƒP[ƒ‹İ’è
     void SetScale(Effekseer::Handle handle, const DirectX::XMFLOAT3& scale);
 
+    // ‰ñ“]İ’è
+    void SetRotation(Effekseer::Handle handle, const DirectX::XMFLOAT3& rotation);
+
+
 private:
     Effekseer::EffectRef effekseerEffect;
 };
