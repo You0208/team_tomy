@@ -32,7 +32,7 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
 {
     GamePad& game_pad = Input::Instance().GetGamePad();
     Mouse& mouse = Input::Instance().GetMouse();
-    if(game_pad.GetButtonDown()&GamePad::BTN_START||
+    if(game_pad.GetButtonDown()&GamePad::BTN_A||
         mouse.GetButtonDown()&Mouse::BTN_RIGHT)
     {
         // タイトルから行くときは初めから。

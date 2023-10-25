@@ -294,6 +294,11 @@ void GambleScene::Initialize()
 	spr_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
 	spr_select = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\select.png");
 
+
+	spr_bet_icon[0] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_heart.png");
+	spr_bet_icon[1] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_attack.png");
+	spr_bet_icon[2] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_speed.png");
+
 	spr_betbox = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_space.png");
 	spr_OK = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\OK.png");
 	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
@@ -815,7 +820,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					}
 				}
 			}
-			if (game_pad.GetButtonDown() & GamePad::BTN_B)
+			if (game_pad.GetButtonDown() & GamePad::BTN_A)
 			{
 				// ƒ|ƒCƒ“ƒg‚ð”{—¦•ª‚©‚¯‚Ä‚¨‚­
 				//total_point *= bet_rate;
@@ -1042,6 +1047,7 @@ void GambleScene::Render(float elapsedTime)
 		for (int i = 0; i < 3; i++)
 		{
 			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
+			spr_bet_icon[i]->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y,85, 190);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
 			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 50, 50, 1, 1, 1, 1);
