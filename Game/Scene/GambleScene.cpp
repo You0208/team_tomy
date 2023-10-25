@@ -25,6 +25,8 @@ float bet_rate;
 
 void GambleScene::set_skill_data()
 {
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
 	wcscpy_s(skill_data[0].title, L"çÑòr");
 	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
 	wcscpy_s(skill_data[1].title, L"ãSóÕ");
@@ -51,10 +53,35 @@ void GambleScene::set_skill_data()
 	wcscpy_s(skill_data[15].title, L"ì§ïÖ");
 	wcscpy_s(skill_data[16].title, L"éÙÊf");
 	wcscpy_s(skill_data[17].title, L"ò¸ñù");
+
+
+	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çÑòr.png");
+	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãSóÕ.png");
+	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ñÇåï.png");
+	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/écçì.png");
+	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ã∂óê.png");
+	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãZèp.png");
+	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãzåå.png");
+	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éæëñ.png");
+	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/â¡ë¨.png");
+	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/â‰ñù.png");
+	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çƒê∂.png");
+	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãxåe.png");
+	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãtì].png");
+	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çÙém.png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/åïêπ.png");
+	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éæïó.png");
+	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/îÏñû.png");
+	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ì§ïÖ.png");
+	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éÙÊf.png");
+	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ò¸ñù.png");
 }
 
 void GambleScene::set_quest_data()
 {
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
 	wcscpy_s(quest_data[0].title,  L"Quest0");
 	wcscpy_s(quest_data[0].contents, L"Quest_ContentsA");
 	wcscpy_s(quest_data[1].title,  L"Quest1");
@@ -76,7 +103,22 @@ void GambleScene::set_quest_data()
 	wcscpy_s(quest_data[15].title, L"Quest15");
 	wcscpy_s(quest_data[16].title, L"Quest16");
 
-
+	spr_quest[QuestPattern::A] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A1.png");
+	spr_quest[QuestPattern::B] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A2.png");
+	spr_quest[QuestPattern::C] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A3.png");
+	spr_quest[QuestPattern::D] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A4.png");
+	spr_quest[QuestPattern::E] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A5.png");
+	spr_quest[QuestPattern::F] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B1.png");
+	spr_quest[QuestPattern::G] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B2.png");
+	spr_quest[QuestPattern::H] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B3.png");
+	spr_quest[QuestPattern::I] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B4.png");
+	spr_quest[QuestPattern::J] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B5.png");
+	spr_quest[QuestPattern::K] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C1.png");
+	spr_quest[QuestPattern::L] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C2.png");
+	spr_quest[QuestPattern::M] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C3.png");
+	spr_quest[QuestPattern::N] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C4.png");
+	spr_quest[QuestPattern::O] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C5.png");//TODO
+	spr_quest[QuestPattern::P] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/X.png");
 
 	// ÉNÉGÉXÉgÉpÉ^Å[ÉìÇÃê›íË
 	for (int quest_num_i = QuestPattern::A; quest_num_i < QuestPattern::MAX_QUEST; quest_num_i++)
@@ -259,27 +301,6 @@ void GambleScene::Initialize()
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
-	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çÑòr.png");
-	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãSóÕ.png");
-	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ñÇåï.png");
-	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/écçì.png");
-	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ã∂óê.png");
-	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãZèp.png");
-	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãzåå.png");
-	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éæëñ.png");
-	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/â¡ë¨.png");
-	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/â‰ñù.png");
-	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çƒê∂.png");
-	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãxåe.png");
-	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãtì].png");
-	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çÙém.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/åïêπ.png");
-	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éæïó.png");
-	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/îÏñû.png");
-	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ì§ïÖ.png");
-	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éÙÊf.png");
-	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ò¸ñù.png");
 
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
 
@@ -854,11 +875,6 @@ void GambleScene::Render(float elapsedTime)
 		spr_skill_back->render(immediate_context, skillCard[select_num].position.x - 126, skillCard[select_num].position.y - plusPos[select_num] - 178, 893, 1126);
 		for (int i = 0; i < 3; i++)
 		{
-			//// ÉJÅ[ÉhÇQ
-			//spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
-			//// ÉeÉLÉXÉg
-			//Lemur::Graphics::Font::Instance().render(skillCard[i].wcText.c_str(), skillCard[i].wcText.size() + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
-			////Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
 			spr_skill[skillCard[i].category]->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 		}
 
@@ -868,50 +884,38 @@ void GambleScene::Render(float elapsedTime)
 	case Quest_Select:
 
 		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		//spr_card->render(immediate_context, Poo.x, Poo.y - plusPos[0], questCard[0].size.x, questCard[0].size.y);
-		//spr_card->render(immediate_context, 0, 0 , Poo.x, Poo.y);
 		switch (selection_card)
 		{
 		case 0:
 			// ÉJÅ[ÉhÇP
 			for (int i = 2; i >= 0; i--)
 			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+				spr_quest[questCard[i].category]->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
 			// ñÓàÛ
-			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
+			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
 
-			// ÉeÉLÉXÉg
-
-			Lemur::Graphics::Font::Instance().render(questCard[0].wcText.c_str(), questCard[0].wcText.size()+1, { 16,10 }, 600, 72);
-		//	Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
 			break;
 		case 1:
 			// ÉJÅ[ÉhÇP
 			for (int i = 0; i < 3; i++)
 			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+				spr_quest[questCard[i].category]->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
 			// ñÓàÛ
-			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
-			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y);
+			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
+			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
 
-
-			// ÉeÉLÉXÉg
-			Lemur::Graphics::Font::Instance().render(questCard[1].wcText.c_str(), questCard[1].wcText.size()+1, { 40,10 }, 600, 72);
 			break;
 		case 2:
 			// ÉJÅ[ÉhÇP
 			for (int i = 0; i < 3; i++)
 			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+				spr_quest[questCard[i].category]->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
 
 			// ñÓàÛ
-			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
-
-			// ÉeÉLÉXÉg
-			Lemur::Graphics::Font::Instance().render(questCard[2].wcText.c_str(), questCard[2].wcText.size()+1, { 63,10 }, 600, 72);
+			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y);
 			break;
 		}
 
