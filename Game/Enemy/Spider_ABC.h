@@ -11,9 +11,9 @@ public:
     {
         rotation.y = 180;
         // todo ìGÇÃèoåªà íuÇÃê›íË
-        max_health = 300;
+        max_health = 100;
         health = max_health;
-        attack_power = 20.0f;
+        attack_power = 8.0f;
         speed_power = 20.0f;
 
         near_attack_range = 2.0f;
@@ -50,9 +50,9 @@ public:
         position.z = 30;
         rotation.y = DirectX::XMConvertToDegrees(180);
 
-        max_health = 300;
+        max_health = 100;
         health = max_health;
-        attack_power = 10.0f;
+        attack_power = 5.0f;
         speed_power = 30.0f;
 
         near_attack_range = 2.0f;
@@ -91,9 +91,9 @@ public:
         position.z = 30;
         rotation.y = DirectX::XMConvertToDegrees(180);
 
-        max_health = 500;
+        max_health = 200;
         health = max_health;
-        attack_power = 10.0f;
+        attack_power = 5.0f;
         speed_power = 20.0f;
 
         near_attack_range = 2.0f;

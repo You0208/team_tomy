@@ -1,5 +1,7 @@
 #include "SceneGame.h"
 
+#include <Game/Easing.h>
+
 #include "GambleScene.h"
 #include "imgui.h"
 #include "Game/Manager/CharacterManager.h"
@@ -153,7 +155,10 @@ void GameScene::Initialize()
 		Method_B_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\B.png");
 		Method_Y_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Y.png");
 		Method_LBRB_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\LBRB.png");
-		Method_LBRB_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\LBRB.png");
+
+		tutorial_01 = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\tutorial\\fight_page1.png");
+		tutorial_02 = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\tutorial\\fight_page2.png");
+		tutorial_03 = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\tutorial\\fight_page3.png");
 	}
 
 	// ライト
@@ -224,6 +229,62 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 
 	if (is_pause)return;
 
+	if (wave_count == 1) {
+
+		switch (easing_step)
+		{
+
+		case 0: // 1回目のイージング
+
+			if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+				return;
+
+
+			// 一回目やったら
+			if (tutorial_i == 0)
+			{
+				// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+				ResetEasingTime();
+
+				easing_step++;
+				return;
+
+			}
+			// ボタン押されん限り進めん
+			else if (Input::Instance().GetGamePad().GetButtonDown() & GamePad::BTN_A)
+			{
+				// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+				ResetEasingTime();
+				stop_time_ms = 0.0f;
+				easing_step++;
+				return;
+			}
+			return;
+			break;
+
+		case 1: // 2回目のイージング
+			if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+				return;
+			ResetEasingTime();
+
+			tutorial_end[tutorial_i] = true;
+			tutorial_i++;
+			if (tutorial_i > 2)
+			{
+				easing_step++;
+				stop_time_ms = 3.0f;
+				return;
+			}
+			else
+			{
+				easing_step = 0;
+				return;
+			}
+			break;
+		}
+	}
+
+
 	timer += elapsedTime;
 
 	// エフェクト更新処理
@@ -236,7 +297,7 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	player->Update(elapsedTime);
 
 
-	ColliderManager::Instance().Update();
+	//ColliderManager::Instance().Update();
 
 	QuestClear();
 	QuestFailed();
@@ -537,8 +598,8 @@ void GameScene::Render(float elapsedTime)
 
 		EffectManager::Instance().Render(view, projection);
 
-		player->DrawDebugPrimitive();
-		EnemyManager::Instance().DrawDebugPrimitive();
+		//player->DrawDebugPrimitive();
+		//EnemyManager::Instance().DrawDebugPrimitive();
 	}
 
 
@@ -614,6 +675,16 @@ void GameScene::Render(float elapsedTime)
 		//camera.RenderEnemyHP(player_hp_gauge.get());
 
 		PauseRender();
+
+		if (wave_count == 1)
+		{
+			if (!tutorial_end[2])
+				tutorial_03->render(graphics.GetDeviceContext(), spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+			if (!tutorial_end[1])
+				tutorial_02->render(graphics.GetDeviceContext(), spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+			if (!tutorial_end[0])
+				tutorial_01->render(graphics.GetDeviceContext(), spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+		}
 	}
 #endif
 
@@ -1195,5 +1266,34 @@ void GameScene::PauseRender()
 	else
 		pause_select->animation(dc, pause_select_UI_pos[1], DirectX::XMFLOAT2(25, 25), DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMConvertToRadians(180), DirectX::XMFLOAT2(25, 25));
 
+
+}
+
+bool GameScene::EasingTutorial(int start_pos, int end_pos, float stop_time_ms, float easing_time_ms)
+{
+	/*----------- 最初の待機の部分 ----------*/
+
+    // ストップする時間立ってなかったら
+	if (stop_timer_ms <= stop_time_ms) {
+		// 時間進める
+		stop_timer_ms += high_resolution_timer::Instance().time_interval();
+		return false;
+	}
+
+	/*------------ イージングでスライドする部分 -----------*/
+	spr_tutorial_pos.x = Easing::OutSine(easing_timer_ms, easing_time_ms, static_cast<float>(end_pos), static_cast<float>(start_pos));
+
+	easing_timer_ms += high_resolution_timer::Instance().time_interval();
+
+	// イージング到達したら
+	if (easing_timer_ms >= easing_time_ms)
+	{
+		// イージングのタイムを止める。
+		easing_timer_ms = easing_time_ms;
+
+		// 一回の処理終了
+		return true;
+	}
+	else return false;
 
 }

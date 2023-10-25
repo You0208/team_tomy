@@ -401,7 +401,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					easing_step++;
 					return;
 				}
-
+				return;
 				break;
 
 			case 1: // 2回目のイージング
@@ -418,7 +418,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				}
 				else
 					easing_step = 0;
-				break;
+				return;
+			    break;
 			}
 		}
 
@@ -668,6 +669,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					easing_step++;
 					return;
 				}
+				return;
 				break;
 
 			case 3://クエスト選択の2回目のイージング
@@ -683,6 +685,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				}
 				else
 					easing_step = 2;
+				return;
 				break;
 			}
 		}
@@ -863,6 +866,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					easing_step++;
 					return;
 				}
+				return;
 				break;
 
 			case 5://ステータス振り分けの2回目のイージング
@@ -875,12 +879,14 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				if (tutorial_i > 8){
 					easing_step++;
 					stop_time_ms = 3.0f;
+					return;
 				}
 				else
+				{
 					easing_step = 4;
-				break;
-
-
+					return;
+				}
+				return;
 
 			}
 		}

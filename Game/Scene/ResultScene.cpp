@@ -1,5 +1,7 @@
 #include "Game/Scene/ResultScene.h"
 
+#include <Game/Easing.h>
+
 #include "GambleScene.h"
 #include "imgui.h"
 #include "TitleScene.h"
@@ -20,12 +22,19 @@ void ResultScene::Initialize()
     spr_back_win = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Win.png");
     spr_back_Clear = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Clear.png");
     spr_back_lose = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Over_.png");
-    spr_back_status = std::make_unique<sprite>(device, L".\\resources\\Image\\pose_back.png");
+    spr_back_status = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_back.png");
 
 	spr_betbox = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_space.png");
 	spr_OK = std::make_unique<sprite>(device, L".\\resources\\Image\\OK.png");
 	spr_small_arrow = std::make_unique<sprite>(device, L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(device, L".\\resources\\Image\\number2.png");
+
+	spr_coin[0] = std::make_unique<sprite>(device, L".\\resources\\Image\\HP_coin.png");
+	spr_coin[1] = std::make_unique<sprite>(device, L".\\resources\\Image\\AP_coin.png");
+	spr_coin[2] = std::make_unique<sprite>(device, L".\\resources\\Image\\SP_coin.png");
+
+
+    tutorial = std::make_unique<sprite>(device, L".\\resources\\Image\\tutorial\\status_page1.png");
 
 	// アセットの座標設定
 	for (int i = 0; i < 3; ++i)
@@ -65,6 +74,7 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 {
 	Mouse& mouse = Input::Instance().GetMouse();
 	GamePad& game_pad = Input::Instance().GetGamePad();
+
     switch (step)
     {
     case SceneStep::Result: // リザルト画面
@@ -74,12 +84,14 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 		{
 			if (clear)
 			{
+				// ボス倒したらクリア
 			    if(wave_count==6)
 			    {
 					Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
 			    }
 				step++;
 			}
+			//負けたら即タイトルに戻る
 			else
 				Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
 		}
@@ -87,6 +99,42 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 		break;
 
     case SceneStep::Status: // ステータス振り分け
+
+		// 勝利時に１増えるからここでのwave_countは基本＋１
+		if (wave_count == 2)
+		{
+
+			switch (easing_step)
+			{
+
+			case 0: // 1回目のイージング
+
+				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+					return;
+
+				// ボタン押されん限り進めん
+				if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				{
+					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+					ResetEasingTime();
+					stop_time_ms = 0.0f;
+					easing_step++;
+					return;
+				}
+				return;
+
+			case 1: // 2回目のイージング
+				if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+					return;
+				ResetEasingTime();
+
+				easing_step++;
+				stop_time_ms = 3.0f;
+
+				return;
+
+			}
+		}
 
 		// プレイヤーのパラメータを配列に変換(for文で三つのパラメータを一気にやるために)
 		player_status[0] = static_cast<float>(player->max_health);
@@ -175,14 +223,14 @@ void ResultScene::Render(float elapsedTime)
 			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
-			//spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
-			//if (bet_num[i] > 0)
-			//{
-			//	for (int j = bet_num[i]; j > 0; j--)
-			//	{
-			//		spr_coin->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y - 5 * j, 200, 100);
-			//	}
-			//}
+			spr_number->textout(immediate_context, std::to_string(player->total_point), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
+			if (player->total_point > 0)
+			{
+				for (int j = player->total_point; j > 0; j--)
+				{
+					spr_coin[i]->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y - 5 * j, 200, 100);
+				}
+			}
 			spr_number->textout(immediate_context, std::to_string(int(player_status[i])), num_bet_pos[i].x, 100, 25, 50, 1, 1, 1, 1);
 		}
 
@@ -191,6 +239,8 @@ void ResultScene::Render(float elapsedTime)
 		Lemur::Graphics::Font::Instance().render(L"AP", 3, { char_bet_pos[1].x,char_bet_pos[1].y }, 600, 72);
 		Lemur::Graphics::Font::Instance().render(L"SP", 3, { char_bet_pos[2].x,char_bet_pos[2].y }, 600, 72);
 
+		if(!tutorial_end)
+			tutorial->render(immediate_context, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
 		break;
     }
 
@@ -218,6 +268,34 @@ void ResultScene::GiveReward()
 	player->total_point *= bet_rate;
 }
 
+bool ResultScene::EasingTutorial(int start_pos, int end_pos, float stop_time_ms, float easing_time_ms)
+{
+    /*----------- 最初の待機の部分 ----------*/
+
+	// ストップする時間立ってなかったら
+	if (stop_timer_ms <= stop_time_ms) {
+		// 時間進める
+		stop_timer_ms += high_resolution_timer::Instance().time_interval();
+		return false;
+	}
+
+	/*------------ イージングでスライドする部分 -----------*/
+	spr_tutorial_pos.x = Easing::OutSine(easing_timer_ms, easing_time_ms, static_cast<float>(end_pos), static_cast<float>(start_pos));
+
+	easing_timer_ms += high_resolution_timer::Instance().time_interval();
+
+	// イージング到達したら
+	if (easing_timer_ms >= easing_time_ms)
+	{
+		// イージングのタイムを止める。
+		easing_timer_ms = easing_time_ms;
+
+		// 一回の処理終了
+		return true;
+	}
+	else return false;
+
+}
 
 
 // todo エフェクト

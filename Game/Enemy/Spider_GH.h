@@ -12,9 +12,9 @@ public:
     {
         rotation.y = 180;
 
-        max_health = 300;
+        max_health = 200;
         health = max_health;
-        attack_power = 100.0f;
+        attack_power = 8.0f;
         speed_power = 50.0f;
 
         near_attack_range = 2.0f;
@@ -50,10 +50,10 @@ public:
     {
         rotation.y = 180;
 
-        max_health = 300;
+        max_health = 1000;
         health = max_health;
-        attack_power = 100.0f;
-        speed_power = 50.0f;
+        attack_power = 15.0f;
+        speed_power = 80.0f;
 
         near_attack_range = 4.0f;
         middle_attack_range = 10.0f;

@@ -162,6 +162,7 @@ private:// ゲーム関連
     std::unique_ptr<sprite>Method_Y_Button;
     std::unique_ptr<sprite>Method_LBRB_Button;
 
+
     // UIデバッグ用
     DirectX::XMFLOAT2 UI_pos[4]
     {
@@ -297,4 +298,46 @@ private:// シェーダー関連
     float light_view_size{ 12.0f };
     float light_view_near_z{ 2.0f };
     float light_view_far_z{ 18.0f };
+
+    /*----------------- チュートリアル -----------------*/
+
+    std::unique_ptr<sprite>tutorial_01;
+    std::unique_ptr<sprite>tutorial_02;
+    std::unique_ptr<sprite>tutorial_03;
+
+    // チュートリアルが終わったか
+    std::array<bool, 3> tutorial_end;
+    //チュートリアルの進行度
+    int tutorial_i = 0;
+    // チュートリアルページの位置(全員共通の使って、イージングするときに初期化)
+    DirectX::XMFLOAT2 spr_tutorial_pos = { 1920.0f,0.0f };
+
+    /*------- イージング関係 --------*/
+
+    // イージングする時間
+    float easing_time_ms = 1.0f;
+    // イージングしてる時間
+    float easing_timer_ms = 0.0f;
+
+    // チュートリアル画面が真ん中でとどまる時間
+    float stop_time_ms = 3.0f;
+    // チュートリアル画面が右でとどまる時間
+    float hide_stop_time_ms = 1.0f;
+    // チュートリアル画面がとどまる処理の値が動くタイマー
+    float stop_timer_ms = 0.0f;
+
+    // チュートリアル画面がイージングする処理
+    //戻り値にはイージングが終了したかが返る
+    //第一引数、イージング始める座標
+    //第二引数、イージングで止まる座標
+    //第三引数、イージング始まるまでの時間
+    //第四引数、イージングにかける時間
+    bool EasingTutorial(int start_pos, int end_pos, float stop_time_ms, float easing_time_ms);
+
+    void ResetEasingTime()
+    {
+        easing_timer_ms = 0.0f;
+        stop_timer_ms = 0.0f;
+    }
+    int easing_step;
 };

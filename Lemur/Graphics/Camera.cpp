@@ -53,8 +53,10 @@ void Camera::SetPerspectiveFov(Microsoft::WRL::ComPtr<ID3D11DeviceContext> dc)
 void Camera::Update(float elapsedTime)
 {
     GamePad& gamePad = Input::Instance().GetGamePad();
-
-    if (gamePad.GetButtonDown() & GamePad::BTN_LEFT_SHOULDER)
+    Mouse& mouse = Input::Instance().GetMouse();
+    if (gamePad.GetButtonDown() & GamePad::BTN_LEFT_SHOULDER||
+        gamePad.GetButtonDown() & GamePad::BTN_RIGHT_SHOULDER||
+        mouse.GetButtonDown()&Mouse::BTN_MIDDLE)
     {
         InputLockOn();
     }
@@ -228,11 +230,13 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     float mouse_pos_x = static_cast<int> (mouse.GetPositionX() - mouse.GetOldPositionX());
     float mouse_pos_y = static_cast<int> (mouse.GetPositionY() - mouse.GetOldPositionY());
 
+    // なんか9.0fずれてる
+    mouse_pos_y -= 9.0f;
     //if (mouse_pos_x < 10.0f&& mouse_pos_x > -10.0f)mouse_pos_x = 0.0f;
     //if (mouse_pos_y < 5.0f&& mouse_pos_y > -5.0f)mouse_pos_y = 0.0f;
 
     // マウスでの感度の補正値、rollSpeedにかける。
-    float speed_fit = 0.1f;
+    float speed_fit = 0.05f;
 
     // カメラの回転速度。
     speed = speed_fit * rollSpeed * elapsedTime;
