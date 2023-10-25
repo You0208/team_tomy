@@ -8,6 +8,7 @@ class LoadingScene :
 {
 public:
     LoadingScene(Lemur::Scene::BaseScene* next_scene) :nextScene(next_scene){}
+    LoadingScene() {}
     ~LoadingScene() override {}
 
     // èâä˙âª
@@ -30,6 +31,7 @@ private:
     BaseScene* nextScene = nullptr;
     std::thread* thread = nullptr;
     std::unique_ptr<sprite> spr_icon;
+    std::unique_ptr<sprite> spr_back;
 
     DirectX::XMFLOAT2 poo;
 

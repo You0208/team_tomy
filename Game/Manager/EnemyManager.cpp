@@ -33,11 +33,11 @@ void EnemyManager::Update(float elapsedTime)
 
 }
 
-void EnemyManager::Render(float elapsedTime)
+void EnemyManager::Render(float elapsedTime,bool shadow)
 {
     for (Enemy* enemy : enemies)
     {
-        enemy->Render(elapsedTime);
+        enemy->Render(elapsedTime,shadow);
     }
 }
 

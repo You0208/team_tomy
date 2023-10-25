@@ -81,26 +81,14 @@ void GameScene::Initialize()
 		create_ps_from_cso(graphics.GetDevice(), "Shader/fog_ps.cso", pixel_shaders[static_cast<size_t>(PS::FOG)].GetAddressOf());
 		create_ps_from_cso(graphics.GetDevice(), "Shader/final_pass_ps.cso", pixel_shaders[static_cast<size_t>(PS::FINAL)].GetAddressOf());
 
-		//BLOOM
-		framebuffers[static_cast<size_t>(FRAME_BUFFER::BLOOM)] = std::make_unique<framebuffer>(graphics.GetDevice(), SCREEN_WIDTH, SCREEN_HEIGHT, true);
-		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::BLOOM)] = std::make_unique<fullscreen_quad>(graphics.GetDevice());
-		bloomer = std::make_unique<bloom>(graphics.GetDevice(), 1920, 1080);
-		create_ps_from_cso(graphics.GetDevice(), "Shader/bloom_ps.cso", pixel_shaders[static_cast<size_t>(PS::BLOOM)].GetAddressOf());
-
-		// SKYMAP
-		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::SKY)] = std::make_unique<fullscreen_quad>(graphics.GetDevice());
-		create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[static_cast<size_t>(PS::SKY)].GetAddressOf());
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
-
 		// SHADOW
 		double_speed_z = std::make_unique<shadow_map>(graphics.GetDevice(), shadowmap_width, shadowmap_height);
 
 		// dissolve
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Image\\dissolve_animation.png", noise.GetAddressOf(), graphics.GetTexture2D());//TODO
 
-
 		//TODO 実験用
-		create_ps_from_cso(graphics.GetDevice(), "./Shader/fog_pbr_ps.cso", Try.GetAddressOf());
+		create_ps_from_cso(graphics.GetDevice(), "./Shader/player_ps.cso", Try.GetAddressOf());
 
 		//TODO　ごり押しPBR
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_AlbedoTransparency.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
@@ -153,9 +141,6 @@ void GameScene::Initialize()
 		stage = std::make_unique<Stage>();
 		stage->Init();
 
-		skinned_meshes[0] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx", true);
-		skinned_meshes[2] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx", true);
-
 		/*------------------ UI関係 --------------------*/
 		player_hp_gauge = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui_02.png");
 		player_hp_gauge_zabuton = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui.png");
@@ -207,9 +192,9 @@ void GameScene::Initialize()
 		light.ambientLight.z = 0.3f;
 
 		// step-2 ポイントライトの初期座標を設定する
-		light.ptPosition.x = player->GetPosition().x;
-		light.ptPosition.y = player->GetPosition().y;
-		light.ptPosition.z = player->GetPosition().z;
+		light.ptPosition.x = -17.3f;
+		light.ptPosition.y = 18.8f;
+		light.ptPosition.z = 41.4f;
 
 		// step-3 ポイントライトの初期カラーを設定する
 		light.ptColor.x = 1.0f;
@@ -217,7 +202,7 @@ void GameScene::Initialize()
 		light.ptColor.z = 1.0f;
 
 		// step-4 ポイントライトの影響範囲を設定する
-		light.ptRange.x = 50.0f;
+		light.ptRange.x = 100.0f;
 
 	}
 }
@@ -376,10 +361,7 @@ void GameScene::Render(float elapsedTime)
 
 		ID3D11PixelShader* null_pixel_shader{ NULL };
 		player->Render(elapsedTime, &null_pixel_shader);
-		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
-		skinned_meshes[2]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
-
-		//EnemyManager::Instance().Render(elapsedTime, &null_pixel_shader);
+		EnemyManager::Instance().Render(elapsedTime, true);
 		double_speed_z->deactivate(immediate_context);
 	}
 
@@ -400,13 +382,15 @@ void GameScene::Render(float elapsedTime)
 
 		DirectX::XMStoreFloat4x4(&scene_constants.view_projection, V * P);
 		scene_constants.light_direction = light_direction;
-		// UNIT.16
+		
+		DirectX::XMStoreFloat4(&camera_position, eye);
+
 		scene_constants.camera_position = camera_position;
 		if (enableFog)
 		{
 			// FOG
 			DirectX::XMStoreFloat4x4(&scene_constants.inverse_projection, DirectX::XMMatrixInverse(NULL, P));
-			DirectX::XMStoreFloat4x4(&scene_constants.inverse_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
+			DirectX::XMStoreFloat4x4(&scene_constants.inv_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
 			scene_constants.time = high_resolution_timer::Instance().time_stamp();
 		}
 	}
@@ -504,7 +488,7 @@ void GameScene::Render(float elapsedTime)
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
 
-#if 1
+#if 0
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
 		{
@@ -1084,7 +1068,6 @@ void GameScene::CreateEnemy_KARI()
 
 	case QuestPattern::BOSS:
 
-		//// ボスクモ
 		//for (int i = 0; i < 1; ++i)
 		//{
 		//	boss_enemy = CreateEnemy<BossSpider>();

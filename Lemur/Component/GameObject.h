@@ -53,9 +53,9 @@ public:
         graphics->Update(this);
     }
 
-    void Render(float elapsedTime)
+    void Render(float elapsedTime,bool shadow=false)
     {
-        graphics->Render(this,elapsedTime, pixelShader);
+        graphics->Render(this,elapsedTime, pixelShader, shadow);
     }
 
     void Delete()

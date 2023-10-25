@@ -22,7 +22,7 @@ public:
     void Update(float elapsedTime);
 
     // •`‰æˆ—
-    void Render(float elapsedTime);
+    void Render(float elapsedTime, bool shadow = false);
 
     // ƒ_ƒ[ƒW•`‰æˆ—
     void DamageRender();

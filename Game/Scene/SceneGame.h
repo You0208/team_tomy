@@ -116,7 +116,7 @@ private:// ゲーム関連
     DirectX::XMFLOAT4 camera_position{ 0.0f, 0.0f, -10.0f, 1.0f };
     DirectX::XMFLOAT4 camera_focus{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-    DirectX::XMFLOAT4 light_direction{ -0.113f, -0.556f, 1.0f, 0.0f };
+    DirectX::XMFLOAT4 light_direction{ 1.0f, -1.0f,0.9f, 0.0f };
 
     DirectX::XMFLOAT3 translation{ 0, 0, 0 };
     DirectX::XMFLOAT3 scaling{ 1, 1, 1 };
@@ -219,7 +219,6 @@ private:// シェーダー関連
         DirectX::XMFLOAT4 camera_position;
         // FOG
         DirectX::XMFLOAT4X4 inverse_projection;
-        DirectX::XMFLOAT4X4 inverse_view_projection;
         float time;
         float pads[3];
         // SKYMAP
@@ -235,13 +234,13 @@ private:// シェーダー関連
     struct fog_constants
     {
         //float fog_color[4] = { 0.322f, 0.765f, 0.882f, 0.894f }; // w: fog intensuty
-        float fog_color[4] = { 1.000f, 1.000f, 1.000f, 0.894f }; // w: fog intensuty
-        float fog_density = 0.0007f;
-        float fog_height_falloff = 0.9313f;
+        float fog_color[4] = { 0.734f, 0.734f, 0.734f, 0.894f }; // w: fog intensuty
+        float fog_density =0.15f;
+        float fog_height_falloff = 0.8126f;
         float start_distance = 5.00f;
         float fog_cutoff_distance = 500.0f;
-        float time_scale = 0.5f;
-        float seed_scale = 0.2f;
+        float time_scale = 0.4f;
+        float seed_scale = 0.03f;
         float pads[2];
     };
     fog_constants fog_constants;

@@ -11,11 +11,12 @@ void LoadingScene::Initialize()
     // シェーダー関連
     // スレッド
     {
-        thread = new std::thread(LoadingThread, this);
+       thread = new std::thread(LoadingThread, this);
     }
     // ゲーム部分
     {
         spr_icon = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Load_icon.png");
+        spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Loading_screen.png");
     }
 }
 
@@ -52,8 +53,8 @@ void LoadingScene::Render(float elapsedTime)
             immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
             immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
 
-            spr_icon->animation(immediate_context, poo, { 150, 150 }, { 1, 1, 1, 1 }, 0, { 110, 110 });
-            //spr_icon->render(immediate_context,  100,100 ,  110, 110 , 1, 1, 1, 1, 0);
+            spr_back->render(immediate_context,  0,0 ,  SCREEN_WIDTH, SCREEN_HEIGHT, 1, 1, 1, 1, 0);
+            spr_icon->animation(immediate_context, {1691,835}, { 150, 150 }, { 1, 1, 1, 1 }, 0, { 110, 110 });
         }
     }
 }
