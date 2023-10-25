@@ -13,6 +13,7 @@
 #include "Game/AI/NodeBase.h"
 #include "Game/Manager/EnemyManager.h"
 #include "Game/StateMachine/StateMachine.h"
+#include "Lemur/Audio/AudioManager.h"
 #include "Lemur/Collision/Collision.h"
 
 void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
@@ -675,6 +676,8 @@ void Enemy::AttackHit()
     if (player->CounterJudge(position)) {}
     else if (player->ApplyDamage(attack_power * player->GetDamageCorrection()))
     {
+        Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::DAMAGE, false);
+
         // “¤•…ƒXƒLƒ‹Ž‚Á‚Ä‚½‚ç‹­§“I‚ÉHP0‚É‚·‚é
         if (player->HaveSkill("Tofu"))
         {

@@ -156,6 +156,10 @@ private:/*---------------- スプライト関係 -----------------*/
 	std::unique_ptr<sprite> spr_tutorial_08;
 	std::unique_ptr<sprite> spr_tutorial_09;
 
+	// チュートリアルが終わったか
+	std::array<bool,10> tutorial_end;
+	//チュートリアルの進行度
+	int tutorial_i = 0;
 	// チュートリアルページの位置(全員共通の使って、イージングするときに初期化)
 	DirectX::XMFLOAT2 spr_tutorial_pos = { 1920.0f,0.0f };
 

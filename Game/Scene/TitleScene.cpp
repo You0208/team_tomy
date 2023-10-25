@@ -42,6 +42,7 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
             mouse.GetButtonDown() & Mouse::BTN_RIGHT)
         {
             // todo ここで演出
+
             step++;
         }
 
@@ -52,6 +53,7 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
 
         // タイトルから行くときは初めから。
         wave_count = 1;
+        Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::SENI, false);
 
         Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
 
@@ -59,15 +61,6 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
 
         break;
     }
-
-
-
-
-        // タイトルから行くときは初めから。
-        wave_count = 1;
-
-        Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
-    
 
     anim_timer += high_resolution_timer::Instance().time_interval();
 

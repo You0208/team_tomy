@@ -45,7 +45,7 @@ void Mouse::Update()
     // カーソル位置の取得
     POINT cursor;
     ::GetCursorPos(&cursor);
-    ::ScreenToClient(hWnd, &cursor);
+    //::ScreenToClient(hWnd, &cursor);
 
     // 画面のサイズを取得する。
     RECT rc;

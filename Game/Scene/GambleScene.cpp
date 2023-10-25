@@ -151,6 +151,7 @@ void GambleScene::Initialize()
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	SetState();
 
+	
 
 	// todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
@@ -189,6 +190,10 @@ void GambleScene::Initialize()
 
 		// ここでシングルトンクラスにセットしてこいつをゲームシーンで渡す
 		CharacterManager::Instance().SetPlayer(player);
+
+		tutorial_i = 0;
+		tutorial_end.fill(false);
+
 	}
 	else
 	{
@@ -263,9 +268,9 @@ void GambleScene::Initialize()
 		}
 		questCard[2].category = QuestPattern::P;
 		break;
-	case 5:
-		questCard[1].category = QuestPattern::BOSS;
-			break;
+	//case 5:
+	//	questCard[1].category = QuestPattern::BOSS;
+	//		break;
 	}
 	for (int i = 0; i < 3; i++)
 	{
@@ -282,12 +287,12 @@ void GambleScene::Initialize()
 	spr_tutorial_01 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/skill_page1.png");
 	spr_tutorial_02 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/skill_page2.png");
 	spr_tutorial_03 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/skill_page3.png");
-	//spr_tutorial_04 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/４.png");
-	//spr_tutorial_05 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/５.png");
-	//spr_tutorial_06 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/６.png");
-	//spr_tutorial_07 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/７.png");
-	//spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/８.png");
-	//spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/９.png");
+	spr_tutorial_04 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/quest_page1.png");
+	spr_tutorial_05 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/Bet_page1.png");
+	spr_tutorial_06 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/Bet_page2.png");
+	spr_tutorial_07 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/Bet_page3.png");
+	spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/Bet_page4.png");
+	spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/Bet_page5.png");
 
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
 	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
@@ -358,34 +363,64 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	GamePad& game_pad = Input::Instance().GetGamePad();
 
 	// 一週目だけチュートリアル表示
-	if (wave_count == 1)
-	{
-		switch (easing_step)
-		{
-
-		case 0: // 1回目のイージング
-			if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
-				return;
-
-			// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
-			ResetEasingTime();
-			easing_step++;
-			return;
-
-			break;
-
-		case 1: // 2回目のイージング
-			if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
-				return;
 
 
-			break;
-		}
-	}
+
+
 	switch (step)
 	{
 	case Skill_Lottery:
+		if (wave_count == 1) {
 
+			switch (easing_step)
+			{
+
+			case 0: // 1回目のイージング
+
+				if (step != Skill_Lottery)return;
+				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+					return;
+
+
+				// 一回目やったら
+				if (tutorial_i == 0)
+				{
+					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+					ResetEasingTime();
+
+					easing_step++;
+					return;
+
+				}
+				// ボタン押されん限り進めん
+				else if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				{
+					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+					ResetEasingTime();
+					stop_time_ms = 0.0f;
+					easing_step++;
+					return;
+				}
+
+				break;
+
+			case 1: // 2回目のイージング
+				if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+					return;
+				ResetEasingTime();
+
+				tutorial_end[tutorial_i] = true;
+				tutorial_i++;
+				if (tutorial_i > 2)
+				{
+					easing_step++;
+					stop_time_ms = 3.0f;
+				}
+				else
+					easing_step = 0;
+				break;
+			}
+		}
 
 		switch (select_down_num)
 		{
@@ -413,6 +448,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
 					player->SkillSort();
 					// 決定した時の処理
+					if (wave_count == 5)
+					{
+						quest_pattern = BOSS;
+						Lemur::Audio::AudioManager::Instance().stop_BGM(Lemur::Audio::BGM::PLAY);
+						Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
+					}
 					step++;
 				}
 				if (game_pad.GetButtonDown() & GamePad::BTN_UP)
@@ -426,40 +467,40 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			}
 			break;
 		case 2:
-				if (game_pad.GetButtonDown() & GamePad::BTN_A)
+			if (game_pad.GetButtonDown() & GamePad::BTN_A)
+			{
+				if (!SelectCard[select_num])
 				{
-					if (!SelectCard[select_num])
+					last_num = select_num;
+					SelectCard[select_num] = true;
+					plusPos[select_num] = 50;
+					font_d[select_num] = 4;
+				}
+				else
+				{
+					SelectCard[select_num] = false;
+					plusPos[select_num] = 0;
+					font_d[select_num] = 0;
+				}
+				for (int i = 0; i < 3; i++)
+				{
+					// スキルカードを再び配り直し
+					if (SelectCard[i])
 					{
-						last_num = select_num;
-						SelectCard[select_num] = true;
-						plusPos[select_num] = 50;
-						font_d[select_num] = 4;
-					}
-					else
-					{
-						SelectCard[select_num] = false;
-						plusPos[select_num] = 0;
-						font_d[select_num] = 0;
-					}
-					for (int i = 0; i < 3; i++)
-					{
-						// スキルカードを再び配り直し
-						if (SelectCard[i])
-						{
-							skillCard[i].category = rand() % skill_num_max;
-							skillCard[i].wcText = skill_data[skillCard[i].category].title;
-							// カードを元に
-							SelectCard[i] = false;
-							plusPos[i] = 0;
-							font_d[i] = 0;
-							// 抽選回数を減算
-							can_lottery_count--;
-						}
+						skillCard[i].category = rand() % skill_num_max;
+						skillCard[i].wcText = skill_data[skillCard[i].category].title;
+						// カードを元に
+						SelectCard[i] = false;
+						plusPos[i] = 0;
+						font_d[i] = 0;
+						// 抽選回数を減算
+						can_lottery_count--;
 					}
 				}
+			}
 
-				if (select_down_num > 0)
-				{
+			if (select_down_num > 0)
+			{
 				if (game_pad.GetButtonDown() & GamePad::BTN_UP)
 				{
 					select_down_num = 0;
@@ -593,6 +634,12 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				player->SetSkill(lottery_skills);
 				// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
 				player->SkillSort();
+				if(wave_count==5)
+				{
+					quest_pattern = BOSS;
+					Lemur::Audio::AudioManager::Instance().stop_BGM(Lemur::Audio::BGM::PLAY);
+					Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
+				}
 				// 決定した時の処理
 				step++;
 			}
@@ -600,6 +647,45 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		break;
 
 	case Quest_Select:
+		if (wave_count == 1) {
+
+			switch (easing_step)
+			{
+				if (step != Quest_Select)return;
+
+			case 2://クエスト選択の一回目のイージング
+				if (step != Quest_Select)return;
+				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+					return;
+
+
+				// ボタン押されん限り進めん
+				if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				{
+					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+					ResetEasingTime();
+					stop_time_ms = 0.0f;
+					easing_step++;
+					return;
+				}
+				break;
+
+			case 3://クエスト選択の2回目のイージング
+				if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+					return;
+				ResetEasingTime();
+
+				tutorial_end[tutorial_i] = true;
+				tutorial_i++;
+				if (tutorial_i > 3){
+					easing_step++;
+					stop_time_ms = 3.0f;
+				}
+				else
+					easing_step = 2;
+				break;
+			}
+		}
 
 		switch (select_num)
 		{
@@ -759,6 +845,46 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//player->attack_power = 40;
 		//small_arrow_up_pos[0] = Poo;
 		// 上下
+
+		if (wave_count == 1) {
+			switch (easing_step)
+			{
+			case 4:// ステータス振り分けの一回目のイージング
+				if (step != Gamble_Status)return;
+				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+					return;
+
+			    // ボタン押されん限り進めん
+			    if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				{
+					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+					ResetEasingTime();
+					stop_time_ms = 0.0f;
+					easing_step++;
+					return;
+				}
+				break;
+
+			case 5://ステータス振り分けの2回目のイージング
+				if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+					return;
+				ResetEasingTime();
+
+				tutorial_end[tutorial_i] = true;
+				tutorial_i++;
+				if (tutorial_i > 8){
+					easing_step++;
+					stop_time_ms = 3.0f;
+				}
+				else
+					easing_step = 4;
+				break;
+
+
+
+			}
+		}
+
 
 
 		// コントローラー
@@ -1132,15 +1258,32 @@ void GambleScene::SetLotterySkills()
 void GambleScene::TutorialRender()
 {
 	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
-	//spr_tutorial_09->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//spr_tutorial_08->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//spr_tutorial_07->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//spr_tutorial_06->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//spr_tutorial_05->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//spr_tutorial_04->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_03->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_02->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
-	spr_tutorial_01->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!tutorial_end[8])
+		spr_tutorial_09->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	if (!tutorial_end[7])
+		spr_tutorial_08->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[6])
+		spr_tutorial_07->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[5])
+		spr_tutorial_06->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[4])
+		spr_tutorial_05->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[3])
+		spr_tutorial_04->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[2])
+		spr_tutorial_03->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[1])
+		spr_tutorial_02->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    if (!tutorial_end[0])
+		spr_tutorial_01->render(dc, spr_tutorial_pos.x, spr_tutorial_pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 bool GambleScene::EasingTutorial(int start_pos,int end_pos,float stop_time_ms,float easing_time_ms)

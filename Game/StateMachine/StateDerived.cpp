@@ -7,6 +7,7 @@
 #include "Game/Scene/ResultScene.h"
 #include "Game/Scene/TitleScene.h"
 #include "Game/StateMachine/StateMachine.h"
+#include "Lemur/Audio/AudioManager.h"
 #include "Lemur/Graphics/Camera.h"
 #include "Lemur/Scene/SceneManager.h"
 
@@ -96,6 +97,7 @@ namespace Nero::Component::AI
     {
         owner->SetAnimationIndex(owner->Avoid_Anim);
         owner->GetModel()->rootMotionFlag = true;
+        Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::AVOID,false);
     }
 
     void AvoidState::Update()
@@ -286,7 +288,7 @@ namespace Nero::Component::AI
         {
         case first_attack:
 
-            // todo 散弾判定にしなくてイケル？
+            // 三段判定
             if (!owner->attack_collision_flag)
             {
                 if (owner->GetFrameIndex() == CollisionControlFrame::FirstAttack_Start ||
@@ -294,7 +296,10 @@ namespace Nero::Component::AI
                     owner->GetFrameIndex() == CollisionControlFrame::FirstAttack_Start - 1
                     )
                 {
+                    //エフェクト再生
                     PlayEffect(DirectX::XMFLOAT3(0.0f, 180.0f, 70.0f),1.5f);
+                    //SE再生
+                    Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::SWING, false);
                     owner->attack_collision_flag = true;
                 }
             }
@@ -437,6 +442,9 @@ namespace Nero::Component::AI
 
                 // エフェクト再生
                 owner->parry_spark->Play(owner->GetPosition());
+                // 音再生
+                Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::CONTER, false);
+
                 break;
             }
 

@@ -220,10 +220,11 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     angle.x -= ay * speed;
     angle.y += ax * speed;
 
-#if 0
+#if 1
     /*------------- É}ÉEÉXèàóù -------------*/
     Mouse& mouse = Input::Instance().GetMouse();
 
+    //delta  pos
     float mouse_pos_x = static_cast<int> (mouse.GetPositionX() - mouse.GetOldPositionX());
     float mouse_pos_y = static_cast<int> (mouse.GetPositionY() - mouse.GetOldPositionY());
 
@@ -242,7 +243,8 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     angle.y += mouse_pos_x * speed;
 # endif
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-#if 0
+#if 1
+
     SetCursorPos(1920 / 2, 1080 / 2);
     mouse.SetPositionX(1920 / 2);
     mouse.SetPositionY(1080 / 2);

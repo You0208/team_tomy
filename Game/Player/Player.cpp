@@ -11,6 +11,7 @@
 #include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Collision/Collision.h"
 #include "Game/MathHelper.h"
+#include "Lemur/Audio/AudioManager.h"
 
 void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
@@ -389,11 +390,13 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 {
                     // ヒットストップ
                     HitStopON(0.15f);
-                    // todo これいる？
+                    // SE再生
+                    Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::HIT, false);
                     //画面振動
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);
                     // ダメージ量描画
                     enemy->DamageRenderSet(attack_power * motion_value,node_pos);
+
 
                     // このフレームで与えたダメージを保持
                     add_damage += attack_power * motion_value;

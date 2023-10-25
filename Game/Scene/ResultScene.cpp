@@ -2,12 +2,15 @@
 
 #include "GambleScene.h"
 #include "imgui.h"
+#include "TitleScene.h"
 #include "Game/Manager/CharacterManager.h"
 #include "Lemur/Input/Input.h"
 #include "Lemur/Scene/SceneManager.h"
 #include "Lemur/Audio/AudioManager.h"
 
 extern float bet_rate;
+extern int wave_count;
+
 void ResultScene::Initialize()
 {
 	step = SceneStep::Result;
@@ -15,7 +18,8 @@ void ResultScene::Initialize()
     // äGÇÃê›íË
     ID3D11Device* device = Lemur::Graphics::Graphics::Instance().GetDevice();
     spr_back_win = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Win.png");
-    spr_back_lose = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Lose.png");
+    spr_back_Clear = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Clear.png");
+    spr_back_lose = std::make_unique<sprite>(device, L".\\resources\\Image\\Result_Over_.png");
     spr_back_status = std::make_unique<sprite>(device, L".\\resources\\Image\\pose_back.png");
 
 	spr_betbox = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_space.png");
@@ -69,9 +73,15 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 			mouse.GetButtonDown()&Mouse::BTN_RIGHT)
 		{
 			if (clear)
+			{
+			    if(wave_count==6)
+			    {
+					Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+			    }
 				step++;
+			}
 			else
-				Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+				Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
 		}
 
 		break;
@@ -138,7 +148,11 @@ void ResultScene::Render(float elapsedTime)
     {
     case SceneStep::Result:
 
-		if (clear) spr_back_win->render(graphics.GetDeviceContext(), 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		if (clear) {
+			if (wave_count == 6)spr_back_Clear->render(graphics.GetDeviceContext(), 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		    else spr_back_win->render(graphics.GetDeviceContext(), 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+		}
 		else      spr_back_lose->render(graphics.GetDeviceContext(), 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 

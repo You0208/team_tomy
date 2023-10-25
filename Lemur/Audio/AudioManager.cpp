@@ -12,9 +12,17 @@ namespace Lemur::Audio
             bgm[static_cast<int>(BGM::OVER)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/BGM/GameOver.wav");
             bgm[static_cast<int>(BGM::PLAY)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/BGM/Play.wav");
             bgm[static_cast<int>(BGM::TITLE)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/BGM/Title.wav");
-            
-            //se[static_cast<int>(SE::ARROW)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/");
+
+            se[static_cast<int>(SE::ARROW)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/arrow_se.wav");
+            se[static_cast<int>(SE::AVOID)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/avoid.wav");
+            se[static_cast<int>(SE::CONTER)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/counter.wav");
+            se[static_cast<int>(SE::DAMAGE)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/damage.wav");
+            se[static_cast<int>(SE::DECISION)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/decision.wav");
+            se[static_cast<int>(SE::HIT)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/Hit.wav");
+            se[static_cast<int>(SE::SENI)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/Seni.wav");
+            se[static_cast<int>(SE::SWING)] = std::make_unique<Lemur::Audio::audio>(xAudio2.Get(), L"./resources/Sound/SE/swing.wav");
         }
+    
     }
     void AudioManager::play_bgm(const BGM& bgm_, const bool isloop)
     {
