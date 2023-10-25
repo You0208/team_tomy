@@ -81,17 +81,6 @@ void GameScene::Initialize()
 		create_ps_from_cso(graphics.GetDevice(), "Shader/fog_ps.cso", pixel_shaders[static_cast<size_t>(PS::FOG)].GetAddressOf());
 		create_ps_from_cso(graphics.GetDevice(), "Shader/final_pass_ps.cso", pixel_shaders[static_cast<size_t>(PS::FINAL)].GetAddressOf());
 
-		//BLOOM
-		framebuffers[static_cast<size_t>(FRAME_BUFFER::BLOOM)] = std::make_unique<framebuffer>(graphics.GetDevice(), SCREEN_WIDTH, SCREEN_HEIGHT, true);
-		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::BLOOM)] = std::make_unique<fullscreen_quad>(graphics.GetDevice());
-		bloomer = std::make_unique<bloom>(graphics.GetDevice(), 1920, 1080);
-		create_ps_from_cso(graphics.GetDevice(), "Shader/bloom_ps.cso", pixel_shaders[static_cast<size_t>(PS::BLOOM)].GetAddressOf());
-
-		// SKYMAP
-		bit_block_transfer[static_cast<size_t>(BIT_BLOCK::SKY)] = std::make_unique<fullscreen_quad>(graphics.GetDevice());
-		create_ps_from_cso(graphics.GetDevice(), "./Shader/skymap_ps.cso", pixel_shaders[static_cast<size_t>(PS::SKY)].GetAddressOf());
-		load_texture_from_file(graphics.GetDevice(), L".\\resources\\winter_evening_4k.hdr", skymap.GetAddressOf(), graphics.GetTexture2D());
-
 		// SHADOW
 		double_speed_z = std::make_unique<shadow_map>(graphics.GetDevice(), shadowmap_width, shadowmap_height);
 
@@ -151,9 +140,6 @@ void GameScene::Initialize()
 
 		stage = std::make_unique<Stage>();
 		stage->Init();
-
-		skinned_meshes[0] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\nico.fbx", true);
-		skinned_meshes[2] = std::make_unique<skinned_mesh>(graphics.GetDevice(), ".\\resources\\Model\\grid.fbx", true);
 
 		/*------------------ UIŠÖŒW --------------------*/
 		player_hp_gauge = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HPui_02.png");
@@ -394,7 +380,9 @@ void GameScene::Render(float elapsedTime)
 
 		DirectX::XMStoreFloat4x4(&scene_constants.view_projection, V * P);
 		scene_constants.light_direction = light_direction;
-		// UNIT.16
+		
+		DirectX::XMStoreFloat4(&camera_position, eye);
+
 		scene_constants.camera_position = camera_position;
 		if (enableFog)
 		{

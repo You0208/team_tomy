@@ -18,7 +18,6 @@ void ResultScene::Initialize()
     spr_back_status = std::make_unique<sprite>(device, L".\\resources\\Image\\pose_back.png");
 
 	spr_betbox = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_space.png");
-	spr_coin = std::make_unique<sprite>(device, L".\\resources\\Image\\coin.png");
 	spr_OK = std::make_unique<sprite>(device, L".\\resources\\Image\\OK.png");
 	spr_small_arrow = std::make_unique<sprite>(device, L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(device, L".\\resources\\Image\\number2.png");

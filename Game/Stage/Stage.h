@@ -21,7 +21,7 @@ private:
 
 
     DirectX::XMFLOAT3 position = { 0, 0, 0 };  // 位置
-    DirectX::XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f }; // スケール
+    DirectX::XMFLOAT3 scale = { 1.5f, 1.5f, 1.5f }; // スケール
     DirectX::XMFLOAT3 rotation = { 0, 0, 0 }; //　回転
     float scale_factor = 0.01f;
 
