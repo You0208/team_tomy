@@ -204,9 +204,9 @@ void GameScene::Initialize()
 		light.ambientLight.z = 0.3f;
 
 		// step-2 ポイントライトの初期座標を設定する
-		light.ptPosition.x = player->GetPosition().x;
-		light.ptPosition.y = player->GetPosition().y;
-		light.ptPosition.z = player->GetPosition().z;
+		light.ptPosition.x = -17.3f;
+		light.ptPosition.y = 18.8f;
+		light.ptPosition.z = 41.4f;
 
 		// step-3 ポイントライトの初期カラーを設定する
 		light.ptColor.x = 1.0f;
@@ -214,7 +214,7 @@ void GameScene::Initialize()
 		light.ptColor.z = 1.0f;
 
 		// step-4 ポイントライトの影響範囲を設定する
-		light.ptRange.x = 50.0f;
+		light.ptRange.x = 100.0f;
 
 	}
 }
@@ -373,10 +373,7 @@ void GameScene::Render(float elapsedTime)
 
 		ID3D11PixelShader* null_pixel_shader{ NULL };
 		player->Render(elapsedTime, &null_pixel_shader);
-		skinned_meshes[0]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
-		skinned_meshes[2]->render(immediate_context, { -0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 0.01f, 0, 0, 0, 0, 1 }, material_color, nullptr, &null_pixel_shader);
-
-		//EnemyManager::Instance().Render(elapsedTime, &null_pixel_shader);
+		EnemyManager::Instance().Render(elapsedTime, true);
 		double_speed_z->deactivate(immediate_context);
 	}
 
@@ -403,7 +400,7 @@ void GameScene::Render(float elapsedTime)
 		{
 			// FOG
 			DirectX::XMStoreFloat4x4(&scene_constants.inverse_projection, DirectX::XMMatrixInverse(NULL, P));
-			DirectX::XMStoreFloat4x4(&scene_constants.inverse_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
+			DirectX::XMStoreFloat4x4(&scene_constants.inv_view_projection, DirectX::XMMatrixInverse(NULL, V * P));
 			scene_constants.time = high_resolution_timer::Instance().time_stamp();
 		}
 	}
@@ -501,7 +498,7 @@ void GameScene::Render(float elapsedTime)
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
 
-#if 1
+#if 0
 		immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_ON_ZW_ON)].Get(), 0);
 		immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
 		{
