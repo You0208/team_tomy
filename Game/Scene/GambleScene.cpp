@@ -28,55 +28,29 @@ void GambleScene::set_skill_data()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 
-	wcscpy_s(skill_data[0].title, L"„˜r");
-	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
-	wcscpy_s(skill_data[1].title, L"‹S—Í");
-	wcscpy_s(skill_data[1].contents, L"Skill_ContentsB");
-	wcscpy_s(skill_data[2].title, L"–‚Œ•");
-	wcscpy_s(skill_data[2].contents, L"Skill_ContentsC");
-
-	wcscpy_s(skill_data[3].title, L"c“");
-	wcscpy_s(skill_data[4].title, L"•œQ");
-	wcscpy_s(skill_data[5].title, L"‹¶—");
-	wcscpy_s(skill_data[19].title, L"‹Zp");
-	wcscpy_s(skill_data[6].title, L"‹zŒŒ");
-	wcscpy_s(skill_data[7].title, L"¾‘–");
-	wcscpy_s(skill_data[8].title, L"‰Á‘¬");
-	wcscpy_s(skill_data[9].title, L"‰ä–");
-	wcscpy_s(skill_data[10].title, L"Ä¶");
-	wcscpy_s(skill_data[18].title, L"‹xŒe");
-	wcscpy_s(skill_data[20].title, L"‹t“]");
-	wcscpy_s(skill_data[21].title, L"ôm");
-	wcscpy_s(skill_data[11].title, L"’´l");
-	wcscpy_s(skill_data[12].title, L"Œ•¹");
-	wcscpy_s(skill_data[13].title, L"¾•—");
-	wcscpy_s(skill_data[14].title, L"”ì–");
-	wcscpy_s(skill_data[15].title, L"“¤•…");
-	wcscpy_s(skill_data[16].title, L"ôæf");
-	wcscpy_s(skill_data[17].title, L"˜ü–");
-
 
 	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/„˜r.png");
 	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹S—Í.png");
 	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/–‚Œ•.png");
 	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/c“.png");
-	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹¶—.png");
-	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹Zp.png");
-	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹zŒŒ.png");
-	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾‘–.png");
-	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰Á‘¬.png");
-	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰ä–.png");
-	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Ä¶.png");
-	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹xŒe.png");
-	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹t“].png");
-	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôm.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Œ•¹.png");
-	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾•—.png");
-	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/”ì–.png");
-	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/“¤•….png");
-	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôæf.png");
-	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/˜ü–.png");
+	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/•œQ.png");
+	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹¶—.png");
+	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹Zp.png");
+	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹zŒŒ.png");
+	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾‘–.png");
+	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰Á‘¬.png");
+	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰ä–.png");
+	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Ä¶.png");
+	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹xŒe.png");
+	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹t“].png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/’´l.png");
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôm.png");
+	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Œ•¹.png");
+	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾•—.png");
+	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/”ì–.png");
+	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/“¤•….png");
+	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôæf.png");
+	spr_skill[21] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/˜ü–.png");
 }
 
 void GambleScene::set_quest_data()
@@ -151,8 +125,6 @@ void GambleScene::Initialize()
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	SetState();
 
-	
-
 	// todo –´“c‚³‚ñ@ƒAƒZƒbƒgƒ[ƒh‚µ‚Ä”wŒi‚È‚Ç‚Ì•`‰æ‚ğ‚¨Šè‚¢‚µ‚Ü‚·B
 	step = Skill_Lottery;
 
@@ -163,7 +135,7 @@ void GambleScene::Initialize()
 		player = CreatePlayer();
 
 		// ƒQ[ƒ€‚Ì‘SƒXƒLƒ‹‚Ìİ’è
-		player->SetSkill<StrongArm>(L"./resources/Image/„˜r.png");
+		player->SetSkill<StrongArm>(L"./resources/Image/„˜r.png");				
 		player->SetSkill<DemonPower>(L"./resources/Image/‹S—Í.png");
 		player->SetSkill<MagicSword>(L"./resources/Image/–‚Œ•.png");
 		player->SetSkill<Cruel>(L"./resources/Image/c“.png");
@@ -177,8 +149,8 @@ void GambleScene::Initialize()
 		player->SetSkill<Regeneration>(L"./resources/Image/Ä¶.png");
 		player->SetSkill<Rest>(L"./resources/Image/‹xŒe.png");
 		player->SetSkill<Reverse>(L"./resources/Image/‹t“].png");
+		player->SetSkill<Reverse>(L"./resources/Image/’´l.png");
 		player->SetSkill<Schemer>(L"./resources/Image/ôm.png");
-		player->SetSkill<SuperMan>(L"./resources/Image/’´l.png");
 		player->SetSkill<SwordSaint>(L"./resources/Image/Œ•¹.png");
 		player->SetSkill<Gale>(L"./resources/Image/¾•—.png");
 		player->SetSkill<Obesity>(L"./resources/Image/”ì–.png");
@@ -321,34 +293,13 @@ void GambleScene::Initialize()
 	spr_coin[2] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\SP_coin.png");
 
 	// todo ‚±‚±‚Ì‡”Ô‚ÆƒvƒŒƒCƒ„[‚ÌƒZƒbƒgƒXƒLƒ‹‚Ì‡”Ô‚ğ‚»‚ë‚¦‚éB
-	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/„˜r.png");
-	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹S—Í.png");
-	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/–‚Œ•.png");
-	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/c“.png");
-	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹¶—.png");
-	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹Zp.png");
-	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹zŒŒ.png");
-	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾‘–.png");
-	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰Á‘¬.png");
-	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰ä–.png");
-	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Ä¶.png");
-	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹xŒe.png");
-	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹t“].png");
-	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôm.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Œ•¹.png");
-	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾•—.png");
-	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/”ì–.png");
-	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/“¤•….png");
-	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôæf.png");
-	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/˜ü–.png");
 
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
 
 
 	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::PLAY, true);
 	/*--------------- ‚±‚êƒfƒoƒbƒO—p --------------*/
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 }
 
 void GambleScene::Finalize()
@@ -617,7 +568,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 
 
-		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 400, 100))
+		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 500, 200))
 		{
 			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
