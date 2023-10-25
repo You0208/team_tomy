@@ -288,7 +288,6 @@ void GambleScene::Initialize()
 	spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/‚W.png");
 	spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/‚X.png");
 
-
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
 	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
 	spr_arrow = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
@@ -300,7 +299,6 @@ void GambleScene::Initialize()
 	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
-
 
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
 
