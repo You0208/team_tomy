@@ -67,7 +67,7 @@ public:
     virtual void DebugImgui(){};
     virtual void DrawDebugPrimitive() {};
     void AnimationUpdate(float elapsedTime);
-    animation animation{};
+    animation animation_{};
     animation::keyframe keyframe{};
     DirectX::XMFLOAT4X4 world;
 public:
@@ -128,12 +128,16 @@ public:
     skinned_mesh* GetModel()const { return Model.get(); }
 
     // アニメーションの切り替え
-    void SetAnimationIndex(int index)
+    void SetAnimationIndex(int index, const bool& loop=false)
     {
         frame_index = 0;
         animation_tick = 0;
         animation_index = index;
         end_animation = false;
+        animation_loop_flag = loop;
+
+        animation_blend_time = 0.0f;
+        animation_blend_seconds = 1.0f;
     }
 
     // アニメーション終了フラグ取得
@@ -141,6 +145,9 @@ public:
 
     // アニメーションフレーム取得
     int GetFrameIndex()const { return frame_index; }
+
+    // アニメーションデータ取得
+    std::vector<animation>* GetAnimation() { return &Model->animation_clips; };
 
     // 描画設定
     void Render(float elapsedTime, ID3D11PixelShader* replaced_pixel_shader);
@@ -224,6 +231,20 @@ public:
     Microsoft::WRL::ComPtr<ID3D11PixelShader> PS;
 
 public:
+    //TODO 危険
+    void UpdateAnimation(float elapsedTIme);
+// アニメーション再生[17]
+    void PlayAnimation(int index, bool loop, float blendSeconds = 0.2f);
+    void UpdateBlendRate(float blendRate, const float& elapsedTime);
+    // アニメーション再生中か[17]
+    bool IsPlayAnimation()const;
+    // 現在のアニメーション番号
+    bool animation_loop_flag = true;
+    float animation_blend_time = 0.0f;
+    float animation_blend_seconds = 0.0f;
+    bool isDebugBlendAnimation = true;     // アニメーションブレンドオンオフ
+    //todo 危険
+
     DirectX::XMFLOAT4X4 World;
 
     DirectX::XMFLOAT3 velocity          ={ 0, 0, 0 };  // 速度

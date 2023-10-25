@@ -248,6 +248,7 @@ void skinned_mesh::update_animation(animation::keyframe& keyframe)
     }
 }
 
+
 void skinned_mesh::create_com_objects(ID3D11Device* device, const char* fbx_filename, bool used_as_collider/*RAYCAST*/)
 {
     for (mesh& mesh : meshes)

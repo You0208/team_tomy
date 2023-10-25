@@ -15,7 +15,7 @@ namespace Nero::Component::AI
     void IdleState::Begin()
     {
         // todo アニメーション
-        owner->SetAnimationIndex(owner->Idle_Anim);
+        owner->SetAnimationIndex(owner->Idle_Anim, true);
     }
 
     void IdleState::Update()
@@ -56,7 +56,7 @@ namespace Nero::Component::AI
     void WalkState::Begin()
     {
         // todo アニメーション
-        owner->SetAnimationIndex(owner->Run_Anim);
+        owner->SetAnimationIndex(owner->Run_Anim, true);
     }
 
     void WalkState::Update()

@@ -27,7 +27,7 @@ ActionBase::State WanderAction::Run(float elapsedTime)
 	{
 	case 0:
 		// todo アニメーション設定
-		owner->SetAnimationIndex(owner->Walk_Anim);
+		owner->SetAnimationIndex(owner->Walk_Anim,true);
 		owner->SetRandomTargetPosition();
 
 	    step++;
@@ -85,7 +85,7 @@ ActionBase::State IdleAction::Run(float elapsedTime)
 		// 数はテキトー
 		idleing_time = Mathf::RandomRange(1.0f, 3.0f);
 
-		owner->SetAnimationIndex(owner->Idle_Anim);
+		owner->SetAnimationIndex(owner->Idle_Anim, true);
 		step++;
 		break;
 
@@ -131,7 +131,7 @@ ActionBase::State TuraAction::Run(float elapsedTime)
 	{
 	case 0:
 		// アニメーションセット
-		owner->SetAnimationIndex(owner->Walk_Anim);
+		owner->SetAnimationIndex(owner->Walk_Anim, true);
 		// 軸合わせは歩きモーションのちょっと早送り
 		owner->SetAnimCalcRate(2.0f);
 
@@ -174,7 +174,7 @@ ActionBase::State PursueAction::Run(float elapsedTime)
 	{
 	case 0:
 
-		owner->SetAnimationIndex(owner->Walk_Anim);
+		owner->SetAnimationIndex(owner->Walk_Anim, true);
 		step++;
 		break;
 
@@ -506,7 +506,7 @@ ActionBase::State RushAttackAction::Run(float elapsedTime)
 	{
 	case 0:
 		// todo アニメーション再生
-		owner->SetAnimationIndex(owner->Walk_Anim);
+		owner->SetAnimationIndex(owner->Walk_Anim, true);
 
 	    owner->SetAnimCalcRate(3.0f);
 
@@ -529,7 +529,7 @@ ActionBase::State RushAttackAction::Run(float elapsedTime)
 
 				return ActionBase::State::Complete;
 			}
-			else owner->SetAnimationIndex(owner->Walk_Anim);
+			else owner->SetAnimationIndex(owner->Walk_Anim, true);
 
 		}
 
