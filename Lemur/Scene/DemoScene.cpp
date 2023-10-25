@@ -77,7 +77,7 @@ void DemoScene::Initialize()
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Image\\dissolve_animation.png", noise.GetAddressOf(), graphics.GetTexture2D());//TODO
 
 		//TODO ÀŒ±—p
-		create_ps_from_cso(graphics.GetDevice(), "./Shader/fog_pbr_ps.cso", Try.GetAddressOf());
+		create_ps_from_cso(graphics.GetDevice(), "./Shader/player_ps.cso", Try.GetAddressOf());
 	}
 	// ƒQ[ƒ€•”•ª
 	{

@@ -59,7 +59,7 @@ namespace Lemur::Scene
         Microsoft::WRL::ComPtr<ID3D11PixelShader> Wall;
         Microsoft::WRL::ComPtr<ID3D11PixelShader> Try;
 
-        bool enableShadow = false;
+        bool enableShadow = true;
         bool enableSkyMap = false;
         bool enableBloom = false;
         bool enableFog = false;

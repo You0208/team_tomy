@@ -98,9 +98,8 @@ void GameScene::Initialize()
 		// dissolve
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Image\\dissolve_animation.png", noise.GetAddressOf(), graphics.GetTexture2D());//TODO
 
-
 		//TODO 実験用
-		create_ps_from_cso(graphics.GetDevice(), "./Shader/fog_pbr_ps.cso", Try.GetAddressOf());
+		create_ps_from_cso(graphics.GetDevice(), "./Shader/player_ps.cso", Try.GetAddressOf());
 
 		//TODO　ごり押しPBR
 		load_texture_from_file(graphics.GetDevice(), L".\\resources\\Model\\Jummo\\Textures\\mixbot_low_mixamo_edit1_AlbedoTransparency.png", BaseColor.GetAddressOf(), graphics.GetTexture2D());
@@ -675,7 +674,7 @@ void GameScene::CreateEnemy_KARI()
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
 
-	//quest_pattern = BOSS;
+	quest_pattern = BOSS;
 	switch (quest_pattern)
 	{
 	case QuestPattern::A:
@@ -1083,14 +1082,14 @@ void GameScene::CreateEnemy_KARI()
 	case QuestPattern::BOSS:
 
 		// ボスクモ
-		for (int i = 0; i < 1; ++i)
-		{
-			boss_enemy = CreateEnemy<BossSpider>();
-			boss_enemy->Initialize();
-			enemyManager.Register(boss_enemy);
+		//for (int i = 0; i < 1; ++i)
+		//{
+		//	boss_enemy = CreateEnemy<BossSpider>();
+		//	boss_enemy->Initialize();
+		//	enemyManager.Register(boss_enemy);
 
-			ColliderManager::Instance().SetCollider(boss_enemy);
-		}
+		//	ColliderManager::Instance().SetCollider(boss_enemy);
+		//}
 		break;
 		
 	}
@@ -1100,12 +1099,12 @@ void GameScene::QuestClear()
 {
 	int enemy_count = EnemyManager::Instance().GetEnemyCount();
 
-	if (enemy_count <= 0)
-	{
-		player->SkillFin();
-		wave_count++;
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
-	}
+	//if (enemy_count <= 0)
+	//{
+	//	player->SkillFin();
+	//	wave_count++;
+	//	Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
+	//}
 	//player->SkillFin();
 	//wave_count++;
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));

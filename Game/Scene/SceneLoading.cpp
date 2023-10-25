@@ -11,7 +11,7 @@ void LoadingScene::Initialize()
     // シェーダー関連
     // スレッド
     {
-       // thread = new std::thread(LoadingThread, this);
+       thread = new std::thread(LoadingThread, this);
     }
     // ゲーム部分
     {
@@ -31,12 +31,12 @@ void LoadingScene::Update(HWND hwnd, float elapsedTime)
     time=high_resolution_timer::Instance().time_stamp();
     ImGui::SliderFloat2("poo", &poo.x,0,1920);
     ImGui::End();
-    //// 次のシーンの準備が完了したらシーンを切り替える
-    //if (nextScene->IsReady())
-    //{
-    //    Lemur::Scene::SceneManager::Instance().ChangeScene(nextScene);
-    //    nextScene = nullptr;
-    //}
+    // 次のシーンの準備が完了したらシーンを切り替える
+    if (nextScene->IsReady())
+    {
+        Lemur::Scene::SceneManager::Instance().ChangeScene(nextScene);
+        nextScene = nullptr;
+    }
 }
 
 void LoadingScene::Render(float elapsedTime)
