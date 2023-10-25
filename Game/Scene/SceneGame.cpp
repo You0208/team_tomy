@@ -20,6 +20,8 @@
 #include "Game/Enemy/Spider_GH.h"
 #include "Game/StateMachine/StateMachine.h"
 #include "Lemur/Scene/SceneManager.h"
+
+#include "Lemur/Audio/AudioManager.h"
 extern QuestPattern quest_pattern;
 extern int wave_count;
 
@@ -203,6 +205,8 @@ void GameScene::Initialize()
 		light.ptRange.x = 100.0f;
 
 	}
+
+	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::TITLE,true);
 }
 
 void GameScene::Finalize()
@@ -210,6 +214,7 @@ void GameScene::Finalize()
 	//player->Delete();
 	//delete player;
 	//エネミー終了
+	Lemur::Audio::AudioManager::Instance().stop_BGM(Lemur::Audio::BGM::TITLE);
 	EnemyManager::Instance().Clear();
 }
 

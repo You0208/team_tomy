@@ -13,6 +13,7 @@
 #include "Quest.h"
 #include "ResultScene.h"
 #include "Game/Scene/SceneLoading.h"
+#include "Lemur/Audio/AudioManager.h"
 
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::C;
@@ -207,7 +208,7 @@ void GambleScene::Initialize()
 		player_status_max[1] = player->attack_power;
 		player_status_max[2] = player->speed_power;
 	}
-	skill_num_max = player->all_skills.size();
+	skill_num_max = player->all_skills.size()-1;
 	// ベット情報
 	bet_boxsize = { 400,200 };
 
@@ -218,7 +219,7 @@ void GambleScene::Initialize()
 		// スキルカード設定
 		{
 			// どのスキルカードを配布したかをランダムで
-			skillCard[i].category = rand() % skill_num_max - 1;
+			skillCard[i].category = rand() % skill_num_max;
 			// 位置
 			skillCard[i].position = { 20 + float(i * 630), 98 };
 			skillCard[i].font_position = { 10 + float(i * 30), 10 };
@@ -273,6 +274,7 @@ void GambleScene::Initialize()
 		skillCard[i].wcText = skill_data[skillCard[i].category].title;
 		questCard[i].wcText = quest_data[questCard[i].category].title;
 	}
+
 
 
 	/*-------------------------- アセットのロード -------------------------*/
@@ -335,6 +337,7 @@ void GambleScene::Initialize()
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
 
 
+	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::PLAY, true);
 	/*--------------- これデバッグ用 --------------*/
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 }
@@ -866,6 +869,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//player->TestSkillSet("Rest");
 		//player->TestSkillSet("Schemer");
 
+		Lemur::Audio::AudioManager::Instance().stop_BGM(Lemur::Audio::BGM::PLAY);
 		Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene(new GameScene));
 		//Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 

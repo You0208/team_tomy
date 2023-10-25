@@ -5,6 +5,7 @@
 #include "Lemur/Scene/SceneManager.h"
 #include "imgui.h"
 #include "Game/Manager/CharacterManager.h"
+#include "Lemur/Audio/AudioManager.h"
 extern int wave_count;
 
 void TitleScene::Initialize()
@@ -19,10 +20,12 @@ void TitleScene::Initialize()
         player->Delete();
         delete player;
     }
+    Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::TITLE, true);
 }
 
 void TitleScene::Finalize()
 {
+    Lemur::Audio::AudioManager::Instance().stop_BGM(Lemur::Audio::BGM::TITLE);
 }
 
 void TitleScene::Update(HWND hwnd, float elapsedTime)
