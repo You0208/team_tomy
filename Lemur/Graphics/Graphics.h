@@ -31,7 +31,7 @@
 #include <wrl.h>
 #include <dxgi1_6.h>
 
-//#define ENABLE_DIRECT2D
+#define ENABLE_DIRECT2D
 #ifdef ENABLE_DIRECT2D
 #include <d2d1_1.h>
 #include <dwrite.h>

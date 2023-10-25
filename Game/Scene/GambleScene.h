@@ -167,7 +167,7 @@ private:/*---------------- スプライト関係 -----------------*/
 	std::shared_ptr<sprite>  spr_select;
 
 	std::shared_ptr<sprite> spr_betbox;
-	std::shared_ptr<sprite> spr_coin;
+	std::shared_ptr<sprite> spr_coin[3];
 	std::shared_ptr<sprite> spr_OK;
 	std::shared_ptr<sprite> spr_betback;
 	std::shared_ptr<sprite> spr_small_arrow;
@@ -178,6 +178,8 @@ private:/*---------------- スプライト関係 -----------------*/
 	std::shared_ptr<sprite> spr_skill[22];
 	std::shared_ptr<sprite> spr_quest[22];
 
+	std::shared_ptr<sprite> spr_skill_ok;
+	std::shared_ptr<sprite> spr_skill_change;
 
 	/*------- イージング関係 --------*/
 

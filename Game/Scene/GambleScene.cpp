@@ -294,11 +294,20 @@ void GambleScene::Initialize()
 	spr_select = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\select.png");
 
 	spr_betbox = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_space.png");
-	spr_coin = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\coin.png");
 	spr_OK = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\OK.png");
 	spr_betback = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_back.png");
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
+
+	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
+
+	spr_skill_ok = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Skill_Text_OK.png");
+	spr_skill_change = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Skill_Text_Change.png");
+
+
+	spr_coin[0] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HP_coin.png");
+	spr_coin[1] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\AP_coin.png");
+	spr_coin[2] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\SP_coin.png");
 
 	// todo ここの順番とプレイヤーのセットスキルの順番をそろえる。
 	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剛腕.png");
@@ -428,7 +437,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				{
 					if (!SelectCard[i])
 					{
-						last_num = i;
+						last_num = select_num= i;
 						SelectCard[i] = true;
 						plusPos[i] = 50;
 						font_d[i] = 4;
@@ -532,10 +541,6 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				step++;
 			}
 		}
-		
-		
-
-
 		break;
 
 	case Quest_Select:
@@ -925,6 +930,8 @@ void GambleScene::Render(float elapsedTime)
 		for (int i = 0; i < 2; i++) {
 			spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100,1,1,1,1,0);
 		}
+		spr_skill_ok->render(immediate_context, select_pos[0].x, select_pos[0].y, 400, 100, 1, 1, 1, 1, 0);
+		spr_skill_change->render(immediate_context, select_pos[1].x, select_pos[1].y, 400, 100, 1, 1, 1, 1, 0);
 		break;
 	case Quest_Select:
 
@@ -986,15 +993,15 @@ void GambleScene::Render(float elapsedTime)
 			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
-			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
+			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 50, 50, 1, 1, 1, 1);
 			if (bet_num[i] > 0)
 			{
-				for (int j = bet_num[i]; j > 0; j--)
+				for (int j = 0; j < bet_num[i]; j++)
 				{
-					spr_coin->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y - 5 * j, 200, 100);
+					spr_coin[i]->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y - 5 * j, 200, 100);
 				}
 			}
-			spr_number->textout(immediate_context, std::to_string(int(player_status[i])), num_bet_pos[i].x, 100,25, 50, 1, 1, 1, 1);
+			spr_number->textout(immediate_context, std::to_string(int(player_status[i])), num_bet_pos[i].x, 100,50, 50, 1, 1, 1, 1);
 		}
 
 
