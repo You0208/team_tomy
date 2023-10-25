@@ -10,10 +10,10 @@ public:
         PhysicsComponent* physics_,
         GraphicsComponent* graphics_) :Enemy(input_, physics_, graphics_)
     {
-        max_health = 5000;
+        max_health = 500;
         health = max_health;
 
-        attack_power = 50.0f;
+        attack_power = 10.0f;
         speed_power = 70.0f;
         near_attack_range = 6.0f;
         middle_attack_range = 10.0f;
