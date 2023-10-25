@@ -13,7 +13,6 @@ public:
     void Init() override;
     void Fin() override;
 
-    //todo 牟田さん こいつらが各スキルのクラスです。こいつらに文言を設定してください
 
 };
 

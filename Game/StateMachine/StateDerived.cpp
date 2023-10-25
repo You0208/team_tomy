@@ -451,7 +451,12 @@ namespace Nero::Component::AI
             {
                 // 斬撃エフェクト再生
                 DirectX::XMFLOAT3 wepon_pos = owner->GetModel()->joint_position("sickle", "J_wepon", &owner->keyframe, owner->world);
-                owner->parry_slash->Play(wepon_pos);
+                Effekseer::Handle handle = owner->parry_slash->Play(wepon_pos, 0.3f);
+                wepon_pos.y += 1.0f;
+
+                DirectX::XMFLOAT3 rot = owner->GetAngle();
+                rot.y += DirectX::XMConvertToDegrees(180.0f);
+                owner->parry_slash->SetRotation(handle, rot);
 
                 wepon_pos.y += 1.0f;
                 owner->attack_collision_flag = true;

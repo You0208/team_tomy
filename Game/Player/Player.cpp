@@ -111,7 +111,7 @@ void Player::DebugImgui()
     }
     if(ImGui::TreeNode("Attack & Hit"))
     {
-        ImGui::DragFloat("near_attack_range", &attack_collision_range);
+        ImGui::DragFloat("attack_collision_range", &attack_collision_range);
         ImGui::DragFloat("motion_value", &motion_value);
         ImGui::Checkbox("attack_collision_flag", &attack_collision_flag);
         ImGui::Checkbox("is_hit_stop", &is_hit_stop);
@@ -384,8 +384,6 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                 {
                     // ヒットストップ
                     HitStopON(0.15f);
-                    ////エフェクト
-                    slash->Play(position, 1.0f);
                     // todo これいる？
                     //画面振動
                     Camera::Instance().ScreenVibrate(0.05f, 0.3f);
@@ -507,6 +505,8 @@ void Player::SkillUpdate()
     {
         skill->Update();
     }
+
+    if (health > max_health)health = max_health;
 }
 
 void Player::SkillFin()

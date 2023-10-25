@@ -4,12 +4,21 @@
 #include "Lemur/Input/Input.h"
 #include "Lemur/Scene/SceneManager.h"
 #include "imgui.h"
+#include "Game/Manager/CharacterManager.h"
 extern int wave_count;
 
 void TitleScene::Initialize()
 {
     title = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/titile.png");
     spider_anim = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/spider_anime.png");
+    wave_count = 1;
+    Player* player = CharacterManager::Instance().GetPlayer();
+
+    if (player) 
+    {
+        player->Delete();
+        delete player;
+    }
 }
 
 void TitleScene::Finalize()
@@ -31,7 +40,8 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
 
     anim_timer += high_resolution_timer::Instance().time_interval();
 
-    tex_pos_x = (static_cast<int>(anim_timer) / 12) % 3;
+    // todo ‚È‚ñ‚©‚¤‚Ü‚­‚¢‚©‚ñ
+    tex_pos_x = ((static_cast<int>(anim_timer) / 1) % 3) * 300;
 }
 
 void TitleScene::Render(float elapsedTime)
@@ -50,7 +60,7 @@ void TitleScene::Render(float elapsedTime)
             immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
 
             title->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-            spider_anim->render(immediate_context, spider_pos.x, spider_pos.y, 300, 300, 1, 1, 1, 1, 0.0f, tex_pos_x, 0, 300, 300);
+            spider_anim->render(immediate_context, spider_pos.x, spider_pos.y, 1200, 300, 1, 1, 1, 1, 0.0f, tex_pos_x, 0, 300, 300);
         }
     }
 

@@ -105,6 +105,18 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
 }
 
 
+void Enemy::BehaviorTreeClear()
+{
+    ai_tree = nullptr;
+    delete ai_tree;
+
+    behaviorData = nullptr;
+    delete behaviorData;
+
+    activeNode = nullptr;
+    delete activeNode;
+}
+
 void Enemy::DrawDebugPrimitive()
 {
     DebugRenderer* debug_renderer = Lemur::Graphics::Graphics::Instance().GetDebugRenderer();
@@ -899,11 +911,11 @@ void Enemy::SetUpHitCollisionNormalSize()
     PutInCollisions("J_leg_A_01_L", 0.2f, arm_attack_collisions);
     PutInCollisions("J_leg_A_02_L", 0.2f, arm_attack_collisions);
     PutInCollisions("J_leg_A_03_L", 0.2f, arm_attack_collisions);
-    //PutInCollisions("J_leg_A_end_L", 0.5f, arm_attack_collisions);
+    PutInCollisions("J_leg_A_end_L", 0.5f, arm_attack_collisions);
     PutInCollisions("J_leg_A_01_R", 0.2f, arm_attack_collisions);
     PutInCollisions("J_leg_A_02_R", 0.2f, arm_attack_collisions);
     PutInCollisions("J_leg_A_03_R", 0.2f, arm_attack_collisions);
-    //PutInCollisions("J_leg_A_end_R", 0.5f, arm_attack_collisions);
+    PutInCollisions("J_leg_A_end_R", 0.5f, arm_attack_collisions);
 
 }
 

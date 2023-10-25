@@ -44,7 +44,6 @@ public:
             vec.emplace_back(node_collision);
         };
 
-        // todo 喰らいの当たり判定の量が少ない。岡君にリグ足してもらう
         /*------------------ 喰らい当たり判定のセット --------------*/
         PutInCollisions("J_head_end", 0.8f, hit_collisions);
         PutInCollisions("J_leg_A_03_L", 0.8f, hit_collisions);

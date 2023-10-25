@@ -239,8 +239,8 @@ public:
     float   maxMoveSpeed                = 5.0f; // Å‘å‘¬“x
     float   moveVecX                    = 0.0f; // X•ûŒüˆÚ“®
     float   moveVecZ                    = 0.0f; // Z•ûŒüˆÚ“®
-    float   friction                    = 0.5f; // –€C—Í
-    float   acceleration                = 1.0f; // ‰Á‘¬—Í
+    float   friction                    = 0.7f; // –€C—Í
+    float   acceleration                = 1.5f; // ‰Á‘¬—Í
     float   gravity                     = -1.0f; // d—Í
     float   radius                      = 1.0f; // ”¼Œa
     float   height                      = 0.0f; // ‚‚³ 

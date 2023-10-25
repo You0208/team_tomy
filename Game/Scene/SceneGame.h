@@ -80,12 +80,7 @@ private:// ゲーム関連
     float bet_rate_max = 1.0f;
 
     //ポーズ
-    void Pause()
-    {
-        GamePad& game_pad = Input::Instance().GetGamePad();
-        if (game_pad.GetButtonDown() & GamePad::BTN_START)
-            is_pause = !is_pause;
-    }
+    void Pause();
 
     // UI関係の描画
     void UIRender();
@@ -143,6 +138,17 @@ private:// ゲーム関連
 
     // ポーズ画面の背景
     std::unique_ptr<sprite>pause_back;
+    //ポーズ画面の戦闘に戻る
+    std::unique_ptr<sprite>pause_return;
+    // ポーズ画面のタイトルに戻る
+    std::unique_ptr<sprite>pause_title;
+
+    // 戦闘に戻るUIの座標
+    DirectX::XMFLOAT2 pause_return_UI_pos{50, 190};
+    // タイトルに戻るUIの座標
+    DirectX::XMFLOAT2 pause_title_UI_pos{50, 350};
+    // ポーズ画面のUIのサイズ
+    DirectX::XMFLOAT2 pause_UI_size{750,100};
 
     // 操作方法
     std::unique_ptr<sprite>Method_A_Button;
@@ -151,7 +157,10 @@ private:// ゲーム関連
     std::unique_ptr<sprite>Method_LBRB_Button;
 
     // UIデバッグ用
-    DirectX::XMFLOAT2 UI_pos[4];
+    DirectX::XMFLOAT2 UI_pos[4]
+    {
+        {1685,740},{1480,820},{1480,600},{1685,570}
+    };
 private:// シェーダー関連
     std::unique_ptr<framebuffer> framebuffers[8];
     enum class FRAME_BUFFER { FOG_1, FOG_2, BLOOM };

@@ -56,14 +56,15 @@ public:
         // プレイヤーはスピードの補正を変える
         walk_speed = 0.1f;
 
+        attack_collision_range = 0.5f;
         max_health = 20;
         max_health = 1000;
         health = max_health;
 
         attack_power = 20;
 
-        speed_power = 30;
-        //speed_power = 100;// デバッグ用
+        //speed_power = 30;
+        speed_power = 100;// デバッグ用
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);

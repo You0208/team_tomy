@@ -57,7 +57,6 @@ void DemoPlayerPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 
 void DemoPlayer::DebugImgui()
 {
-	//TODO:1 Position取れます。
 	// 左のintはmesh_index、右のintはbone_indexです
 	// intの場所に名前を入れても出来ます。
 	float f = Model->joint_position(0, 0, &keyframe, world).x;

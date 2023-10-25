@@ -23,6 +23,7 @@
 extern QuestPattern quest_pattern;
 extern int wave_count;
 
+// todo ポーズ画面
 void GameScene::Initialize()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
@@ -162,6 +163,8 @@ void GameScene::Initialize()
 		enemy_hp_gauge_zabuton = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\enemy_HPui.png");
 
 		pause_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_back.png");
+		pause_title = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_title.png");
+		pause_return = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_return.png");
 
 		Method_A_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\A.png");
 		Method_B_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\B.png");
@@ -656,10 +659,12 @@ void GameScene::DebugImGui()
 	ImGui::Checkbox("is_pause", &is_pause);
 	ImGui::DragFloat("bet_rate", &bet_rate);
 	ImGui::DragFloat("rate", & rate );
-    ImGui::DragFloat2("UI_pos", & UI_pos[0].x );
-    ImGui::DragFloat2("UI_pos1", & UI_pos[1].x );
-    ImGui::DragFloat2("UI_pos2", & UI_pos[2].x );
-    ImGui::DragFloat2("UI_pos3", & UI_pos[3].x );
+    ImGui::DragFloat2("pause_return_UI_pos", & pause_return_UI_pos.x );
+    ImGui::DragFloat2("pause_title_UI_pos", & pause_title_UI_pos.x );
+    //ImGui::DragFloat2("UI_pos", & UI_pos[0].x );
+    //ImGui::DragFloat2("UI_pos1", & UI_pos[1].x );
+    //ImGui::DragFloat2("UI_pos2", & UI_pos[2].x );
+    //ImGui::DragFloat2("UI_pos3", & UI_pos[3].x );
 	//ImGui::DragFloat3("ene_HP_gauge_pos", & ene_HP_gauge_pos.x );
 	//ImGui::DragFloat("a", & a );
 	ImGui::End();
@@ -1132,6 +1137,27 @@ void GameScene::QuestFailed()
 	}
 }
 
+void GameScene::Pause()
+{
+	GamePad& game_pad = Input::Instance().GetGamePad();
+	Mouse& mouse = Input::Instance().GetMouse();
+	if (game_pad.GetButtonDown() & GamePad::BTN_START)
+		is_pause = !is_pause;
+
+	// 一応ポーズ中以外は処理しないようにする
+	if (!is_pause) return;
+	if(mouse.IsArea(pause_return_UI_pos.x,pause_return_UI_pos.y,pause_UI_size.x,pause_UI_size.y)&&
+		mouse.GetButtonDown()& Mouse::BTN_LEFT)
+	{
+		is_pause = false;
+	}
+	if (mouse.IsArea(pause_title_UI_pos.x, pause_title_UI_pos.y, pause_UI_size.x, pause_UI_size.y) &&
+		mouse.GetButtonDown() & Mouse::BTN_LEFT)
+	{
+		Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+	}
+}
+
 void GameScene::UIRender()
 {
 	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
@@ -1166,6 +1192,10 @@ void GameScene::PauseRender()
 {
 	// todo 何で真っ黒？
 	if (!is_pause)return;
-	pause_back->render(Lemur::Graphics::Graphics::Instance().GetDeviceContext(), 0,0, 1920, 1080,1,1,1,1.0f,0);
 
+	ID3D11DeviceContext* dc = Lemur::Graphics::Graphics::Instance().GetDeviceContext();
+	// todo 半透明化
+	pause_back->render(dc, 0,0, 1920, 1080,1,1,1,1.0f,0);
+	pause_title->render(dc, pause_title_UI_pos.x, pause_title_UI_pos.y, pause_UI_size.x, pause_UI_size.y);
+	pause_return->render(dc, pause_return_UI_pos.x, pause_return_UI_pos.y, pause_UI_size.x, pause_UI_size.y);
 }

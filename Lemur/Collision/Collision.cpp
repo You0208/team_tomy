@@ -12,7 +12,6 @@ void CollisionPhysicsComponent::Update(GameObject* gameobj, float elapsedTime)
 }
 
 
-//TODO ‰Ÿ‚µo‚µˆ—‚ª—v‚ç‚È‚¢ê‡­‚µ•Ï‚¦‚é
 
 //@‹…‚Æ‹…Œğ·”»’è
 bool Collision::IntersectSphereVsSphereOut(

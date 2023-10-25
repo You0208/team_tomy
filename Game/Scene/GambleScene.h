@@ -163,8 +163,8 @@ private:/*---------------- スプライト関係 -----------------*/
 
 	std::shared_ptr<sprite>  spr_back;
 	std::shared_ptr<sprite>  spr_card;
-	std::shared_ptr<sprite_d>  spr_arrow;
-	std::shared_ptr<sprite_d>  spr_select;
+	std::shared_ptr<sprite>  spr_arrow;
+	std::shared_ptr<sprite>  spr_select;
 
 	std::shared_ptr<sprite> spr_betbox;
 	std::shared_ptr<sprite> spr_coin;

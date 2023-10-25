@@ -103,6 +103,8 @@ public:
         spr_damages.resize(10);
     }
 
+    void BehaviorTreeClear();
+
     // UŒ‚“–‚½‚è”»’è‚Åg‚¤
     std::string meshName;
     

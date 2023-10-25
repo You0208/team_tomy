@@ -59,6 +59,8 @@ void EnemyManager::Clear()
 {
     for (Enemy* enemy : enemies)
     {
+        enemy->BehaviorTreeClear();
+        enemy->Delete();
         delete enemy;
     }
     enemies.clear();

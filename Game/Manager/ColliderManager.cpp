@@ -14,7 +14,6 @@ void ColliderManager::Update()
             // todo ‚±‚±‚Å—Dæ“x‚Ì”äŠr‚ð‚·‚é
 
 
-            // todo ‚±‚±‚Å“–‚½‚è”»’è
             DirectX::XMFLOAT3 pos_a = colliders.at(i)->GetPosition();
             DirectX::XMFLOAT3 pos_b = colliders.at(j)->GetPosition();
 

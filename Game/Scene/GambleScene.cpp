@@ -13,7 +13,7 @@
 #include "Quest.h"
 #include "ResultScene.h"
 #include "Game/Scene/SceneLoading.h"
-// todo 牟田さん こいつにQuestPattern型のどのクエストにするのか選択して値を入れる処理を作ってください。お願いします。
+
 //こいつの値を変えたら勝手に敵の種類変わるようになってます
 QuestPattern quest_pattern = QuestPattern::C;
 
@@ -249,8 +249,8 @@ void GambleScene::Initialize()
 
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
 	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
-	spr_arrow = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
-	spr_select = std::make_unique<sprite_d>(graphics.GetDevice(), L".\\resources\\Image\\select.png");
+	spr_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow.png");
+	spr_select = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\select.png");
 
 	spr_betbox = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\bet_space.png");
 	spr_coin = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\coin.png");
@@ -259,6 +259,7 @@ void GambleScene::Initialize()
 	spr_small_arrow = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\arrow_small.png");
 	spr_number = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number2.png");
 
+	// todo ここの順番とプレイヤーのセットスキルの順番をそろえる。
 	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剛腕.png");
 	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/鬼力.png");
 	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/魔剣.png");
@@ -481,6 +482,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					}
 					n++;
 				}
+
 				// 抽選されたスキルの配列をプレイヤーに持たせる。
 				player->SetSkill(lottery_skills);
 				// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
@@ -800,8 +802,9 @@ void GambleScene::Render(float elapsedTime)
 			spr_skill[skillCard[i].category]->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 		}
 
-		for (int i = 0; i < 2; i++)spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100);
-
+		for (int i = 0; i < 2; i++) {
+			spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100,1,1,1,1,0);
+		}
 		break;
 	case Quest_Select:
 
