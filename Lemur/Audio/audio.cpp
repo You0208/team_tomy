@@ -157,6 +157,22 @@ namespace Lemur::Audio
 		hr = source_voice->Start(0);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 	}
+	void audio::play(const bool isLoop)
+	{
+		HRESULT hr;
+
+		XAUDIO2_VOICE_STATE voiceState = {};
+		source_voice->GetState(&voiceState);
+
+		const int loopCount = isLoop ? XAUDIO2_LOOP_INFINITE : 0;
+
+		buffer.LoopCount = loopCount;
+		hr = source_voice->SubmitSourceBuffer(&buffer);
+		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+		hr = source_voice->Start(0);
+		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+	}
 	void audio::stop(bool play_tails, size_t after_samples_played)
 	{
 		XAUDIO2_VOICE_STATE voice_state = {};

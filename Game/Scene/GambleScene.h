@@ -64,7 +64,7 @@ public:
 	int skill_num_max;
 
 	int select_num;
-
+	int select_down_num;
 	bool select;
 
 	struct Card
@@ -166,6 +166,8 @@ private:/*---------------- スプライト関係 -----------------*/
 	std::shared_ptr<sprite>  spr_arrow;
 	std::shared_ptr<sprite>  spr_select;
 
+	std::shared_ptr<sprite> spr_bet_icon[3];
+
 	std::shared_ptr<sprite> spr_betbox;
 	std::shared_ptr<sprite> spr_coin[3];
 	std::shared_ptr<sprite> spr_OK;
@@ -180,6 +182,7 @@ private:/*---------------- スプライト関係 -----------------*/
 
 	std::shared_ptr<sprite> spr_skill_ok;
 	std::shared_ptr<sprite> spr_skill_change;
+
 
 	/*------- イージング関係 --------*/
 

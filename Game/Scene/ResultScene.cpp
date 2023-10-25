@@ -5,6 +5,7 @@
 #include "Game/Manager/CharacterManager.h"
 #include "Lemur/Input/Input.h"
 #include "Lemur/Scene/SceneManager.h"
+#include "Lemur/Audio/AudioManager.h"
 
 extern float bet_rate;
 void ResultScene::Initialize()
@@ -42,13 +43,18 @@ void ResultScene::Initialize()
 	player_status_min[1] = player->attack_power;
 	player_status_min[2] = player->speed_power;
 
+	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::OVER, true);
     // ƒNƒŠƒA‚µ‚Ä‚½‚ç•ñV‚ğ—^‚¦‚é
-    if (clear)
-        GiveReward();
+	if (clear)
+	{
+		Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::CLEAR, true);
+		GiveReward();
+	}
 }
 
 void ResultScene::Finalize()
 {
+	Lemur::Audio::AudioManager::Instance().stop_AllBGM();
 }
 
 void ResultScene::Update(HWND hwnd, float elapsedTime)

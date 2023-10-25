@@ -6,6 +6,8 @@
 #include "./Game/Scene/SceneGame.h"
 #include "./Game/Scene/TitleScene.h"
 
+#include "Lemur/Audio/AudioManager.h"
+
 // Effect
 #include "../Effekseer/EffekseerManager.h"
 #include "Game/Scene/GambleScene.h"
@@ -31,8 +33,18 @@ bool framework::initialize()
 
     //merge前にこれをコメント化
 
-	//Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
-	Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+	// XAUDIO2
+	HRESULT hr{ S_OK };
+	Lemur::Audio::AudioManager& audio = Lemur::Audio::AudioManager::Instance();
+	hr = XAudio2Create(audio.xAudio2.GetAddressOf(), 0, XAUDIO2_DEFAULT_PROCESSOR);
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	hr = audio.xAudio2->CreateMasteringVoice(&audio.masterVoice);
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	Lemur::Audio::AudioManager::Instance().load_audio();
 
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene);

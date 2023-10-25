@@ -19,6 +19,7 @@ namespace Lemur::Audio
 		audio(IXAudio2* xaudio2, const wchar_t* filename);
 		virtual ~audio();
 		void play(int loop_count = 0/*255 : XAUDIO2_LOOP_INFINITE*/);
+		void play(const bool isLoop = false);
 		void stop(bool play_tails = true, size_t after_samples_played = 0);
 		void volume(float volume);
 		bool queuing();
