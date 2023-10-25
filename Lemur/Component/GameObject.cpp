@@ -145,7 +145,6 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader** replaced_pixel_sh
     if (Model->animation_clips.size() > 0)
     {
 #if 1
-
 #else
         animation::keyframe keyframe;
         const animation::keyframe* keyframes[2]{
