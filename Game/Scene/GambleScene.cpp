@@ -28,55 +28,29 @@ void GambleScene::set_skill_data()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 
-	wcscpy_s(skill_data[0].title, L"„˜r");
-	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
-	wcscpy_s(skill_data[1].title, L"‹S—Í");
-	wcscpy_s(skill_data[1].contents, L"Skill_ContentsB");
-	wcscpy_s(skill_data[2].title, L"–‚Œ•");
-	wcscpy_s(skill_data[2].contents, L"Skill_ContentsC");
-
-	wcscpy_s(skill_data[3].title, L"c“");
-	wcscpy_s(skill_data[4].title, L"•œQ");
-	wcscpy_s(skill_data[5].title, L"‹¶—");
-	wcscpy_s(skill_data[19].title, L"‹Zp");
-	wcscpy_s(skill_data[6].title, L"‹zŒŒ");
-	wcscpy_s(skill_data[7].title, L"¾‘–");
-	wcscpy_s(skill_data[8].title, L"‰Á‘¬");
-	wcscpy_s(skill_data[9].title, L"‰ä–");
-	wcscpy_s(skill_data[10].title, L"Ä¶");
-	wcscpy_s(skill_data[18].title, L"‹xŒe");
-	wcscpy_s(skill_data[20].title, L"‹t“]");
-	wcscpy_s(skill_data[21].title, L"ôm");
-	wcscpy_s(skill_data[11].title, L"’´l");
-	wcscpy_s(skill_data[12].title, L"Œ•¹");
-	wcscpy_s(skill_data[13].title, L"¾•—");
-	wcscpy_s(skill_data[14].title, L"”ì–");
-	wcscpy_s(skill_data[15].title, L"“¤•…");
-	wcscpy_s(skill_data[16].title, L"ôæf");
-	wcscpy_s(skill_data[17].title, L"˜ü–");
-
 
 	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/„˜r.png");
 	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹S—Í.png");
 	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/–‚Œ•.png");
 	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/c“.png");
-	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹¶—.png");
-	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹Zp.png");
-	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹zŒŒ.png");
-	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾‘–.png");
-	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰Á‘¬.png");
-	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰ä–.png");
-	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Ä¶.png");
-	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹xŒe.png");
-	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹t“].png");
-	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôm.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Œ•¹.png");
-	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾•—.png");
-	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/”ì–.png");
-	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/“¤•….png");
-	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôæf.png");
-	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/˜ü–.png");
+	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/•œQ.png");
+	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹¶—.png");
+	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹Zp.png");
+	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹zŒŒ.png");
+	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾‘–.png");
+	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰Á‘¬.png");
+	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰ä–.png");
+	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Ä¶.png");
+	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹xŒe.png");
+	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹t“].png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/’´l.png");
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôm.png");
+	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Œ•¹.png");
+	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾•—.png");
+	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/”ì–.png");
+	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/“¤•….png");
+	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôæf.png");
+	spr_skill[21] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/˜ü–.png");
 }
 
 void GambleScene::set_quest_data()
@@ -151,8 +125,6 @@ void GambleScene::Initialize()
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
 	SetState();
 
-	
-
 	// todo –´“c‚³‚ñ@ƒAƒZƒbƒgƒ[ƒh‚µ‚Ä”wŒi‚È‚Ç‚Ì•`‰æ‚ğ‚¨Šè‚¢‚µ‚Ü‚·B
 	step = Skill_Lottery;
 
@@ -163,7 +135,7 @@ void GambleScene::Initialize()
 		player = CreatePlayer();
 
 		// ƒQ[ƒ€‚Ì‘SƒXƒLƒ‹‚Ìİ’è
-		player->SetSkill<StrongArm>(L"./resources/Image/„˜r.png");
+		player->SetSkill<StrongArm>(L"./resources/Image/„˜r.png");				
 		player->SetSkill<DemonPower>(L"./resources/Image/‹S—Í.png");
 		player->SetSkill<MagicSword>(L"./resources/Image/–‚Œ•.png");
 		player->SetSkill<Cruel>(L"./resources/Image/c“.png");
@@ -177,8 +149,8 @@ void GambleScene::Initialize()
 		player->SetSkill<Regeneration>(L"./resources/Image/Ä¶.png");
 		player->SetSkill<Rest>(L"./resources/Image/‹xŒe.png");
 		player->SetSkill<Reverse>(L"./resources/Image/‹t“].png");
+		player->SetSkill<Reverse>(L"./resources/Image/’´l.png");
 		player->SetSkill<Schemer>(L"./resources/Image/ôm.png");
-		player->SetSkill<SuperMan>(L"./resources/Image/’´l.png");
 		player->SetSkill<SwordSaint>(L"./resources/Image/Œ•¹.png");
 		player->SetSkill<Gale>(L"./resources/Image/¾•—.png");
 		player->SetSkill<Obesity>(L"./resources/Image/”ì–.png");
@@ -321,29 +293,11 @@ void GambleScene::Initialize()
 	spr_coin[2] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\SP_coin.png");
 
 	// todo ‚±‚±‚Ì‡”Ô‚ÆƒvƒŒƒCƒ„[‚ÌƒZƒbƒgƒXƒLƒ‹‚Ì‡”Ô‚ğ‚»‚ë‚¦‚éB
-	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/„˜r.png");
-	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹S—Í.png");
-	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/–‚Œ•.png");
-	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/c“.png");
-	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹¶—.png");
-	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹Zp.png");
-	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹zŒŒ.png");
-	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾‘–.png");
-	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰Á‘¬.png");
-	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‰ä–.png");
-	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Ä¶.png");
-	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹xŒe.png");
-	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/‹t“].png");
-	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôm.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Œ•¹.png");
-	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/¾•—.png");
-	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/”ì–.png");
-	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/“¤•….png");
-	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ôæf.png");
-	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/˜ü–.png");
 
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
+
+	spr_number_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/”š”wŒisel.png");
+	spr_ok_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/OK”wŒisel.png");
 
 
 	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::PLAY, true);
@@ -618,7 +572,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 
 
-		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 400, 100))
+		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 500, 200))
 		{
 			if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
@@ -918,79 +872,93 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			{
 				select_num = 1;
 			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 3;
+			}
+			break;
+		case 3:
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 2;
+			}
 			break;
 		}
 
 
-		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚Ì‚É“®‚­
+		if(select_num<3)
 		{
-			if (game_pad.GetButtonDown() & GamePad::BTN_UP)
+			if (bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚Ì‚É“®‚­
 			{
-				if (player_status[select_num] > 1)
+				if (game_pad.GetButton() & GamePad::BTN_UP)
 				{
-					bet_num[select_num]++;
-					player_status_bet[select_num]++;
-					player_status[select_num]--;
-					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
+					if (player_status[select_num] > 10)
 					{
-						bet_rate += 0.1f;
+						bet_num[select_num]++;
+						player_status_bet[select_num]++;
+						player_status[select_num]--;
+						player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+						if (player->total_point % 10 == 0 && player->total_point >= 10)
+						{
+							bet_rate += 0.1f;
+						}
+					}
+				}
+				if (game_pad.GetButton() & GamePad::BTN_DOWN)
+				{
+					if (player_status[select_num] < player_status_max[select_num])
+					{
+						if (bet_num[select_num] > 0)bet_num[select_num]--;
+						player_status_bet[select_num]--;
+						player_status[select_num]++;
+						player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+						if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate >= min_magnification)
+						{
+							bet_rate -= 0.1f;
+						}
 					}
 				}
 			}
-			if (game_pad.GetButtonDown() & GamePad::BTN_DOWN)
-			{
-				if (player_status[select_num] < player_status_max[select_num])
-				{
-					if (bet_num[select_num] > 0)bet_num[select_num]--;
-					player_status_bet[select_num]--;
-					player_status[select_num]++;
-					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate >= min_magnification)
-					{
-						bet_rate -= 0.1f;
-					}
-				}
-			}
-			if (game_pad.GetButtonDown() & GamePad::BTN_A)
-			{
-				// ƒ|ƒCƒ“ƒg‚ğ”{—¦•ª‚©‚¯‚Ä‚¨‚­
-				//total_point *= bet_rate;
-				// Œ³‚ÌƒXƒe[ƒ^ƒX‚ğŒ¸‚ç‚·
 
-				//player->health = player_status[0];
-				//player->max_health = player_status[0] * bet_rate;
-				//player->attack_power = player_status[1] * bet_rate;
-				//player->speed_power = player_status[2] * bet_rate;
+		}
+		if (select_num == 3 && game_pad.GetButtonDown() & GamePad::BTN_A)
+		{
+			// ƒ|ƒCƒ“ƒg‚ğ”{—¦•ª‚©‚¯‚Ä‚¨‚­
+			//total_point *= bet_rate;
+			// Œ³‚ÌƒXƒe[ƒ^ƒX‚ğŒ¸‚ç‚·
 
-				// ‚½‚Ô‚ñ‚±‚¤
-				player->max_health = player_status[0];
-				player->attack_power = player_status[1];
-				player->speed_power = player_status[2];
+			//player->health = player_status[0];
+			//player->max_health = player_status[0] * bet_rate;
+			//player->attack_power = player_status[1] * bet_rate;
+			//player->speed_power = player_status[2] * bet_rate;
 
-				player->bet_MHP = player_status_bet[0];
-				player->bet_AP = player_status_bet[1];
-				player->bet_SP = player_status_bet[2];
-				step++;
-			}
+			// ‚½‚Ô‚ñ‚±‚¤
+			player->max_health = player_status[0];
+			player->attack_power = player_status[1];
+			player->speed_power = player_status[2];
+
+			player->bet_MHP = player_status_bet[0];
+			player->bet_AP = player_status_bet[1];
+			player->bet_SP = player_status_bet[2];
+			step++;
 		}
 	}
 
-		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚Ì‚É“®‚­
+		if (bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚Ì‚É“®‚­
 		{
 			for (int i = 0; i < 3; i++)
 			{
 				if (mouse.IsArea(small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50))
 				{
-					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					if (mouse.GetButton() & Mouse::BTN_LEFT)
 					{
-						if (player_status[i] > 1)
+						if (player_status[i] > 10)
 						{
 							bet_num[i]++;
 							player_status_bet[i]++;
 							player_status[i]--;
 							player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-							if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
+							if (player->total_point % 10 == 0 && player->total_point >= 10)
 							{
 								bet_rate += 0.1f;
 							}
@@ -999,7 +967,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				}
 				if (mouse.IsArea(small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50))
 				{
-					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					if (mouse.GetButton() & Mouse::BTN_LEFT)
 					{
 						if (player_status[i] < player_status_max[i])
 						{
@@ -1173,15 +1141,24 @@ void GambleScene::Render(float elapsedTime)
 			std::string result = stream.str();
 			spr_number->textout(immediate_context, result, select_decision_pos.x, 50.0f, 50, 50, 1, 1, 1, 1);
 		}
+		if (select_num == 3)spr_ok_sel->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
+
 		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
 		spr_number->textout(immediate_context, std::to_string(player->total_point), select_decision_pos.x, select_decision_pos.y - 70.0f, 50, 50, 1, 1, 1, 1);
 
+
+		spr_betbox->render(immediate_context, bet_boxpos[0].x, bet_boxpos[0].y, bet_boxsize.x, bet_boxsize.y);
+		spr_betbox->render(immediate_context, bet_boxpos[1].x, bet_boxpos[1].y, bet_boxsize.x, bet_boxsize.y);
+		spr_betbox->render(immediate_context, bet_boxpos[2].x, bet_boxpos[2].y, bet_boxsize.x, bet_boxsize.y);
+		if (select_num < 3)spr_number_sel->render(immediate_context, bet_boxpos[select_num].x, bet_boxpos[select_num].y, bet_boxsize.x, bet_boxsize.y);
 		for (int i = 0; i < 3; i++)
 		{
-			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
 			spr_bet_icon[i]->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y,85, 190);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
+
+
+
 			spr_number->textout(immediate_context, std::to_string(bet_num[i]), num_bet_pos[i].x, num_bet_pos[i].y, 50, 50, 1, 1, 1, 1);
 			if (bet_num[i] > 0)
 			{
@@ -1208,26 +1185,26 @@ void GambleScene::Render(float elapsedTime)
 
 void GambleScene::DebugImGui()
 {
-	ImGui::Begin("Scene");
-	int quest_pattern_int = static_cast<int>(quest_pattern);
-	ImGui::InputInt("quest_pattern", &quest_pattern_int);
-	quest_pattern = static_cast<QuestPattern>(quest_pattern_int);
+	//ImGui::Begin("Scene");
+	//int quest_pattern_int = static_cast<int>(quest_pattern);
+	//ImGui::InputInt("quest_pattern", &quest_pattern_int);
+	//quest_pattern = static_cast<QuestPattern>(quest_pattern_int);
 
-	//ImGui::SliderFloat2("Poo", &Poo.x,0,100);
-	//ImGui::SliderFloat2("Poo", &Poo.x,0,100);
-	//ImGui::SliderInt("last_num", &last_num,0,100);
-	ImGui::InputInt("wave_count", &wave_count);
-	ImGui::DragFloat2("spr_tutorial_pos", &spr_tutorial_pos.x);
-	ImGui::DragFloat("easing_time_ms", &easing_time_ms);
-	ImGui::DragFloat("easing_timer_ms", &easing_timer_ms);
-	ImGui::DragFloat("stop_time_ms", &stop_time_ms);
-	ImGui::DragFloat("stop_timer_ms", &stop_timer_ms);
-	ImGui::DragFloat("hide_stop_time_ms", &hide_stop_time_ms);
-	for(auto& skill:lottery_skills)
-	{
-		ImGui::Text(skill->GetName().c_str());
-	}
-	ImGui::End();
+	////ImGui::SliderFloat2("Poo", &Poo.x,0,100);
+	////ImGui::SliderFloat2("Poo", &Poo.x,0,100);
+	////ImGui::SliderInt("last_num", &last_num,0,100);
+	//ImGui::InputInt("wave_count", &wave_count);
+	//ImGui::DragFloat2("spr_tutorial_pos", &spr_tutorial_pos.x);
+	//ImGui::DragFloat("easing_time_ms", &easing_time_ms);
+	//ImGui::DragFloat("easing_timer_ms", &easing_timer_ms);
+	//ImGui::DragFloat("stop_time_ms", &stop_time_ms);
+	//ImGui::DragFloat("stop_timer_ms", &stop_timer_ms);
+	//ImGui::DragFloat("hide_stop_time_ms", &hide_stop_time_ms);
+	//for(auto& skill:lottery_skills)
+	//{
+	//	ImGui::Text(skill->GetName().c_str());
+	//}
+	//ImGui::End();
 
 }
 

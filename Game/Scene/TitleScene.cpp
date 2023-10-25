@@ -11,7 +11,7 @@ extern int wave_count;
 void TitleScene::Initialize()
 {
     step = 0;
-
+    SetState();
     title = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/titile.png");
     spider_anim = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/spider_anime.png");
     wave_count = 1;
@@ -38,15 +38,13 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
     switch (step)
     {
     case 0:
-        if (game_pad.GetButtonDown() & GamePad::BTN_START ||
+        if (game_pad.GetButtonDown() & GamePad::BTN_A ||
             mouse.GetButtonDown() & Mouse::BTN_RIGHT)
         {
             // todo ‚±‚±‚Å‰‰o
 
             step++;
         }
-
-
         break;
 
     case 1:
@@ -83,18 +81,15 @@ void TitleScene::Render(float elapsedTime)
             immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
             immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
 
-            title->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-            spider_anim->render(immediate_context, spider_pos.x, spider_pos.y, 1200, 300, 1, 1, 1, 1, 0.0f, tex_pos_x, 0, 300, 300);
+            title->render(immediate_context, 0, 0, 1920, 1080);
+            //spider_anim->render(immediate_context, spider_pos.x, spider_pos.y, 1200, 300, 1, 1, 1, 1, 0.0f, tex_pos_x, 0, 300, 300);
         }
     }
 
-    DrawImGui();
+    //DrawImGui();
 }
 
 void TitleScene::DrawImGui()
 {
-    ImGui::Begin("scene");
-    ImGui::DragFloat2("spider_pos", &spider_pos.x);
-    ImGui::DragInt("tex_pos_x", &tex_pos_x);
-    ImGui::End();
+
 }

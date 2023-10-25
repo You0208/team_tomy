@@ -83,13 +83,7 @@ void Camera::Update(float elapsedTime)
 
 void Camera::DrawDebug()
 {
-    ImGui::Begin("Camera");
-    ImGui::DragFloat3("eye", &eye.x);
-    ImGui::DragFloat3("target", &target.x);
-    ImGui::DragFloat("eye_y_offset", &eye_y_offset);
-    ImGui::DragFloat("target_y_offset", &target_y_offset);
-    ImGui::DragFloat("range", &range);
-    ImGui::End();
+
 }
 
 void Camera::RenderEnemyHP(sprite* gauge)

@@ -70,7 +70,7 @@ void EnemyManager::DrawDebugPrimitive()
 {
     for(Enemy* enemy:enemies)
     {
-        enemy->DrawDebugPrimitive();
+       // enemy->DrawDebugPrimitive();
     }
 }
 
