@@ -64,7 +64,7 @@ public:
 	int skill_num_max;
 
 	int select_num;
-
+	int select_down_num;
 	bool select;
 
 	struct Card

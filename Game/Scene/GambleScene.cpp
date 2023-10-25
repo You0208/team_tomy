@@ -265,7 +265,6 @@ void GambleScene::Initialize()
 		break;
 	case 5:
 		questCard[1].category = QuestPattern::BOSS;
-
 			break;
 	}
 	for (int i = 0; i < 3; i++)
@@ -378,107 +377,175 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	//		break;
 	//	}
 	//}
-    switch (step)
+	switch (step)
 	{
 	case Skill_Lottery:
 
-		switch (select_num)
+
+		switch (select_down_num)
 		{
 		case 0:
-			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			if (game_pad.GetButtonDown() & GamePad::BTN_DOWN)
 			{
-				select_num=1;
+				select_down_num = 1;
 			}
 			break;
 		case 1:
-			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			if (select_down_num > 0)
 			{
-				select_num = 2;
-			}
-			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
-			{
-				select_num = 0;
+				if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				{
+					int n = 0;//　対応する順番のスキルを入れる
+					for (const auto& skill : player->all_skills) {
+						if (n == skillCard[0].category || n == skillCard[1].category || n == skillCard[2].category)
+						{
+							lottery_skills.emplace_back(skill.get());
+						}
+						n++;
+					}
+					// 抽選されたスキルの配列をプレイヤーに持たせる。
+					player->SetSkill(lottery_skills);
+					// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
+					player->SkillSort();
+					// 決定した時の処理
+					step++;
+				}
+				if (game_pad.GetButtonDown() & GamePad::BTN_UP)
+				{
+					select_down_num = 0;
+				}
+				if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+				{
+					select_down_num = 2;
+				}
 			}
 			break;
 		case 2:
-			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
-			{
-				select_num=1;
-			}
-			break;
-		}
-		// コントローラー
-		if (game_pad.GetButtonDown() & GamePad::BTN_B)
-		{
-			if (!SelectCard[select_num])
-			{
-				last_num = select_num;
-				SelectCard[select_num] = true;
-				plusPos[select_num] = 50;
-				font_d[select_num] = 4;
-			}
-			else
-			{
-				SelectCard[select_num] = false;
-				plusPos[select_num] = 0;
-				font_d[select_num] = 0;
-			}
-		}
-		// カード
-		for (int i = 0; i < 3; i++)
-		{
-			if (SelectCard[i] && last_num != i)
-			{
-				SelectCard[i] = false;
-				plusPos[i] = 0;
-				font_d[i] = 0;
-			}
-			// マウス
-			if (mouse.IsArea(skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y) && !IsDirection)
-			{
-				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+				if (game_pad.GetButtonDown() & GamePad::BTN_A)
 				{
-					if (!SelectCard[i])
+					if (!SelectCard[select_num])
 					{
-						last_num = select_num= i;
-						SelectCard[i] = true;
-						plusPos[i] = 50;
-						font_d[i] = 4;
+						last_num = select_num;
+						SelectCard[select_num] = true;
+						plusPos[select_num] = 50;
+						font_d[select_num] = 4;
 					}
 					else
 					{
-						SelectCard[i] = false;
-						plusPos[i] = 0;
-						font_d[i] = 0;
+						SelectCard[select_num] = false;
+						plusPos[select_num] = 0;
+						font_d[select_num] = 0;
+					}
+					for (int i = 0; i < 3; i++)
+					{
+						// スキルカードを再び配り直し
+						if (SelectCard[i])
+						{
+							skillCard[i].category = rand() % skill_num_max;
+							skillCard[i].wcText = skill_data[skillCard[i].category].title;
+							// カードを元に
+							SelectCard[i] = false;
+							plusPos[i] = 0;
+							font_d[i] = 0;
+							// 抽選回数を減算
+							can_lottery_count--;
+						}
 					}
 				}
+
+				if (select_down_num > 0)
+				{
+				if (game_pad.GetButtonDown() & GamePad::BTN_UP)
+				{
+					select_down_num = 0;
+				}
+				if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+				{
+					select_down_num = 1;
+				}
+			}
+			break;
+		}
+		if (select_down_num == 0)
+		{
+			switch (select_num)
+			{
+			case 0:
+				if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+				{
+					select_num = 1;
+				}
+				break;
+			case 1:
+				if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+				{
+					select_num = 2;
+				}
+				if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+				{
+					select_num = 0;
+				}
+				break;
+			case 2:
+				if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+				{
+					select_num = 1;
+				}
+				break;
 			}
 
-		}
+			//// コントローラー
+			//if (game_pad.GetButtonDown() & GamePad::BTN_A)
+			//{
+			//	if (!SelectCard[select_num])
+			//	{
+			//		last_num = select_num;
+			//		SelectCard[select_num] = true;
+			//		plusPos[select_num] = 50;
+			//		font_d[select_num] = 4;
+			//	}
+			//	else
+			//	{
+			//		SelectCard[select_num] = false;
+			//		plusPos[select_num] = 0;
+			//		font_d[select_num] = 0;
+			//	}
+			//}
+			
+			// カード
+			for (int i = 0; i < 3; i++)
+			{
+				if (SelectCard[i] && last_num != i)
+				{
+					SelectCard[i] = false;
+					plusPos[i] = 0;
+					font_d[i] = 0;
+				}
+				// マウス
+				if (mouse.IsArea(skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y) && !IsDirection)
+				{
+					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					{
+						if (!SelectCard[i])
+						{
+							last_num = select_num = i;
+							SelectCard[i] = true;
+							plusPos[i] = 50;
+							font_d[i] = 4;
+						}
+						else
+						{
+							SelectCard[i] = false;
+							plusPos[i] = 0;
+							font_d[i] = 0;
+						}
+					}
+				}
 
+			}
+		}
 		if (can_lottery_count > 0)
 		{
-			// セレクト
-
-			if (game_pad.GetButtonDown() & GamePad::BTN_A)
-			{
-				for (int i = 0; i < 3; i++)
-				{
-					// スキルカードを再び配り直し
-					if (SelectCard[i])
-					{
-						skillCard[i].category = rand() % skill_num_max;
-						//wcscpy_s(skillCard[i].wcText, skill_data[skillCard[i].category].title);
-						skillCard[i].wcText = skill_data[skillCard[i].category].title;
-						// カードを元に
-						SelectCard[i] = false;
-						plusPos[i] = 0;
-						font_d[i] = 0;
-						// 抽選回数を減算
-						can_lottery_count--;
-					}
-				}
-			}
 			if (mouse.IsArea(select_pos[1].x, select_pos[1].y, 400, 100))
 			{
 				if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
@@ -503,25 +570,6 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			}
 		}
 
-		// 決定
-
-		if (game_pad.GetButtonDown() & GamePad::BTN_Y)
-		{
-			int n = 0;//　対応する順番のスキルを入れる
-			for (const auto& skill : player->all_skills) {
-				if (n == skillCard[0].category || n == skillCard[1].category || n == skillCard[2].category)
-				{
-					lottery_skills.emplace_back(skill.get());
-				}
-				n++;
-			}
-			// 抽選されたスキルの配列をプレイヤーに持たせる。
-			player->SetSkill(lottery_skills);
-			// 優先順位でスキルを並び替え(Initとかupdateを呼ぶ順番を変えるために)
-			player->SkillSort();
-			// 決定した時の処理
-			step++;
-		}
 
 		if (mouse.IsArea(select_pos[0].x, select_pos[0].y, 400, 100))
 		{
@@ -931,9 +979,8 @@ void GambleScene::Render(float elapsedTime)
 			spr_skill[skillCard[i].category]->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 		}
 
-		for (int i = 0; i < 2; i++) {
-			spr_select->render(immediate_context, select_pos[i].x, select_pos[i].y, 400, 100,1,1,1,1,0);
-		}
+		if(select_down_num>0)		spr_select->render(immediate_context, select_pos[select_down_num-1].x, select_pos[select_down_num-1].y, 400, 100, 1, 1, 1, 1, 0);
+
 		spr_skill_ok->render(immediate_context, select_pos[0].x, select_pos[0].y, 400, 100, 1, 1, 1, 1, 0);
 		spr_skill_change->render(immediate_context, select_pos[1].x, select_pos[1].y, 400, 100, 1, 1, 1, 1, 0);
 		break;
