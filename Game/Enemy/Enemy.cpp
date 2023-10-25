@@ -694,9 +694,9 @@ void Enemy::SetRandomTargetPosition()
     //float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
     //float range = Mathf::RandomRange(0.0f, territory_range);
 
-    target_position.x = Mathf::RandomRange(-15000,20);
+    target_position.x = Mathf::RandomRange(-15,20);
     target_position.y = territory_origin.y;
-    target_position.z = Mathf::RandomRange(-100000, 45);
+    target_position.z = Mathf::RandomRange(0, 50);
 
 }
 

@@ -16,7 +16,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v014.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v015.fbx"));
 
     player->SetupRootMotion("J_allroot");
     /*----------------- スプライト ---------------*/

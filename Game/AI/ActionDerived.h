@@ -122,8 +122,25 @@ public:
 	}
 	ActionBase::State Run(float elapsedTime)override;
 
-	DirectX::XMFLOAT3 poison_pos{};
+	// イージングする時間(秒)
+	float easing_time_ms = 1.0f;
+	float easing_timer_ms;
+
+	// 現在の毒エフェクトの座標
+    DirectX::XMFLOAT3 poison_pos{};
+    //毒エフェクトの半径
+	float poison_radius = 1.2f;
+
+	// 毒エフェクト開始位置
+	DirectX::XMFLOAT3 start_pos{};
+	// 毒エフェクトが向かう位置
+	DirectX::XMFLOAT3 target_pos{};
+
 	std::unique_ptr<Effect> poison;
+
+	Effekseer::Handle handle;
+	// 毒弾の飛距離
+	float shot_length = 10.0f;
 };
 
 // 突進攻撃

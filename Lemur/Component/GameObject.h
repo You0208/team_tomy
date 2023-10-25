@@ -69,11 +69,12 @@ public:
     virtual void DrawDebugPrimitive() {};
     void AnimationUpdate(float elapsedTime);
 
-    // ルートモーション
+    // ルートモーション更新
     void RootmationUpdate(float elapsedTime);
-    void SetupRootMotion(const char* rootMotionMeshNodeName)
+    // ルートモーションするノード設定
+    void SetupRootMotion(const char* root_motion_nodeName)
     {
-        root_motion_node_index = Model->FindMeshNodeIndex(rootMotionMeshNodeName);
+        root_motion_node_index = Model->FindMeshNodeIndex(root_motion_nodeName);
     }
 
     animation animation{};

@@ -35,15 +35,25 @@ void GameObject::AnimationUpdate(float elapsedTime)
 void GameObject::RootmationUpdate(float elapsedTime)
 {
     if (frame_index < 1)return;
+    if (root_motion_node_index < 0)return;
     animation::keyframe::node node;
     animation::keyframe::node old_node;
-    //animation = { Model->animation_clips.at(animation_index) };
-    //frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+    animation::keyframe::node begin_node;
+
 
     Model->ComputeAnimation(animation_index, root_motion_node_index, frame_index, node);
     Model->ComputeAnimation(animation_index, root_motion_node_index, frame_index-1, old_node);
-    DirectX::XMFLOAT3 Transration = node.translation - old_node.translation;
-    position += Transration * elapsedTime;
+    Model->ComputeAnimation(animation_index, root_motion_node_index, 0, begin_node);
+
+    keyframe.nodes.at(root_motion_node_index).translation =begin_node.translation;
+    Model->update_animation(keyframe);
+
+    DirectX::XMFLOAT3 transration = node.translation - old_node.translation;
+    DirectX::XMMATRIX World = DirectX::XMLoadFloat4x4(&world);
+    DirectX::XMVECTOR Translation = DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&transration), World);
+    DirectX::XMStoreFloat3(&transration, Translation);
+    // todo Ç±Ç±êîéöÇ¢Ç∂ÇÍÇÈÅB
+    position += transration * 1.0f;
 }
 
 bool GameObject::ApplyDamage(int damage)
@@ -372,8 +382,11 @@ void GameObject::UpdateHorizontalMove(float elapsedTime)
 
     if (position.z < 3)
         position.z = 3;
-    else if (position.z > 50)
-        position.z = 50;
+    //else if (position.z > 50)
+    //    position.z = 50;
+    else if (position.z > 55)
+        position.z = 55;
+
 
 #if 0
     // à⁄ìÆó éÊìæ

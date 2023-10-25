@@ -445,26 +445,54 @@ ActionBase::State PoisonAttackAction::Run(float elapsedTime)
 	if (owner->death)
 		return ActionBase::State::Failed;
 
-
 	switch (step)
 	{
-	case 0:
-		// todo アニメーション再生
+	case 0:// アニメーション再生など初期設定
+
 		owner->SetAnimationIndex(owner->ShotAttack_Anim);
+		easing_timer_ms = 0.0f;
 		step++;
 		break;
 
-	case 1:
-		if(owner->GetFrameIndex()>=140)
+	case 1:// 発射モーションのとこ、どくだんのターゲット設定
+
+		if (owner->GetFrameIndex() >= 140)
 		{
 			poison_pos = owner->GetModel()->joint_position(owner->meshName.c_str(), "J_lowbody_end", &owner->keyframe, owner->world);
-			poison->Play(poison_pos);
+			DirectX::XMVECTOR Poison_pos = DirectX::XMLoadFloat3(&poison_pos);
+			start_pos = poison_pos;
+			handle = poison->Play(poison_pos);
+
+			// 回転行列の作成
+			DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationRollPitchYaw(owner->GetAngle().x, owner->GetAngle().y, owner->GetAngle().z);
+			// 前方向ベクトル取得
+			DirectX::XMVECTOR Forward = rotation_matrix.r[2];
+
+			// 前方向ベクトル正規化して飛距離かける。
+			DirectX::XMVECTOR Target_pos = DirectX::XMVector3Normalize(Forward);
+			Target_pos = DirectX::XMVectorAdd(Poison_pos, DirectX::XMVectorScale(Target_pos, shot_length));
+
+			DirectX::XMStoreFloat3(&target_pos, Target_pos);
+
+			// y座標はゼロにする。
+			target_pos.y = 0.0f;
 
 			step++;
 		}
 
 		break;
-	case 2:
+	case 2:// イージング進めて弾動かす。当たり判定。
+
+		if (easing_timer_ms > easing_time_ms)easing_timer_ms = easing_time_ms;
+		easing_timer_ms += high_resolution_timer::Instance().time_interval();
+
+		// イージングする時間(秒)
+		poison_pos = {
+			// イージングによるX座標の更新
+			Easing::OutSine(easing_timer_ms, easing_time_ms, target_pos.x, start_pos.x),
+			Easing::OutSine(easing_timer_ms, easing_time_ms, target_pos.y, start_pos.y),
+			Easing::OutSine(easing_timer_ms, easing_time_ms, target_pos.z, start_pos.z)
+		};
 
 		if (owner->GetEndAnimation())
 		{
@@ -472,13 +500,12 @@ ActionBase::State PoisonAttackAction::Run(float elapsedTime)
 			return ActionBase::State::Complete;
 		}
 
-		//// 当たり判定
-		//if (owner->attack_collision_flag)
-		//{
-		//	Player* player = CharacterManager::Instance().GetPlayer();
+		poison->SetPosition(handle, poison_pos);
 
-		//	owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
-		//}
+	    // 当たり判定
+		owner->CollisionSphereVsPlayer(poison_pos, poison_radius);
+
+
 	}
 
 	return ActionBase::State::Run;
