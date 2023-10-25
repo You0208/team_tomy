@@ -728,7 +728,7 @@ void Enemy::DamageRender()
     for (auto& spr_damage : spr_damages)
     {
         // ダメージが設定されてなかったら処理しない
-        if (spr_damage.spr_damage_values < 0)continue;
+        if (spr_damage.spr_damage_values <= 0)continue;
 
         // タイム制限超えてなかったら描画
         if (spr_damage.sprite_timer_ms < spr_damage.sprite_time_ms)

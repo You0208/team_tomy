@@ -68,6 +68,8 @@ public:
 
         // 最初に所持できるスキルは三つ
         //skills.resize(skill_capacity);
+
+        position={ 0.0f,0.0f,5.0f };
     }
 
     virtual void DebugImgui() override;
@@ -146,15 +148,17 @@ public:
     void AttackAngleInterpolation();
 
     // 特殊攻撃のクールタイム設定
-    void SetSPAttackCoolTime_ms(const float cool_time) { SP_attack_cool_time_ms = cool_time; }
+    void SetSPAttackCoolTime_ms(const float cool_time) { base_SP_attack_cool_time_ms = cool_time; }
     // 特殊攻撃のクールタイム取得
-    float GetSPAttackCoolTime_ms() const { return SP_attack_cool_time_ms; }
+    float GetSPAttackCoolTime_ms() const { return base_SP_attack_cool_time_ms; }
 private:
     
-    //特殊攻撃のクールタイム(秒)
+    //基本の特殊攻撃のクールタイム(秒)
+    float base_SP_attack_cool_time_ms = 17.0f;
+    // speed_powerの影響を受けた実際のクールタイム(秒)
     // タイマーがこれを超えないと特殊攻撃は使えない
-    //float SP_attack_cool_time_ms = 15.0f;
-    float SP_attack_cool_time_ms = 1.0f;// デバッグ用
+    float SP_attack_cool_time_ms;
+    //float base_SP_attack_cool_time_ms = 1.0f;// デバッグ用
 
     // 特殊攻撃用の計測して値が動くタイマー(秒)
     float SP_attack_cool_timer_ms;

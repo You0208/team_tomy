@@ -165,10 +165,12 @@ void GameScene::Initialize()
 		pause_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_back.png");
 		pause_title = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_title.png");
 		pause_return = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_return.png");
+		pause_select = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\pose_selping.png");
 
 		Method_A_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\A.png");
 		Method_B_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\B.png");
 		Method_Y_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Y.png");
+		Method_LBRB_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\LBRB.png");
 		Method_LBRB_Button = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\LBRB.png");
 	}
 
@@ -659,8 +661,8 @@ void GameScene::DebugImGui()
 	ImGui::Checkbox("is_pause", &is_pause);
 	ImGui::DragFloat("bet_rate", &bet_rate);
 	ImGui::DragFloat("rate", & rate );
-    ImGui::DragFloat2("pause_return_UI_pos", & pause_return_UI_pos.x );
-    ImGui::DragFloat2("pause_title_UI_pos", & pause_title_UI_pos.x );
+    ImGui::DragFloat2("pause_select_UI_pos[0]", & pause_select_UI_pos[0].x );
+    ImGui::DragFloat2("pause_select_UI_pos[1]", &pause_select_UI_pos[1].x );
     //ImGui::DragFloat2("UI_pos", & UI_pos[0].x );
     //ImGui::DragFloat2("UI_pos1", & UI_pos[1].x );
     //ImGui::DragFloat2("UI_pos2", & UI_pos[2].x );
@@ -675,7 +677,7 @@ void GameScene::CreateEnemy_KARI()
 	// エネミー初期化
 	EnemyManager& enemyManager = EnemyManager::Instance();
 
-	//quest_pattern = BOSS;
+	quest_pattern = BOSS;
 	switch (quest_pattern)
 	{
 	case QuestPattern::A:
@@ -1082,15 +1084,15 @@ void GameScene::CreateEnemy_KARI()
 
 	case QuestPattern::BOSS:
 
-		// ボスクモ
-		for (int i = 0; i < 1; ++i)
-		{
-			boss_enemy = CreateEnemy<BossSpider>();
-			boss_enemy->Initialize();
-			enemyManager.Register(boss_enemy);
+		//// ボスクモ
+		//for (int i = 0; i < 1; ++i)
+		//{
+		//	boss_enemy = CreateEnemy<BossSpider>();
+		//	boss_enemy->Initialize();
+		//	enemyManager.Register(boss_enemy);
 
-			ColliderManager::Instance().SetCollider(boss_enemy);
-		}
+		//	ColliderManager::Instance().SetCollider(boss_enemy);
+		//}
 		break;
 		
 	}
@@ -1100,12 +1102,12 @@ void GameScene::QuestClear()
 {
 	int enemy_count = EnemyManager::Instance().GetEnemyCount();
 
-	if (enemy_count <= 0)
-	{
-		player->SkillFin();
-		wave_count++;
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
-	}
+	//if (enemy_count <= 0)
+	//{
+	//	player->SkillFin();
+	//	wave_count++;
+	//	Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
+	//}
 	//player->SkillFin();
 	//wave_count++;
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
@@ -1146,15 +1148,21 @@ void GameScene::Pause()
 
 	// 一応ポーズ中以外は処理しないようにする
 	if (!is_pause) return;
-	if(mouse.IsArea(pause_return_UI_pos.x,pause_return_UI_pos.y,pause_UI_size.x,pause_UI_size.y)&&
-		mouse.GetButtonDown()& Mouse::BTN_LEFT)
+	if(mouse.IsArea(pause_return_UI_pos.x,pause_return_UI_pos.y,pause_UI_size.x,pause_UI_size.y))
 	{
-		is_pause = false;
+		is_pause_Up_selected = true;
+		if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+		{
+			is_pause = false;
+		}
 	}
-	if (mouse.IsArea(pause_title_UI_pos.x, pause_title_UI_pos.y, pause_UI_size.x, pause_UI_size.y) &&
-		mouse.GetButtonDown() & Mouse::BTN_LEFT)
+	if (mouse.IsArea(pause_title_UI_pos.x, pause_title_UI_pos.y, pause_UI_size.x, pause_UI_size.y))
 	{
-		Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+		is_pause_Up_selected = false;
+		if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+		{
+			Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
+		}
 	}
 }
 
@@ -1198,4 +1206,11 @@ void GameScene::PauseRender()
 	pause_back->render(dc, 0,0, 1920, 1080,1,1,1,1.0f,0);
 	pause_title->render(dc, pause_title_UI_pos.x, pause_title_UI_pos.y, pause_UI_size.x, pause_UI_size.y);
 	pause_return->render(dc, pause_return_UI_pos.x, pause_return_UI_pos.y, pause_UI_size.x, pause_UI_size.y);
+
+	if (is_pause_Up_selected)
+		pause_select->animation(dc, pause_select_UI_pos[0],DirectX::XMFLOAT2(25,25),DirectX::XMFLOAT4(1,1,1,1),DirectX::XMConvertToRadians(180), DirectX::XMFLOAT2(25,25));
+	else
+		pause_select->animation(dc, pause_select_UI_pos[1], DirectX::XMFLOAT2(25, 25), DirectX::XMFLOAT4(1, 1, 1, 1), DirectX::XMConvertToRadians(180), DirectX::XMFLOAT2(25, 25));
+
+
 }

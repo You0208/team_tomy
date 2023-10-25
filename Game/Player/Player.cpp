@@ -16,9 +16,9 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
 {
     Player* player = dynamic_cast<Player*> (gameobj);
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v013.fbx"));
+    player->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Player\\player_v014.fbx"));
 
-    player->GetModel()->SetupRootMotion("polySurface1", "J_root");
+    player->SetupRootMotion("J_allroot");
     /*----------------- スプライト ---------------*/
     //player->spr_damage = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\number6.png");
 
@@ -119,10 +119,12 @@ void Player::DebugImgui()
         ImGui::DragInt("invincible_frame", &invincible_frame);
         ImGui::Checkbox("can_SP_attack", &can_SP_attack);
         ImGui::DragFloat("SP_attack_cool_time_ms", &SP_attack_cool_time_ms);
+        ImGui::DragFloat("SP_attack_cool_timer_ms", &SP_attack_cool_timer_ms);
         ImGui::TreePop();
     }
     if(ImGui::TreeNode("Animation"))
     {
+        ImGui::Checkbox("rootMotionFlag", &Model->rootMotionFlag);
         ImGui::InputInt("animation_index", &animation_index);
         ImGui::InputFloat("animation_tick", &animation_tick);
         ImGui::DragInt("frame_index", &frame_index);
@@ -198,6 +200,9 @@ bool Player::HaveSkill(const char* search_skill_name)
 
 void Player::CalcSPAttackTime()
 {
+    // todo これ
+    // 実際のクールタイム = 基礎クールタイム - (スピードパワー / 10)
+    SP_attack_cool_time_ms = base_SP_attack_cool_time_ms - (speed_power / 10);
     if (SP_attack_cool_timer_ms >= SP_attack_cool_time_ms)
     {
         can_SP_attack = true;

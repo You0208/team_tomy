@@ -342,30 +342,30 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 	GamePad& game_pad = Input::Instance().GetGamePad();
 
 	// 一週目だけチュートリアル表示
-	//if (wave_count == 1)
-	//{
-	//	switch (easing_step)
-	//	{
+	if (wave_count == 1)
+	{
+		switch (easing_step)
+		{
 
-	//	case 0: // 1回目のイージング
-	//		if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
-	//			return;
+		case 0: // 1回目のイージング
+			if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
+				return;
 
-	//		// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
-	//		ResetEasingTime();
-	//		easing_step++;
-	//		return;
+			// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
+			ResetEasingTime();
+			easing_step++;
+			return;
 
-	//		break;
+			break;
 
-	//	case 1: // 2回目のイージング
-	//		if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
-	//			return;
+		case 1: // 2回目のイージング
+			if (!EasingTutorial(0.0f, -SCREEN_WIDTH, stop_time_ms, easing_time_ms))
+				return;
 
 
-	//		break;
-	//	}
-	//}
+			break;
+		}
+	}
     switch (step)
 	{
 	case Skill_Lottery:

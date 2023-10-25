@@ -9,6 +9,8 @@ extern int wave_count;
 
 void TitleScene::Initialize()
 {
+    step = 0;
+
     title = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/titile.png");
     spider_anim = std::make_unique<sprite>(Lemur::Graphics::Graphics::Instance().GetDevice(), L"./resources/Image/spider_anime.png");
     wave_count = 1;
@@ -29,14 +31,40 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
 {
     GamePad& game_pad = Input::Instance().GetGamePad();
     Mouse& mouse = Input::Instance().GetMouse();
-    if(game_pad.GetButtonDown()&GamePad::BTN_START||
-        mouse.GetButtonDown()&Mouse::BTN_RIGHT)
+
+    switch (step)
     {
+    case 0:
+        if (game_pad.GetButtonDown() & GamePad::BTN_START ||
+            mouse.GetButtonDown() & Mouse::BTN_RIGHT)
+        {
+            // todo ここで演出
+            step++;
+        }
+
+
+        break;
+
+    case 1:
+
         // タイトルから行くときは初めから。
         wave_count = 1;
 
         Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+
+
+
+        break;
     }
+
+
+
+
+        // タイトルから行くときは初めから。
+        wave_count = 1;
+
+        Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+    
 
     anim_timer += high_resolution_timer::Instance().time_interval();
 

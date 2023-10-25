@@ -142,11 +142,17 @@ private:// ゲーム関連
     std::unique_ptr<sprite>pause_return;
     // ポーズ画面のタイトルに戻る
     std::unique_ptr<sprite>pause_title;
+    // ポーズ画面何選択してるか
+    std::unique_ptr<sprite>pause_select;
+    // ポーズ画面で上選択してるか
+    bool is_pause_Up_selected = true;
 
     // 戦闘に戻るUIの座標
     DirectX::XMFLOAT2 pause_return_UI_pos{50, 190};
     // タイトルに戻るUIの座標
     DirectX::XMFLOAT2 pause_title_UI_pos{50, 350};
+    // ポーズ画面の何選択してるかの位置
+    DirectX::XMFLOAT2 pause_select_UI_pos[2]{ {84,221},{84,380} };
     // ポーズ画面のUIのサイズ
     DirectX::XMFLOAT2 pause_UI_size{750,100};
 

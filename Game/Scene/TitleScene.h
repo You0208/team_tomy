@@ -21,6 +21,8 @@ public:
     void Render(float elapsedTime)override;
 
     void DrawImGui();
+
+    int step = 0;
 private:
     std::unique_ptr<sprite> title;
     std::unique_ptr<sprite> spider_anim;

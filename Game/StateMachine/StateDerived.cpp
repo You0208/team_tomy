@@ -95,6 +95,7 @@ namespace Nero::Component::AI
     void AvoidState::Begin()
     {
         owner->SetAnimationIndex(owner->Avoid_Anim);
+        owner->GetModel()->rootMotionFlag = true;
     }
 
     void AvoidState::Update()

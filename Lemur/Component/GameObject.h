@@ -44,6 +44,7 @@ public:
     {
         UpdateScale();
         AnimationUpdate(elapsedTime);
+        RootmationUpdate(elapsedTime);
         //Model->ComputeRootMotion(keyframe,world);
         //Model->UpdateRootMotion(position,keyframe,world);
         HitStopCalc();
@@ -67,6 +68,14 @@ public:
     virtual void DebugImgui(){};
     virtual void DrawDebugPrimitive() {};
     void AnimationUpdate(float elapsedTime);
+
+    // ルートモーション
+    void RootmationUpdate(float elapsedTime);
+    void SetupRootMotion(const char* rootMotionMeshNodeName)
+    {
+        root_motion_node_index = Model->FindMeshNodeIndex(rootMotionMeshNodeName);
+    }
+
     animation animation{};
     animation::keyframe keyframe{};
     DirectX::XMFLOAT4X4 world;
@@ -264,6 +273,9 @@ public:
     //名前をclip_indexから変えました。
     int animation_index = 0;
     int frame_index = 0;
+
+    // ルートモーションで使うから作りました。 by:tomy
+    int root_motion_node_index = -1;
 
     // アニメーション終了フラグ
     bool end_animation = false;

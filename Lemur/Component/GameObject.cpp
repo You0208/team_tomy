@@ -20,15 +20,30 @@ void GameObject::AnimationUpdate(float elapsedTime)
             end_animation = true;
             frame_index = 0;
             animation_tick = 0;
-
+            Model->rootMotionFlag = false;
         }
         else
         {
             end_animation = false;
             animation_tick += elapsedTime * hit_stop_rate * anim_calc_rate;
             keyframe = { animation.sequence.at(frame_index) };
+            
         }
     }
+}
+
+void GameObject::RootmationUpdate(float elapsedTime)
+{
+    if (frame_index < 1)return;
+    animation::keyframe::node node;
+    animation::keyframe::node old_node;
+    //animation = { Model->animation_clips.at(animation_index) };
+    //frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+
+    Model->ComputeAnimation(animation_index, root_motion_node_index, frame_index, node);
+    Model->ComputeAnimation(animation_index, root_motion_node_index, frame_index-1, old_node);
+    DirectX::XMFLOAT3 Transration = node.translation - old_node.translation;
+    position += Transration * elapsedTime;
 }
 
 bool GameObject::ApplyDamage(int damage)
