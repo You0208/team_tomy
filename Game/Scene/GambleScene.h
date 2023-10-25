@@ -176,6 +176,7 @@ private:/*---------------- スプライト関係 -----------------*/
 	std::shared_ptr<sprite> spr_skill_back;
 
 	std::shared_ptr<sprite> spr_skill[22];
+	std::shared_ptr<sprite> spr_quest[22];
 
 
 	/*------- イージング関係 --------*/

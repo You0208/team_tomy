@@ -25,6 +25,8 @@ float bet_rate;
 
 void GambleScene::set_skill_data()
 {
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
 	wcscpy_s(skill_data[0].title, L"剛腕");
 	wcscpy_s(skill_data[0].contents, L"Skill_ContentsA");
 	wcscpy_s(skill_data[1].title, L"鬼力");
@@ -51,10 +53,35 @@ void GambleScene::set_skill_data()
 	wcscpy_s(skill_data[15].title, L"豆腐");
 	wcscpy_s(skill_data[16].title, L"呪詛");
 	wcscpy_s(skill_data[17].title, L"傲慢");
+
+
+	spr_skill[0] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剛腕.png");
+	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/鬼力.png");
+	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/魔剣.png");
+	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/残酷.png");
+	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/狂乱.png");
+	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/技術.png");
+	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/吸血.png");
+	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾走.png");
+	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/加速.png");
+	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/我慢.png");
+	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/再生.png");
+	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/休憩.png");
+	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/逆転.png");
+	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/策士.png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剣聖.png");
+	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾風.png");
+	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/肥満.png");
+	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/豆腐.png");
+	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/呪詛.png");
+	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/傲慢.png");
 }
 
 void GambleScene::set_quest_data()
 {
+	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
+
 	wcscpy_s(quest_data[0].title,  L"Quest0");
 	wcscpy_s(quest_data[0].contents, L"Quest_ContentsA");
 	wcscpy_s(quest_data[1].title,  L"Quest1");
@@ -76,7 +103,22 @@ void GambleScene::set_quest_data()
 	wcscpy_s(quest_data[15].title, L"Quest15");
 	wcscpy_s(quest_data[16].title, L"Quest16");
 
-
+	spr_quest[QuestPattern::A] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A1.png");
+	spr_quest[QuestPattern::B] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A2.png");
+	spr_quest[QuestPattern::C] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A3.png");
+	spr_quest[QuestPattern::D] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A4.png");
+	spr_quest[QuestPattern::E] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/A5.png");
+	spr_quest[QuestPattern::F] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B1.png");
+	spr_quest[QuestPattern::G] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B2.png");
+	spr_quest[QuestPattern::H] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B3.png");
+	spr_quest[QuestPattern::I] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B4.png");
+	spr_quest[QuestPattern::J] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/B5.png");
+	spr_quest[QuestPattern::K] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C1.png");
+	spr_quest[QuestPattern::L] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C2.png");
+	spr_quest[QuestPattern::M] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C3.png");
+	spr_quest[QuestPattern::N] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C4.png");
+	spr_quest[QuestPattern::O] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/C5.png");//TODO
+	spr_quest[QuestPattern::P] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/quest/X.png");
 
 	// クエストパターンの設定
 	for (int quest_num_i = QuestPattern::A; quest_num_i < QuestPattern::MAX_QUEST; quest_num_i++)
@@ -245,7 +287,6 @@ void GambleScene::Initialize()
 	//spr_tutorial_07 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/７.png");
 	//spr_tutorial_08 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/８.png");
 	//spr_tutorial_09 = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/tutorial/９.png");
-
 
 	spr_back = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\gamble_back.png");
 	spr_card = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\card.png");
@@ -658,6 +699,90 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		//small_arrow_up_pos[0] = Poo;
 		// 上下
 
+
+		// コントローラー
+	{
+		switch (select_num)
+		{
+		case 0:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 1;
+			}
+			break;
+		case 1:
+			if (game_pad.GetButtonDown() & GamePad::BTN_RIGHT)
+			{
+				select_num = 2;
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 0;
+			}
+			break;
+		case 2:
+			if (game_pad.GetButtonDown() & GamePad::BTN_LEFT)
+			{
+				select_num = 1;
+			}
+			break;
+		}
+
+
+		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// 倍率が範囲内の時に動く
+		{
+			if (game_pad.GetButtonDown() & GamePad::BTN_UP)
+			{
+				if (player_status[select_num] > 1)
+				{
+					bet_num[select_num]++;
+					player_status_bet[select_num]++;
+					player_status[select_num]--;
+					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
+					{
+						bet_rate += 0.1f;
+					}
+				}
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_DOWN)
+			{
+				if (player_status[select_num] < player_status_max[select_num])
+				{
+					if (bet_num[select_num] > 0)bet_num[select_num]--;
+					player_status_bet[select_num]--;
+					player_status[select_num]++;
+					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
+					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate >= min_magnification)
+					{
+						bet_rate -= 0.1f;
+					}
+				}
+			}
+			if (game_pad.GetButtonDown() & GamePad::BTN_B)
+			{
+				// ポイントを倍率分かけておく
+				//total_point *= bet_rate;
+				// 元のステータスを減らす
+
+				//player->health = player_status[0];
+				//player->max_health = player_status[0] * bet_rate;
+				//player->attack_power = player_status[1] * bet_rate;
+				//player->speed_power = player_status[2] * bet_rate;
+
+				// たぶんこう
+				player->max_health = player_status[0];
+				player->attack_power = player_status[1];
+				player->speed_power = player_status[2];
+
+				player->bet_MHP = player_status_bet[0];
+				player->bet_AP = player_status_bet[1];
+				player->bet_SP = player_status_bet[2];
+				step++;
+			}
+		}
+	}
+
 		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// 倍率が範囲内の時に動く
 		{
 			for (int i = 0; i < 3; i++)
@@ -794,11 +919,6 @@ void GambleScene::Render(float elapsedTime)
 		spr_skill_back->render(immediate_context, skillCard[select_num].position.x - 126, skillCard[select_num].position.y - plusPos[select_num] - 178, 893, 1126);
 		for (int i = 0; i < 3; i++)
 		{
-			//// カード２
-			//spr_card->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
-			//// テキスト
-			//Lemur::Graphics::Font::Instance().render(skillCard[i].wcText.c_str(), skillCard[i].wcText.size() + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
-			////Lemur::Graphics::Font::Instance().render(skillCard[i].wcText, wcslen(skillCard[i].wcText) + 1, { skillCard[i].font_position.x, skillCard[i].font_position.y - font_d[i] }, 600, 72);
 			spr_skill[skillCard[i].category]->render(immediate_context, skillCard[i].position.x, skillCard[i].position.y - plusPos[i], skillCard[i].size.x, skillCard[i].size.y);
 		}
 
@@ -809,50 +929,38 @@ void GambleScene::Render(float elapsedTime)
 	case Quest_Select:
 
 		spr_back->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		//spr_card->render(immediate_context, Poo.x, Poo.y - plusPos[0], questCard[0].size.x, questCard[0].size.y);
-		//spr_card->render(immediate_context, 0, 0 , Poo.x, Poo.y);
 		switch (selection_card)
 		{
 		case 0:
 			// カード１
 			for (int i = 2; i >= 0; i--)
 			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+				spr_quest[questCard[i].category]->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
 			// 矢印
-			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
+			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
 
-			// テキスト
-
-			Lemur::Graphics::Font::Instance().render(questCard[0].wcText.c_str(), questCard[0].wcText.size()+1, { 16,10 }, 600, 72);
-		//	Lemur::Graphics::Font::Instance().render(questCard[0].wcText, wcslen(questCard[0].wcText) + 1, { 16,10 }, 600, 72);
 			break;
 		case 1:
 			// カード１
 			for (int i = 0; i < 3; i++)
 			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+				spr_quest[questCard[i].category]->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
 			// 矢印
-			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
-			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y);
+			spr_arrow->render(immediate_context, arrow_position[0].x, arrow_position[0].y, arrow_size.x, arrow_size.y);
+			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
 
-
-			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[1].wcText.c_str(), questCard[1].wcText.size()+1, { 40,10 }, 600, 72);
 			break;
 		case 2:
 			// カード１
 			for (int i = 0; i < 3; i++)
 			{
-				spr_card->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
+				spr_quest[questCard[i].category]->render(immediate_context, questCard[i].position.x, questCard[i].position.y, questCard[i].size.x, questCard[i].size.y);
 			}
 
 			// 矢印
-			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y, 1, 1, 1, 1, 180);
-
-			// テキスト
-			Lemur::Graphics::Font::Instance().render(questCard[2].wcText.c_str(), questCard[2].wcText.size()+1, { 63,10 }, 600, 72);
+			spr_arrow->render(immediate_context, arrow_position[1].x, arrow_position[1].y, arrow_size.x, arrow_size.y);
 			break;
 		}
 
