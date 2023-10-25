@@ -26,11 +26,7 @@ void LoadingScene::Finalize()
 
 void LoadingScene::Update(HWND hwnd, float elapsedTime)
 {
-    ImGui::Begin("Shader");
 
-    time=high_resolution_timer::Instance().time_stamp();
-    ImGui::SliderFloat2("poo", &poo.x,0,1920);
-    ImGui::End();
     // 次のシーンの準備が完了したらシーンを切り替える
     if (nextScene->IsReady())
     {

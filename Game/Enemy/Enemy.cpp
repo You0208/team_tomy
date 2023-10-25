@@ -102,7 +102,7 @@ void EnemyGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3D
     {
         enemy->Render(elapsedTime, replaced_pixel_shader);
     }
-    enemy->DebugImgui();
+   // enemy->DebugImgui();
 }
 
 
@@ -786,7 +786,7 @@ void Enemy::DamageRender()
 
 void Enemy::DebugImgui()
 {
-    ImGui::Begin("Enemy");
+  /*  ImGui::Begin("Enemy");
     ImGui::Text(enemy_type.c_str());
     if (ImGui::TreeNode("Transform"))
     {
@@ -847,7 +847,7 @@ void Enemy::DebugImgui()
     }
     ImGui::Checkbox("is_hit", &is_hit);
 
-    ImGui::End();
+    ImGui::End();*/
 
 }
 

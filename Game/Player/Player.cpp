@@ -49,12 +49,12 @@ void PlayerGraphicsComponent::Render(GameObject* gameobj, float elapsedTime, ID3
     {
         player->Render(elapsedTime, replaced_pixel_shader);
     }
-    player->DebugImgui();
+   // player->DebugImgui();
 }
 
 void Player::DebugImgui()
 {
-    ImGui::Begin("Player");
+  /*  ImGui::Begin("Player");
     ImGui::DragFloat("skill_ui_offset_y", &skill_ui_offset_y);
     ImGui::DragFloat("skill_ui_scale", &skill_ui_scale,0.1);
     ImGui::DragInt("down_count", &down_count);
@@ -133,7 +133,7 @@ void Player::DebugImgui()
         ImGui::Checkbox("animStop", &animStop);
         ImGui::TreePop();
     }
-    ImGui::End();
+    ImGui::End();*/
 }
 
 void Player::DrawDebugPrimitive()
