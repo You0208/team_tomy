@@ -7,35 +7,39 @@
 
 void GameObject::AnimationUpdate(float elapsedTime)
 {
+
     // todo 一回死んだらアニメーションバグる
     //todo ヒットストップどっちにするか決める
     // ヒットストップ中なら更新しない
     //if (is_hit_stop) return;
-    if (Model->animation_clips.size() > 0&&!animStop)
-    {
-        animation = { Model->animation_clips.at(animation_index) };
-        frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
-        if (frame_index > animation.sequence.size() - 1)
-        {
-            end_animation = true;
-            frame_index = 0;
-            animation_tick = 0;
-            Model->rootMotionFlag = false;
-        }
-        else
-        {
-            end_animation = false;
-            animation_tick += elapsedTime * hit_stop_rate * anim_calc_rate;
-            keyframe = { animation.sequence.at(frame_index) };
-            
-        }
-    }
+//<<<<<<< HEAD
+//    if (Model->animation_clips.size() > 0&&!animStop)
+//    {
+//        animation = { Model->animation_clips.at(animation_index) };
+//        frame_index = static_cast<int>(animation_tick * animation.sampling_rate);
+//        if (frame_index > animation.sequence.size() - 1)
+//        {
+//            end_animation = true;
+//            frame_index = 0;
+//            animation_tick = 0;
+//            Model->rootMotionFlag = false;
+//        }
+//        else
+//        {
+//            end_animation = false;
+//            animation_tick += elapsedTime * hit_stop_rate * anim_calc_rate;
+//            keyframe = { animation.sequence.at(frame_index) };
+//            
+//        }
+//    }
+//=======
+    UpdateAnimation(elapsedTime);
 }
 
 void GameObject::RootmationUpdate(float elapsedTime)
 {
-    if (frame_index < 1)return;
     if (root_motion_node_index < 0)return;
+    if (frame_index < 1)return;
     animation::keyframe::node node;
     animation::keyframe::node old_node;
     animation::keyframe::node begin_node;
@@ -170,7 +174,6 @@ void GameObject::Render(float elapsedTime, ID3D11PixelShader** replaced_pixel_sh
     if (Model->animation_clips.size() > 0)
     {
 #if 1
-
 #else
         animation::keyframe keyframe;
         const animation::keyframe* keyframes[2]{
@@ -521,4 +524,101 @@ void GameObject::HitStopCalc()
     hit_stop_timer += high_resolution_timer::Instance().time_interval();
 #endif
 
+}
+
+void GameObject::UpdateAnimation(float elapsedTime)
+{
+    // 再生中でないなら処理しない
+    if (!IsPlayAnimation()) return;
+
+    // 最終フレーム処理(再生終了フラグが立っていれば再生終了)
+    if (end_animation)
+    {
+        end_animation = false; // 終了フラグをリセット
+        animation_index = -1;    // アニメーション番号リセット
+        return;
+    }
+    // アニメーション再生時間経過
+    animation_tick += elapsedTime;
+
+    // 指定のアニメーションデータを取得
+    animation& animation = GetAnimation()->at(animation_index);
+
+    // 現在のフレームを取得
+    const float  frameIndex_float = (animation_tick * animation.sampling_rate) * anim_calc_rate * hit_stop_rate;
+    const size_t frameIndex = static_cast<const size_t>(frameIndex_float);
+
+    // 最後のフレームを取得
+    const size_t frameEnd = (animation.sequence.size() - 1);
+
+    // アニメーションが再生しきっていた場合
+    if (frameIndex > frameEnd)
+    { 
+        // ループフラグが立っていれば再生時間を巻き戻す
+        if (animation_loop_flag)
+        {
+            animation_tick = 0.0f;
+            return;
+        }
+        // ループなしなら再生終了フラグを立てる
+        else
+        {
+            end_animation = true;
+            return;
+        }
+
+    }
+    // キーフレームが更新されていてアニメーションが再生しきっていないときはアニメーションをスムーズに切り替える
+    else if ((keyframe.nodes.size() > 0) && frameIndex < frameEnd)
+    {
+        // ブレンド率の計算
+        float blendRate = 0.2f;
+        UpdateBlendRate(blendRate, elapsedTime);
+
+        // キーフレーム取得
+        const std::vector<animation::keyframe>& keyframes = animation.sequence;
+
+        // 現在の前後のキーフレームを取得
+        const animation::keyframe* keyframeArr[2] = {
+            &keyframe,
+            &keyframes.at(frameIndex + 1)
+        };
+
+        // アニメーションを滑らかに切り替える
+        Model->blend_animations(keyframeArr, blendRate, keyframe);
+
+        // アニメーショントランスフォーム更新
+        Model->update_animation(keyframe);
+    }
+    // キーフレームが一度も更新されていなくてアニメーションが再生しきっていなければ現在のフレームを保存
+    else
+    {
+        keyframe = animation.sequence.at(frameIndex);
+    }
+}
+
+void GameObject::UpdateBlendRate(float blendRate, const float& elapsedTime)
+{
+    if (animation_blend_time < animation_blend_seconds)
+    {
+        animation_blend_time += elapsedTime;
+        if (animation_blend_time >= animation_blend_seconds)
+        {
+            animation_blend_time = animation_blend_seconds;
+        }
+        blendRate = animation_blend_time / animation_blend_seconds;
+        blendRate *= blendRate;
+    }
+}
+
+
+
+bool GameObject::IsPlayAnimation() const
+{
+    // アニメーション番号が0以下なら
+    if (animation_index < 0)return false;
+    // アニメーション番号が保存されているアニメーションの数以上なら
+    if (animation_index >= Model->animation_clips.size()) return false;
+
+    return true;
 }

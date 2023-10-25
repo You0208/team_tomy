@@ -348,7 +348,7 @@ void GambleScene::Initialize()
 
 	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::PLAY, true);
 	/*--------------- ‚±‚êƒfƒoƒbƒO—p --------------*/
-	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
 }
 
 void GambleScene::Finalize()
@@ -916,23 +916,23 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 
 
-		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚ÌŽž‚É“®‚­
+		if (bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚ÌŽž‚É“®‚­
 		{
-			if (game_pad.GetButtonDown() & GamePad::BTN_UP)
+			if (game_pad.GetButton() & GamePad::BTN_UP)
 			{
-				if (player_status[select_num] > 1)
+				if (player_status[select_num] > 10)
 				{
 					bet_num[select_num]++;
 					player_status_bet[select_num]++;
 					player_status[select_num]--;
 					player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-					if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
+					if (player->total_point % 10 == 0 && player->total_point >= 10)
 					{
 						bet_rate += 0.1f;
 					}
 				}
 			}
-			if (game_pad.GetButtonDown() & GamePad::BTN_DOWN)
+			if (game_pad.GetButton() & GamePad::BTN_DOWN)
 			{
 				if (player_status[select_num] < player_status_max[select_num])
 				{
@@ -970,21 +970,21 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 	}
 
-		if (bet_rate <= max_magnification && bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚ÌŽž‚É“®‚­
+		if (bet_rate >= min_magnification)// ”{—¦‚ª”ÍˆÍ“à‚ÌŽž‚É“®‚­
 		{
 			for (int i = 0; i < 3; i++)
 			{
 				if (mouse.IsArea(small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50))
 				{
-					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					if (mouse.GetButton() & Mouse::BTN_LEFT)
 					{
-						if (player_status[i] > 1)
+						if (player_status[i] > 10)
 						{
 							bet_num[i]++;
 							player_status_bet[i]++;
 							player_status[i]--;
 							player->total_point = bet_num[0] + bet_num[1] + bet_num[2];
-							if (player->total_point % 10 == 0 && player->total_point >= 10 && bet_rate <= max_magnification)
+							if (player->total_point % 10 == 0 && player->total_point >= 10)
 							{
 								bet_rate += 0.1f;
 							}
@@ -993,7 +993,7 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				}
 				if (mouse.IsArea(small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50))
 				{
-					if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+					if (mouse.GetButton() & Mouse::BTN_LEFT)
 					{
 						if (player_status[i] < player_status_max[i])
 						{
