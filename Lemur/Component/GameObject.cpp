@@ -531,7 +531,7 @@ void GameObject::UpdateAnimation(float elapsedTime)
     // 再生中でないなら処理しない
     if (!IsPlayAnimation()) return;
 
-    // 最終フレーム処理(再生終了フラグが立っていれば再生終了)
+    // 最終フレーム処理
     if (end_animation)
     {
         end_animation = false; // 終了フラグをリセット
@@ -544,23 +544,23 @@ void GameObject::UpdateAnimation(float elapsedTime)
     // 指定のアニメーションデータを取得
     animation& animation = GetAnimation()->at(animation_index);
 
-    // 現在のフレームを取得
+    // 現在の時間がどのキーフレームの間にいるのか判定する
     const float  frameIndex_float = (animation_tick * animation.sampling_rate) * anim_calc_rate * hit_stop_rate;
     const size_t frameIndex = static_cast<const size_t>(frameIndex_float);
 
-    // 最後のフレームを取得
+    // 最終フレーム
     const size_t frameEnd = (animation.sequence.size() - 1);
 
-    // アニメーションが再生しきっていた場合
+    // 再生時間が終端時間を超えたら
     if (frameIndex > frameEnd)
-    { 
-        // ループフラグが立っていれば再生時間を巻き戻す
+    {
+        // ループ再生する場合
         if (animation_loop_flag)
         {
             animation_tick = 0.0f;
             return;
         }
-        // ループなしなら再生終了フラグを立てる
+        // ループ再生しない場合
         else
         {
             end_animation = true;
@@ -568,7 +568,7 @@ void GameObject::UpdateAnimation(float elapsedTime)
         }
 
     }
-    // キーフレームが更新されていてアニメーションが再生しきっていないときはアニメーションをスムーズに切り替える
+    // 再生時間とキーフレームの時間かた補間率を算出する
     else if ((keyframe.nodes.size() > 0) && frameIndex < frameEnd)
     {
         // ブレンド率の計算
@@ -578,19 +578,18 @@ void GameObject::UpdateAnimation(float elapsedTime)
         // キーフレーム取得
         const std::vector<animation::keyframe>& keyframes = animation.sequence;
 
-        // 現在の前後のキーフレームを取得
-        const animation::keyframe* keyframeArr[2] = {
+        // 現在の時間がどのキーフレームの間にいるのか判定する
+        const animation::keyframe* keyframe_[2] = {
             &keyframe,
             &keyframes.at(frameIndex + 1)
         };
 
-        // アニメーションを滑らかに切り替える
-        Model->blend_animations(keyframeArr, blendRate, keyframe);
+        // 再生時間とキーフレームの時間から補間率を計算する
+        Model->blend_animations(keyframe_, blendRate, keyframe);
 
-        // アニメーショントランスフォーム更新
+        // トランスフォーム更新
         Model->update_animation(keyframe);
     }
-    // キーフレームが一度も更新されていなくてアニメーションが再生しきっていなければ現在のフレームを保存
     else
     {
         keyframe = animation.sequence.at(frameIndex);
@@ -611,13 +610,9 @@ void GameObject::UpdateBlendRate(float blendRate, const float& elapsedTime)
     }
 }
 
-
-
 bool GameObject::IsPlayAnimation() const
 {
-    // アニメーション番号が0以下なら
     if (animation_index < 0)return false;
-    // アニメーション番号が保存されているアニメーションの数以上なら
     if (animation_index >= Model->animation_clips.size()) return false;
 
     return true;
