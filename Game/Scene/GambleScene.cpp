@@ -24,6 +24,7 @@ int wave_count = 1;
 // 最終的なポイント倍率
 float bet_rate;
 
+extern bool tutorial;
 void GambleScene::set_skill_data()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
@@ -43,7 +44,7 @@ void GambleScene::set_skill_data()
 	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/再生.png");
 	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/休憩.png");
 	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/逆転.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/超人.png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/Superhuman.png");
 	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/策士.png");
 	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剣聖.png");
 	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾風.png");
@@ -296,8 +297,8 @@ void GambleScene::Initialize()
 
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
 
-	spr_number_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/数字背景sel.png");
-	spr_ok_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/OK背景sel.png");
+	spr_number_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/sel.png");
+	spr_ok_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/OKsel.png");
 
 
 	Lemur::Audio::AudioManager::Instance().play_bgm(Lemur::Audio::BGM::PLAY, true);
@@ -328,8 +329,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 			switch (easing_step)
 			{
-
 			case 0: // 1回目のイージング
+				if (!tutorial)break;
 
 				if (step != Skill_Lottery)return;
 				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
@@ -927,10 +928,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 			//total_point *= bet_rate;
 			// 元のステータスを減らす
 
-			//player->health = player_status[0];
-			//player->max_health = player_status[0] * bet_rate;
-			//player->attack_power = player_status[1] * bet_rate;
-			//player->speed_power = player_status[2] * bet_rate;
+			//player->health = player_RewordStatus_box[0];
+			//player->max_health = player_RewordStatus_box[0] * bet_rate;
+			//player->attack_power = player_RewordStatus_box[1] * bet_rate;
+			//player->speed_power = player_RewordStatus_box[2] * bet_rate;
 
 			// たぶんこう
 			player->max_health = player_status[0];
@@ -998,10 +999,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				//total_point *= bet_rate;
 				// 元のステータスを減らす
 
-				//player->health = player_status[0];
-				//player->max_health = player_status[0] * bet_rate;
-				//player->attack_power = player_status[1] * bet_rate;
-				//player->speed_power = player_status[2] * bet_rate;
+				//player->health = player_RewordStatus_box[0];
+				//player->max_health = player_RewordStatus_box[0] * bet_rate;
+				//player->attack_power = player_RewordStatus_box[1] * bet_rate;
+				//player->speed_power = player_RewordStatus_box[2] * bet_rate;
 
 			    // たぶんこう
 				player->max_health = player_status[0] ;

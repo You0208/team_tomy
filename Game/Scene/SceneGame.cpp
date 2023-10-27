@@ -27,6 +27,7 @@
 extern QuestPattern quest_pattern;
 extern int wave_count;
 
+extern bool tutorial;
 // todo ポーズ画面
 void GameScene::Initialize()
 {
@@ -235,6 +236,7 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 		{
 
 		case 0: // 1回目のイージング
+			if (!tutorial)break;
 
 			if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
 				return;

@@ -171,7 +171,7 @@ private:
 
 
     // 無敵フレーム
-    int invincible_frame = 20;
+    int invincible_frame = 30;
 
     // 旋回の速さ
     float turn_speed = 10.0f;
@@ -327,6 +327,8 @@ public:/*----------- エフェクト関係 ------------*/
     std::unique_ptr<Effect> parry_spark;
     // パリィ成功時の斬撃エフェクト
     std::unique_ptr<Effect> parry_slash;
+    // パリィヒット時のダメージのエフェクト
+    std::unique_ptr<Effect> parry_grandbreak;
 
 public:/*--------------- UI関係 ----------------*/
     // ダメージ表示

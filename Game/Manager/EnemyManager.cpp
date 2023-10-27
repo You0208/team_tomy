@@ -1,5 +1,7 @@
 #include "EnemyManager.h"
 
+#include "Lemur/Graphics/Camera.h"
+
 void EnemyManager::Update(float elapsedTime)
 {
     for (Enemy* enemy : enemies)
@@ -21,6 +23,8 @@ void EnemyManager::Update(float elapsedTime)
             //// Á‚µ‚½•ª‚¾‚¯ƒJƒEƒ“ƒg‚ğŒ¸‚ç‚·
             //enemy_count--;
         }
+        if (Camera::Instance().GetLockONEnemy() == enemy)
+            Camera::Instance().SetLockONEnemy(nullptr);
         // íœ
         delete enemy;
 

@@ -63,6 +63,9 @@ void Camera::Update(float elapsedTime)
 
     ScreenVibrationUpdate();
 
+    if (!lock_on_enemy)
+        is_lockOn = false;
+
     if (is_lockOn) LockOnUpdate(elapsedTime);
 
     else NonLockOnUpdate(elapsedTime);

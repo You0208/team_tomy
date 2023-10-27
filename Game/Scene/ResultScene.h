@@ -43,7 +43,7 @@ private:
     bool clear;
 
     // for分で描画とか判定とかしたいからplayerの各パラメータを配列化
-    float player_status[3];
+    float player_RewordStatus_box[3];
     // 報酬受け取る前の時点でのプレイヤーパラメータ
     float player_status_min[3];
 
