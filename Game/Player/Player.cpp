@@ -28,6 +28,7 @@ void PlayerGraphicsComponent::Initialize(GameObject* gameobj)
     player->slash = std::make_unique<Effect>("./resources/Effect/team0925/slash.efk");
     player->parry_spark = std::make_unique<Effect>("./resources/Effect/team0925/parry_spark.efk");
     player->parry_slash = std::make_unique<Effect>("./resources/Effect/team0925/parry_slash.efk");
+    player->parry_break = std::make_unique<Effect>("./resources/Effect/team0925/grandbreak.efk");
     //player->slash = std::make_unique<Effect>("./resources/Effect/test/hit/Hit.efk");
 
 }
@@ -406,7 +407,10 @@ void Player::CollisionNodeVsEnemies(const char* mesh_name,const char* bone_name,
                         kill_count++;
 
                     if (is_counter)
+                    {
+                        parry_break->Play(enemy->GetPosition());
                         enemy->fear_frag = true;
+                    }
 
                     break;
                 }

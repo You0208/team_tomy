@@ -33,6 +33,9 @@ void ResultScene::Initialize()
 	spr_coin[1] = std::make_unique<sprite>(device, L".\\resources\\Image\\AP_coin.png");
 	spr_coin[2] = std::make_unique<sprite>(device, L".\\resources\\Image\\SP_coin.png");
 
+	spr_bet_icon[0] = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_heart.png");
+	spr_bet_icon[1] = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_attack.png");
+	spr_bet_icon[2] = std::make_unique<sprite>(device, L".\\resources\\Image\\bet_speed.png");
 
     tutorial = std::make_unique<sprite>(device, L".\\resources\\Image\\tutorial\\status_page1.png");
 
@@ -109,11 +112,14 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 
 			case 0: // 1回目のイージング
 
+				if (!tutorial) break;
+
 				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
 					return;
 
 				// ボタン押されん限り進めん
-				if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				if (game_pad.GetButtonDown() & GamePad::BTN_A ||
+					Input::Instance().GetMouse().GetButtonDown() & Mouse::BTN_LEFT)
 				{
 					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
 					ResetEasingTime();
@@ -136,10 +142,6 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 			}
 		}
 
-		// プレイヤーのパラメータを配列に変換(for文で三つのパラメータを一気にやるために)
-		player_status[0] = static_cast<float>(player->max_health);
-		player_status[1] = player->attack_power;
-		player_status[2] = player->speed_power;
 
 		// todo ここの見た目の演出どうする？
 		for (int i = 0; i < 3; i++)
@@ -153,7 +155,7 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 				{
 					// ベットしたトータルポイントを消費してステータス上昇
 					player->total_point--;
-					player_status[i]++;
+					player_Reword_Box[i]++;
 				}
 			}
 			// 下矢印の範囲内でボタンが押されたら
@@ -161,23 +163,24 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 				mouse.GetButtonDown() & Mouse::BTN_LEFT)
 			{
 				// 元のパラメータは下回らないようにする
-				if (player_status[i] > player_status_min[i])
+				if (player_Reword_Box[i] > player_status_min[i])
 				{
 					player->total_point++;
-					player_status[i]--;
+					player_Reword_Box[i]--;
 				}
 			}
 		}
 
-		// 変動後のパラメータを実際のプレイヤーにセット
-		player->max_health = static_cast<int>(player_status[0]);
-		player->attack_power = player_status[1];
-		player->speed_power = player_status[2];
 
 		//OKボタン
 		if (mouse.IsArea(select_decision_pos.x, select_decision_pos.y, 200, 100) &&
 			mouse.GetButtonDown() & Mouse::BTN_LEFT)
 		{
+			// 変動後のパラメータを実際のプレイヤーにセット
+			player->max_health += static_cast<int>(player_Reword_Box[0]);
+			player->attack_power += player_Reword_Box[1];
+			player->speed_power += player_Reword_Box[2];
+
 			Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
 		}
 
@@ -221,17 +224,18 @@ void ResultScene::Render(float elapsedTime)
 		for (int i = 0; i < 3; i++)
 		{
 			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
+			spr_bet_icon[i]->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, 85, 190);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);
-			spr_number->textout(immediate_context, std::to_string(player->total_point), num_bet_pos[i].x, num_bet_pos[i].y, 25, 50, 1, 1, 1, 1);
-			if (player->total_point > 0)
+			spr_number->textout(immediate_context, std::to_string(player_Reword_Box[i]), num_bet_pos[i].x, num_bet_pos[i].y, 50, 50, 1, 1, 1, 1);
+			if (player_Reword_Box[i] > 0)
 			{
-				for (int j = player->total_point; j > 0; j--)
+				for (int j = 0; j < player_Reword_Box[i]; j++)
 				{
 					spr_coin[i]->render(immediate_context, coin_bet_pos[i].x, coin_bet_pos[i].y - 5 * j, 200, 100);
 				}
 			}
-			spr_number->textout(immediate_context, std::to_string(int(player_status[i])), num_bet_pos[i].x, 100, 25, 50, 1, 1, 1, 1);
+			spr_number->textout(immediate_context, std::to_string(int(player_Reword_Box[i]+player_status_min[i])), num_bet_pos[i].x, 100, 50, 50, 1, 1, 1, 1);
 		}
 
 

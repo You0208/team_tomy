@@ -57,6 +57,7 @@ public:
     DirectX::XMVECTOR GetFocus() { return Focus; }
 
     Enemy* GetLockONEnemy()const { return lock_on_enemy; }
+    void SetLockONEnemy(Enemy* enemy) { lock_on_enemy=enemy; }
 
 private:
     // viewçsóÒ

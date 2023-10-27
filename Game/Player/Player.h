@@ -327,6 +327,8 @@ public:/*----------- エフェクト関係 ------------*/
     std::unique_ptr<Effect> parry_spark;
     // パリィ成功時の斬撃エフェクト
     std::unique_ptr<Effect> parry_slash;
+    // パリィヒットの衝撃は
+    std::unique_ptr<Effect> parry_break;
 
 public:/*--------------- UI関係 ----------------*/
     // ダメージ表示

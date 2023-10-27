@@ -10,6 +10,9 @@ void Stage::Init()
     floor_model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/floor.fbx");
     gate_model = std::make_unique<skinned_mesh>(Lemur::Graphics::Graphics::Instance().GetDevice(), "./resources/Stage/gate.fbx");
 
+    fire = std::make_unique<Effect>("./resources/Effect/team0925/fire.efk");
+    fire->Play(DirectX::XMFLOAT3(2.2, 2.7, 1.0));
+    fire->Play(DirectX::XMFLOAT3(-2.2, 2.7, 1.0));
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     create_ps_from_cso(graphics.GetDevice(), "./Shader/stage_ps.cso", stage_1.GetAddressOf());
     create_ps_from_cso(graphics.GetDevice(), "./Shader/gate_ps.cso", gate.GetAddressOf());

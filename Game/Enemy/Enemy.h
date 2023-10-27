@@ -2,6 +2,7 @@
 #include "Game/MathHelper.h"
 #include "Game/AI/BehaviorTree.h"
 #include "Lemur/Component/GameObject.h"
+#include "Lemur/Effekseer/Effect.h"
 
 // ダメージ表示用構造体
 struct DamageSpr
@@ -235,5 +236,9 @@ private:
     std::vector<DamageSpr> spr_damages;
 
     int damage_value_index = 0;
+
+public:/*----------- エフェクト ----------*/
+    std::unique_ptr<Effect> attackalarm;
+
 };
 

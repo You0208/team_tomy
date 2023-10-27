@@ -24,6 +24,7 @@ int wave_count = 1;
 // 最終的なポイント倍率
 float bet_rate;
 
+extern bool tutorial;
 void GambleScene::set_skill_data()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
@@ -325,23 +326,24 @@ void GambleScene::Initialize()
 	spr_skill[1] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/鬼力.png");
 	spr_skill[2] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/魔剣.png");
 	spr_skill[3] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/残酷.png");
-	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/狂乱.png");
-	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/技術.png");
-	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/吸血.png");
-	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾走.png");
-	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/加速.png");
-	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/我慢.png");
-	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/再生.png");
-	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/休憩.png");
-	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/逆転.png");
-	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/策士.png");
-	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/card.png");//TODO
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剣聖.png");
-	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾風.png");
-	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/肥満.png");
-	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/豆腐.png");
-	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/呪詛.png");
-	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/傲慢.png");
+	spr_skill[4] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/復讐.png");
+	spr_skill[5] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/狂乱.png");
+	spr_skill[6] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/技術.png");
+	spr_skill[7] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/吸血.png");
+	spr_skill[8] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾走.png");
+	spr_skill[9] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/加速.png");
+	spr_skill[10] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/我慢.png");
+	spr_skill[11] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/再生.png");
+	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/休憩.png");
+	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/逆転.png");
+	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/策士.png");
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Superhuman.png");//TODO
+	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/剣聖.png");
+	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/疾風.png");
+	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/肥満.png");
+	spr_skill[19] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/豆腐.png");
+	spr_skill[20] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/呪詛.png");
+	spr_skill[21] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/傲慢.png");
 
 	spr_skill_back = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Skill_Back.png");
 
@@ -377,6 +379,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 			case 0: // 1回目のイージング
 
+				if (!tutorial) break;
+
 				if (step != Skill_Lottery)return;
 				if (!EasingTutorial(SCREEN_WIDTH, 0.0f, hide_stop_time_ms, easing_time_ms))
 					return;
@@ -393,7 +397,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 				}
 				// ボタン押されん限り進めん
-				else if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				else if (game_pad.GetButtonDown() & GamePad::BTN_A||
+					Input::Instance().GetMouse().GetButtonDown()&Mouse::BTN_LEFT)
 				{
 					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
 					ResetEasingTime();
@@ -661,7 +666,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 
 
 				// ボタン押されん限り進めん
-				if (game_pad.GetButtonDown() & GamePad::BTN_A)
+				if (game_pad.GetButtonDown() & GamePad::BTN_A ||
+					Input::Instance().GetMouse().GetButtonDown() & Mouse::BTN_LEFT)
 				{
 					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
 					ResetEasingTime();
@@ -858,7 +864,8 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 					return;
 
 			    // ボタン押されん限り進めん
-			    if (game_pad.GetButtonDown() & GamePad::BTN_A)
+			    if (game_pad.GetButtonDown() & GamePad::BTN_A ||
+					Input::Instance().GetMouse().GetButtonDown() & Mouse::BTN_LEFT)
 				{
 					// 一回目のイージング終了したらタイマーをリセットしてステップを進める。
 					ResetEasingTime();
@@ -958,10 +965,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				//total_point *= bet_rate;
 				// 元のステータスを減らす
 
-				//player->health = player_status[0];
-				//player->max_health = player_status[0] * bet_rate;
-				//player->attack_power = player_status[1] * bet_rate;
-				//player->speed_power = player_status[2] * bet_rate;
+				//player->health = player_Reword_Box[0];
+				//player->max_health = player_Reword_Box[0] * bet_rate;
+				//player->attack_power = player_Reword_Box[1] * bet_rate;
+				//player->speed_power = player_Reword_Box[2] * bet_rate;
 
 				// たぶんこう
 				player->max_health = player_status[0];
@@ -1030,10 +1037,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 				//total_point *= bet_rate;
 				// 元のステータスを減らす
 
-				//player->health = player_status[0];
-				//player->max_health = player_status[0] * bet_rate;
-				//player->attack_power = player_status[1] * bet_rate;
-				//player->speed_power = player_status[2] * bet_rate;
+				//player->health = player_Reword_Box[0];
+				//player->max_health = player_Reword_Box[0] * bet_rate;
+				//player->attack_power = player_Reword_Box[1] * bet_rate;
+				//player->speed_power = player_Reword_Box[2] * bet_rate;
 
 			    // たぶんこう
 				player->max_health = player_status[0] ;

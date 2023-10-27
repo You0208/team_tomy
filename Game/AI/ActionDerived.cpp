@@ -224,6 +224,9 @@ ActionBase::State NearAttackAction::Run(float elapsedTime)
     {
     case 0:
 		owner->SetAnimationIndex(owner->NearAttack_Anim);
+		// エフェクト再生
+		owner->attackalarm->Play(owner->GetPosition(), 0.3);
+
 		step++;
 
 		break;
@@ -291,6 +294,9 @@ ActionBase::State JumpAttackAction::Run(float elapsedTime)
 	case 0:
 		// todo アニメーション再生
 		owner->SetAnimationIndex(owner->JumpAttack_Anim);
+		// エフェクト再生
+		owner->attackalarm->Play(owner->GetPosition(), 0.3);
+
 		step++;
 		break;
 	case 1:
@@ -338,6 +344,9 @@ ActionBase::State DoubleAttackAction::Run(float elapsedTime)
 	case 0:
 		// todo アニメーション再生
 		owner->SetAnimationIndex(owner->JumpAttack_Anim);
+		// エフェクト再生
+		owner->attackalarm->Play(owner->GetPosition(), 0.3);
+
 		step++;
 		break;
 	case 1:
@@ -402,6 +411,9 @@ ActionBase::State TwinArmsAttackAction::Run(float elapsedTime)
         {
 			owner->SetAnimCalcRate(0.7f);
         }
+		// エフェクト再生
+		owner->attackalarm->Play(owner->GetPosition(), 0.3);
+
 		step++;
 		break;
 	case 1:
@@ -450,6 +462,9 @@ ActionBase::State PoisonAttackAction::Run(float elapsedTime)
 	case 0:// アニメーション再生など初期設定
 
 		owner->SetAnimationIndex(owner->ShotAttack_Anim);
+		// エフェクト再生
+		owner->attackalarm->Play(owner->GetPosition(), 0.3);
+
 		easing_timer_ms = 0.0f;
 		step++;
 		break;
@@ -535,6 +550,8 @@ ActionBase::State RushAttackAction::Run(float elapsedTime)
 		// todo アニメーション再生
 		owner->SetAnimationIndex(owner->Walk_Anim);
 
+		// エフェクト再生
+		owner->attackalarm->Play(owner->GetPosition(), 0.3);
 	    owner->SetAnimCalcRate(3.0f);
 
 		// ターゲット位置設定する
@@ -561,12 +578,10 @@ ActionBase::State RushAttackAction::Run(float elapsedTime)
 		}
 
 		owner->Move_to_Target(elapsedTime, 2.0f);
-		// 当たり判定
-		if (owner->attack_collision_flag)
-		{
-			Player* player = CharacterManager::Instance().GetPlayer();
 
-			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), "J_root", owner->GetAttackCollisionRange());
+		for (auto& attack_collision : owner->arm_attack_collisions)
+		{
+			owner->CollisionNodeVsPlayer(owner->meshName.c_str(), attack_collision->bone_name.c_str(), attack_collision->node_radius);
 		}
 	}
 

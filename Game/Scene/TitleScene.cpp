@@ -8,6 +8,7 @@
 #include "Lemur/Audio/AudioManager.h"
 extern int wave_count;
 
+bool tutorial;
 void TitleScene::Initialize()
 {
     step = 0;
@@ -38,9 +39,20 @@ void TitleScene::Update(HWND hwnd, float elapsedTime)
     switch (step)
     {
     case 0:
-        if (game_pad.GetButtonDown() & GamePad::BTN_START ||
+        if (game_pad.GetButtonDown() & GamePad::BTN_A ||
             mouse.GetButtonDown() & Mouse::BTN_RIGHT)
         {
+            // todo Ç±Ç±Ç≈ââèo
+            tutorial = true;
+
+            step++;
+        }
+
+        if (game_pad.GetButtonDown() & GamePad::BTN_START ||
+            mouse.GetButtonDown() & Mouse::BTN_MIDDLE)
+        {
+            tutorial = false;
+
             // todo Ç±Ç±Ç≈ââèo
 
             step++;

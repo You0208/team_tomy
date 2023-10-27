@@ -43,7 +43,7 @@ private:
     bool clear;
 
     // for分で描画とか判定とかしたいからplayerの各パラメータを配列化
-    float player_status[3];
+    float player_Reword_Box[3];
     // 報酬受け取る前の時点でのプレイヤーパラメータ
     float player_status_min[3];
 
@@ -68,6 +68,9 @@ private:/*--------- スプライト関係 --------*/
     std::shared_ptr<sprite> spr_betbox;
     // どれだけベットしてる可視化する用のコイン
     std::shared_ptr<sprite> spr_coin[3];
+    // 各パラメータのアイコン
+    std::shared_ptr<sprite> spr_bet_icon[3];
+
     // OKボタン
     std::shared_ptr<sprite> spr_OK;
 

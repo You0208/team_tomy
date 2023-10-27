@@ -67,14 +67,8 @@ void EnemyGraphicsComponent::Initialize(GameObject* gameobj)
     create_ps_from_cso(graphics.GetDevice(), "./Shader/spider_ps.cso", spider_ps.GetAddressOf());
 
     enemy->SetPixelShader(spider_ps.Get());
-    //switch (enemy->enemy_type)
-    //{
-    //case Enemy::SmallSpider:
-    //    enemy->SetModel(ResourceManager::Instance().LoadModelResource(graphics.GetDevice(), ".\\resources\\Enemy\\spider_v003.fbx"));
-    //    break;
-    //case Enemy::BossSpider:
-    //    break;
-    //}
+
+    enemy->attackalarm = std::make_unique<Effect>("./resources/Effect/team0925/attack.efk");
 }
 
 void EnemyGraphicsComponent::Update(GameObject* gameobj)

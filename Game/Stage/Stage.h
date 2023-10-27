@@ -1,5 +1,7 @@
 #pragma once
 #include <memory>
+
+#include "Lemur/Effekseer/Effect.h"
 #include "Lemur/Model/Model.h"
 class Stage
 {
@@ -33,4 +35,8 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11PixelShader> stage_1;
     Microsoft::WRL::ComPtr<ID3D11PixelShader> gate;
+
+    std::unique_ptr<Effect> fire;
+
+
 };

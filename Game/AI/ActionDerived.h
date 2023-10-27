@@ -53,8 +53,8 @@ class NearAttackAction:public ActionBase
 public:
 	NearAttackAction(Enemy* enemy):ActionBase(enemy)
 	{
-		start_collision__frame = 60;
-		end_collision__frame = 100;
+		start_collision__frame = 90;
+		end_collision__frame = 115;
 	}
 	ActionBase::State Run(float elapsedTime) override;
 
@@ -76,8 +76,8 @@ class JumpAttackAction : public ActionBase
 public:
 	JumpAttackAction(Enemy* enemy) :ActionBase(enemy)
 	{
-		start_collision__frame = 60;
-		end_collision__frame = 100;
+		start_collision__frame = 50;
+		end_collision__frame = 80;
 
 	}
 	ActionBase::State Run(float elapsedTime)override;
@@ -90,8 +90,8 @@ class DoubleAttackAction : public ActionBase
 public:
 	DoubleAttackAction(Enemy* enemy) :ActionBase(enemy)
 	{
-		start_collision__frame = 60;
-		end_collision__frame = 100;
+		start_collision__frame = 50;
+		end_collision__frame = 80;
 
 	}
 	ActionBase::State Run(float elapsedTime)override;
@@ -104,8 +104,8 @@ class TwinArmsAttackAction : public ActionBase
 public:
 	TwinArmsAttackAction(Enemy* enemy) :ActionBase(enemy)
 	{
-		start_collision__frame = 60;
-		end_collision__frame = 100;
+		start_collision__frame = 50;
+		end_collision__frame = 80;
 	}
 	ActionBase::State Run(float elapsedTime)override;
 
