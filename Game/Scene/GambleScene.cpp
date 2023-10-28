@@ -22,7 +22,6 @@ QuestPattern quest_pattern = QuestPattern::C;
 int wave_count = 1;
 
 // 最終的なポイント倍率
-float bet_rate;
 
 extern bool tutorial;
 void GambleScene::set_skill_data()
@@ -150,9 +149,7 @@ void GambleScene::set_quest_data()
 void GambleScene::Initialize()
 {
 	Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-	SetState();
-
-	
+	SetState();	
 
 	// todo 牟田さん　アセットロードして背景などの描画をお願いします。
 	step = Skill_Lottery;
@@ -251,7 +248,7 @@ void GambleScene::Initialize()
 	case 2:
 		for (int quest_i = 0; quest_i < 3; quest_i++)
 		{
-			questCard[quest_i].category = Mathf::RandomRange(quest_data[A].pattern, quest_data[E].pattern);
+			questCard[quest_i].category = 14;
 			//TODO 配り方考える（ひとまず順番で）
 		}
 			break;
@@ -279,8 +276,6 @@ void GambleScene::Initialize()
 		skillCard[i].wcText = skill_data[skillCard[i].category].title;
 		questCard[i].wcText = quest_data[questCard[i].category].title;
 	}
-
-
 
 	/*-------------------------- アセットのロード -------------------------*/
 
@@ -315,6 +310,8 @@ void GambleScene::Initialize()
 
 	spr_skill_ok = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Skill_Text_OK.png");
 	spr_skill_change = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Skill_Text_Change.png");
+
+	spr_number_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/数字背景sel.png");
 
 
 	spr_coin[0] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HP_coin.png");
@@ -363,12 +360,9 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 {
 	Mouse& mouse = Input::Instance().GetMouse();
 	GamePad& game_pad = Input::Instance().GetGamePad();
+	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
 
 	// 一週目だけチュートリアル表示
-
-
-
-
 	switch (step)
 	{
 	case Skill_Lottery:
@@ -825,18 +819,18 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		// コントローラー
 		if (game_pad.GetButtonDown() & GamePad::BTN_A)
 		{
-			quest_pattern = QuestPattern(quest_data[selection_card].pattern);
-			bet_rate = quest_data[selection_card].min_magnification;
-			min_magnification = quest_data[selection_card].min_magnification;
-			max_magnification = quest_data[selection_card].max_magnification;
+			quest_pattern = QuestPattern(questCard[selection_card].category);
+			bet_rate = quest_data[questCard[selection_card].category].min_magnification;
+			min_magnification = quest_data[questCard[selection_card].category].min_magnification;
+			max_magnification = quest_data[questCard[selection_card].category].max_magnification;
 			step++;
 		}
 		if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
 		{
 			quest_pattern = static_cast<QuestPattern>(questCard[selection_card].category);
-			bet_rate = quest_data[selection_card].min_magnification;
-			min_magnification = quest_data[selection_card].min_magnification;
-			max_magnification = quest_data[selection_card].max_magnification;
+			bet_rate = quest_data[quest_data[selection_card].pattern].min_magnification;
+			min_magnification = quest_data[quest_data[selection_card].pattern].min_magnification;
+			max_magnification = quest_data[quest_data[selection_card].pattern].max_magnification;
 			step++;
 		}
 
@@ -1084,6 +1078,7 @@ void GambleScene::Render(float elapsedTime)
 	ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* render_target_view = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* depth_stencil_view = graphics.GetDepthStencilView();
+	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
 
 	// レンダーターゲット等の設定とクリア
 	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
@@ -1094,23 +1089,10 @@ void GambleScene::Render(float elapsedTime)
 	// これから描くキャンバスを指定する
 	immediate_context->OMSetRenderTargets(1, &render_target_view, depth_stencil_view);
 
-	immediate_context->PSSetSamplers(0, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::POINT)].GetAddressOf());
-	immediate_context->PSSetSamplers(1, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR)].GetAddressOf());
-	immediate_context->PSSetSamplers(2, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::ANISOTROPIC)].GetAddressOf());
-	immediate_context->PSSetSamplers(3, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_BLACK)].GetAddressOf());
-	immediate_context->PSSetSamplers(4, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR_BORDER_WHITE)].GetAddressOf());
-	// SHADOW
-	immediate_context->PSSetSamplers(5, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::COMPARISON_LINEAR_BORDER_WHITE)].GetAddressOf());
-
 
 	immediate_context->OMSetDepthStencilState(depth_stencil_states[static_cast<size_t>(DEPTH_STATE::ZT_OFF_ZW_OFF)].Get(), 0);
 	immediate_context->RSSetState(rasterizer_states[static_cast<size_t>(RASTER_STATE::CULL_NONE)].Get());
 	immediate_context->OMSetBlendState(blend_states[static_cast<size_t>(BLEND_STATE::ALPHA)].Get(), nullptr, 0xFFFFFFFF);
-
-	immediate_context->IASetInputLayout(sprite_input_layout.Get());
-	immediate_context->VSSetShader(sprite_vertex_shader.Get(), nullptr, 0);
-	immediate_context->PSSetShader(sprite_pixel_shader.Get(), nullptr, 0);
-	immediate_context->PSSetSamplers(0, 1, sampler_states[static_cast<size_t>(SAMPLER_STATE::LINEAR)].GetAddressOf());
 
 	switch (step)
 	{
@@ -1183,9 +1165,13 @@ void GambleScene::Render(float elapsedTime)
 		spr_OK->render(immediate_context, select_decision_pos.x, select_decision_pos.y, 200, 100);
 		spr_number->textout(immediate_context, std::to_string(player->total_point), select_decision_pos.x, select_decision_pos.y - 70.0f, 50, 50, 1, 1, 1, 1);
 
+		spr_betbox->render(immediate_context, bet_boxpos[0].x, bet_boxpos[0].y, bet_boxsize.x, bet_boxsize.y);
+		spr_betbox->render(immediate_context, bet_boxpos[1].x, bet_boxpos[1].y, bet_boxsize.x, bet_boxsize.y);
+		spr_betbox->render(immediate_context, bet_boxpos[2].x, bet_boxpos[2].y, bet_boxsize.x, bet_boxsize.y);
+		if (select_num < 3)spr_number_sel->render(immediate_context, bet_boxpos[select_num].x, bet_boxpos[select_num].y, bet_boxsize.x, bet_boxsize.y);
+
 		for (int i = 0; i < 3; i++)
 		{
-			spr_betbox->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y, bet_boxsize.x, bet_boxsize.y);
 			spr_bet_icon[i]->render(immediate_context, bet_boxpos[i].x, bet_boxpos[i].y,85, 190);
 			spr_small_arrow->render(immediate_context, small_arrow_down_pos[i].x, small_arrow_down_pos[i].y, 50, 50, 1, 1, 1, 1, 180);
 			spr_small_arrow->render(immediate_context, small_arrow_up_pos[i].x, small_arrow_up_pos[i].y, 50, 50);

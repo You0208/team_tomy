@@ -5,6 +5,7 @@
 #include "..\Scene\SceneManager.h"
 #include "./Game/Scene/SceneGame.h"
 #include "./Game/Scene/TitleScene.h"
+#include "./Game/Scene/ResultScene.h"
 
 #include "Lemur/Audio/AudioManager.h"
 
@@ -34,7 +35,7 @@ bool framework::initialize()
     //merge前にこれをコメント化
 
 	Lemur::Scene::SceneManager::Instance().ChangeScene(new TitleScene);
-	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
+	Lemur::Scene::SceneManager::Instance().ChangeScene(new GambleScene);
 	// XAUDIO2
 	HRESULT hr{ S_OK };
 	Lemur::Audio::AudioManager& audio = Lemur::Audio::AudioManager::Instance();
@@ -46,7 +47,9 @@ bool framework::initialize()
 
 	Lemur::Audio::AudioManager::Instance().load_audio();
 
-	//Lemur::Scene::SceneManager::Instance().ChangeScene(new GameScene);
+	//
+	// 
+	//Lemur::Scene::SceneManager::Instance().ChangeScene(new ResultScene(true));
 	//Lemur::Scene::SceneManager::Instance().ChangeScene(new LoadingScene);
 
 	return true;

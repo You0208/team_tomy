@@ -381,6 +381,9 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 		ImGui::TreePop();
 	}
 	ImGui::End();
+
+
+
 }
 
 void GameScene::Render(float elapsedTime)

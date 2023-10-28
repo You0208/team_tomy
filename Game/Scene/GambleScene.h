@@ -187,6 +187,7 @@ private:/*---------------- スプライト関係 -----------------*/
 	std::shared_ptr<sprite> spr_skill_ok;
 	std::shared_ptr<sprite> spr_skill_change;
 
+	std::shared_ptr<sprite> spr_number_sel;
 
 	/*------- イージング関係 --------*/
 

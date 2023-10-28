@@ -12,6 +12,9 @@ namespace Lemur::Scene
         ~SceneManager() {}
 
     public:
+        float bet_rate;
+
+    public:
         // 唯一のインスタンス取得
         static SceneManager& Instance()
         {

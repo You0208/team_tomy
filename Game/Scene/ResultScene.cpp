@@ -10,7 +10,6 @@
 #include "Lemur/Scene/SceneManager.h"
 #include "Lemur/Audio/AudioManager.h"
 
-extern float bet_rate;
 extern int wave_count;
 
 void ResultScene::Initialize()
@@ -77,6 +76,7 @@ void ResultScene::Update(HWND hwnd, float elapsedTime)
 {
 	Mouse& mouse = Input::Instance().GetMouse();
 	GamePad& game_pad = Input::Instance().GetGamePad();
+	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
 
     switch (step)
     {
@@ -193,6 +193,7 @@ void ResultScene::Render(float elapsedTime)
 
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
     ID3D11DeviceContext* immediate_context = graphics.GetDeviceContext();
+	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
     SetUpRendering();
 
     switch (step)
@@ -254,6 +255,7 @@ void ResultScene::Render(float elapsedTime)
 
 void ResultScene::DebugImGui()
 {
+	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
 		player->DebugImgui();
 	ImGui::Begin("Scene");
 	ImGui::InputInt("step", &step);
@@ -265,6 +267,7 @@ void ResultScene::DebugImGui()
 
 void ResultScene::GiveReward()
 {
+	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
     //player->attack_power  += player->bet_AP * bet_rate;
     //player->defense_power += player->bet_DP * bet_rate;
     //player->speed_power   += player->bet_SP * bet_rate;
