@@ -337,7 +337,7 @@ void GambleScene::Initialize()
 	spr_skill[12] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãxåe.png");
 	spr_skill[13] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/ãtì].png");
 	spr_skill[14] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/çÙém.png");
-	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/Superhuman.png");//TODO
+	spr_skill[15] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/í¥êl.png");//TODO
 	spr_skill[16] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/åïêπ.png");
 	spr_skill[17] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/éæïó.png");
 	spr_skill[18] = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/skill/îÏñû.png");
