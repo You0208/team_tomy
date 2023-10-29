@@ -305,84 +305,6 @@ void GameScene::Update(HWND hwnd, float elapsedTime)
 	QuestClear();
 	QuestFailed();
 
-//---------------------------------------------------------------------------------------
-// Imgui
-//---------------------------------------------------------------------------------------
-	ImGui::Begin("Shader");
-
-	// STATIC_BATCHING
-	ImGui::Text("drawcall_count : %d", drawcall_count);
-
-	if (ImGui::TreeNode("enable_shader"))
-	{
-		ImGui::Checkbox("enableShadow", &enableShadow);
-		ImGui::Checkbox("enableSkyMap", &enableSkyMap);
-		ImGui::Checkbox("enableBloom", &enableBloom);
-		ImGui::Checkbox("enableFog", &enableFog);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("dis_fog"))
-	{
-		ImGui::ColorEdit3("fog_color", &fog_color.x);
-		ImGui::SliderFloat("fog_near", &fog_range.x, 0.1f, +100.0f);
-		ImGui::SliderFloat("fog_far", &fog_range.y, 0.1f, +100.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("mask"))
-	{
-		ImGui::SliderFloat("dissolve_value", &dissolve_value, -1.0f, +1.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("fog"))
-	{
-		ImGui::ColorEdit4("fog_color", fog_constants.fog_color);
-		ImGui::SliderFloat("fog_density", &fog_constants.fog_density, +0.0f, +0.005f, "%.4f");
-		ImGui::SliderFloat("fog_height_falloff", &fog_constants.fog_height_falloff, +0.0001f, +10.0f, "%.4f");
-		ImGui::SliderFloat("fog_cutoff_distance", &fog_constants.fog_cutoff_distance, +0.0f, +1000.0f, "%.4f");
-		ImGui::SliderFloat("start_distance", &fog_constants.start_distance, +0.0f, +100.0f, "%.4f");
-		ImGui::SliderFloat("time_scale", &fog_constants.time_scale, +0.0f, +10.0f, "%.4f");
-		ImGui::SliderFloat("seed_scale", &fog_constants.seed_scale, +0.0f, +0.5f, "%.4f");
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("pbr"))
-	{
-		ImGui::SliderFloat("adjustMetalness", &pbr.adjustMetalness.x, -1.0f, +1.0f);
-		ImGui::SliderFloat("adjustSmoothness", &pbr.adjustSmoothness.x, 0.0f, +1.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("point_light"))
-	{
-		ImGui::SliderFloat3("ptPosition", &light.ptPosition.x, -100.0f, +100.0f);
-		ImGui::SliderFloat3("ptRange", &light.ptRange.x, 1.0f, +100.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("direction_light"))
-	{
-		ImGui::SliderFloat("light_direction.x", &light_direction.x, -1.0f, +1.0f);
-		ImGui::SliderFloat("light_direction.y", &light_direction.y, -1.0f, +1.0f);
-		ImGui::SliderFloat("light_direction.z", &light_direction.z, -1.0f, +1.0f);
-
-		ImGui::SliderFloat("light_view_distance", &light_view_distance, 1.0f, +100.0f);
-		ImGui::SliderFloat("light_view_size", &light_view_size, 1.0f, +100.0f);
-		ImGui::SliderFloat("light_view_near_z", &light_view_near_z, 1.0f, light_view_far_z - 1.0f);
-		ImGui::SliderFloat("light_view_far_z", &light_view_far_z, light_view_near_z + 1.0f, +100.0f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("shadow"))
-	{
-		ImGui::Image(reinterpret_cast<void*>(double_speed_z->shader_resource_view.Get()), ImVec2(shadowmap_width / 5.0f, shadowmap_height / 5.0f));
-		ImGui::SliderFloat("shadow_depth_bias", &scene_constants.shadow_depth_bias, 0.1f, 0.01f);
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("bloom"))
-	{
-		ImGui::SliderFloat("bloom_extraction_threshold", &bloomer->bloom_extraction_threshold, +0.0f, +5.0f);
-		ImGui::SliderFloat("bloom_intensity", &bloomer->bloom_intensity, +0.0f, +5.0f);
-		ImGui::TreePop();
-	}
-	ImGui::End();
-
-
 
 }
 
@@ -714,23 +636,7 @@ void GameScene::Render(float elapsedTime)
 
 void GameScene::DebugImGui()
 {
-	//float a = 619.0f * rate;
 
-	ImGui::Begin("Scene");
-	int quest_pattern_int = static_cast<int>(quest_pattern);
-	ImGui::InputInt("quest_pattern", &quest_pattern_int);
-	ImGui::Checkbox("is_pause", &is_pause);
-	ImGui::DragFloat("bet_rate", &bet_rate);
-	ImGui::DragFloat("rate", & rate );
-    ImGui::DragFloat2("pause_select_UI_pos[0]", & pause_select_UI_pos[0].x );
-    ImGui::DragFloat2("pause_select_UI_pos[1]", &pause_select_UI_pos[1].x );
-    //ImGui::DragFloat2("UI_pos", & UI_pos[0].x );
-    //ImGui::DragFloat2("UI_pos1", & UI_pos[1].x );
-    //ImGui::DragFloat2("UI_pos2", & UI_pos[2].x );
-    //ImGui::DragFloat2("UI_pos3", & UI_pos[3].x );
-	//ImGui::DragFloat3("ene_HP_gauge_pos", & ene_HP_gauge_pos.x );
-	//ImGui::DragFloat("a", & a );
-	ImGui::End();
 }
 
 void GameScene::CreateEnemy_KARI()

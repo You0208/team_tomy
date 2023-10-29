@@ -62,7 +62,7 @@ namespace Lemur::Scene
         bool enableShadow = true;
         bool enableSkyMap = false;
         bool enableBloom = false;
-        bool enableFog = false;
+        bool enableFog = true;
 
     private:
         bool ready = false;

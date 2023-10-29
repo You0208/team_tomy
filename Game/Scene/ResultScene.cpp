@@ -255,13 +255,7 @@ void ResultScene::Render(float elapsedTime)
 
 void ResultScene::DebugImGui()
 {
-	float& bet_rate = Lemur::Scene::SceneManager::Instance().bet_rate;
-		player->DebugImgui();
-	ImGui::Begin("Scene");
-	ImGui::InputInt("step", &step);
-	ImGui::Checkbox("clear", &clear);
-	ImGui::InputFloat("bet_rate", &bet_rate);
-	ImGui::End();
+
 
 }
 

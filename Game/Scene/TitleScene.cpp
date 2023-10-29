@@ -105,8 +105,5 @@ void TitleScene::Render(float elapsedTime)
 
 void TitleScene::DrawImGui()
 {
-    ImGui::Begin("scene");
-    ImGui::DragFloat2("spider_pos", &spider_pos.x);
-    ImGui::DragInt("tex_pos_x", &tex_pos_x);
-    ImGui::End();
+  
 }

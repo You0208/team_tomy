@@ -780,68 +780,7 @@ void Enemy::DamageRender()
 
 void Enemy::DebugImgui()
 {
-    ImGui::Begin("Enemy");
-    ImGui::Text(enemy_type.c_str());
-    if (ImGui::TreeNode("Transform"))
-    {
-        ImGui::DragFloat3("position", &position.x);
-        ImGui::SliderAngle("rotation", &rotation.y);
-        ImGui::DragFloat("scale_factor", &scaleFactor);
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode("AI"))
-    {
-        if (!activeNode)
-            ImGui::Text("null");
-        else
-            ImGui::Text(activeNode->GetName().c_str());
 
-        ImGui::DragFloat("near_attack_range", &near_attack_range);
-        ImGui::DragFloat("middle_attack_range", &middle_attack_range);
-        ImGui::DragFloat3("target_position", &target_position.x);
-
-        DirectX::XMFLOAT3 player_pos = CharacterManager::Instance().GetPlayer()->GetPosition();
-        float enemy_to_player = Length(position, player_pos);
-        ImGui::DragFloat("enemy_to_player", &enemy_to_player);
-
-        float enemy_to_target = Length(target_position, position);
-        ImGui::DragFloat("enemy_to_target", &enemy_to_target);
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode("Attack"))
-    {
-        ImGui::DragFloat("near_attack_range", &near_attack_range);
-        ImGui::Checkbox("attack_collision_flag", &attack_collision_flag);
-        ImGui::InputFloat("attack_collision_range", &attack_collision_range);
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode("parameter"))
-    {
-        ImGui::DragInt("MaxHealth", &max_health);
-        ImGui::DragInt("health", &health);
-        if (health <= 0)
-        {
-            health = 0;
-            death = true;
-        }
-        ImGui::DragFloat("Walk_speed", &walk_speed);
-        ImGui::DragFloat("attack_power", &attack_power);
-        ImGui::DragFloat("defense_power", &defense_power);
-        ImGui::DragFloat("speed_power", &speed_power);
-        ImGui::TreePop();
-    }
-    if(ImGui::TreeNode("HitCollisions"))
-    {
-        for (auto& collision : hit_collisions)
-        {
-            ImGui::Text(collision->bone_name.c_str());
-            ImGui::DragFloat("node_radius", &collision->node_radius);
-        }
-        ImGui::TreePop();
-    }
-    ImGui::Checkbox("is_hit", &is_hit);
-
-    ImGui::End();
 
 }
 

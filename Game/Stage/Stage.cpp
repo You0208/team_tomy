@@ -46,9 +46,6 @@ void Stage::Render()
 
 void Stage::DrawImGui()
 {
-    ImGui::Begin("Stage");
-    ImGui::DragFloat3("position", &position.x);
-    ImGui::DragFloat("scale_factor", &scale_factor);
-    ImGui::End();
+
 }
 

@@ -827,10 +827,10 @@ void GambleScene::Update(HWND hwnd, float elapsedTime)
 		}
 		if (mouse.GetButtonDown() & Mouse::BTN_RIGHT)
 		{
-			quest_pattern = static_cast<QuestPattern>(questCard[selection_card].category);
-			bet_rate = quest_data[quest_data[selection_card].pattern].min_magnification;
-			min_magnification = quest_data[quest_data[selection_card].pattern].min_magnification;
-			max_magnification = quest_data[quest_data[selection_card].pattern].max_magnification;
+			quest_pattern = QuestPattern(questCard[selection_card].category);
+			bet_rate = quest_data[questCard[selection_card].category].min_magnification;
+			min_magnification = quest_data[questCard[selection_card].category].min_magnification;
+			max_magnification = quest_data[questCard[selection_card].category].max_magnification;
 			step++;
 		}
 
@@ -1201,26 +1201,6 @@ void GambleScene::Render(float elapsedTime)
 
 void GambleScene::DebugImGui()
 {
-	ImGui::Begin("Scene");
-	int quest_pattern_int = static_cast<int>(quest_pattern);
-	ImGui::InputInt("quest_pattern", &quest_pattern_int);
-	quest_pattern = static_cast<QuestPattern>(quest_pattern_int);
-
-	//ImGui::SliderFloat2("Poo", &Poo.x,0,100);
-	//ImGui::SliderFloat2("Poo", &Poo.x,0,100);
-	//ImGui::SliderInt("last_num", &last_num,0,100);
-	ImGui::InputInt("wave_count", &wave_count);
-	ImGui::DragFloat2("spr_tutorial_pos", &spr_tutorial_pos.x);
-	ImGui::DragFloat("easing_time_ms", &easing_time_ms);
-	ImGui::DragFloat("easing_timer_ms", &easing_timer_ms);
-	ImGui::DragFloat("stop_time_ms", &stop_time_ms);
-	ImGui::DragFloat("stop_timer_ms", &stop_timer_ms);
-	ImGui::DragFloat("hide_stop_time_ms", &hide_stop_time_ms);
-	for(auto& skill:lottery_skills)
-	{
-		ImGui::Text(skill->GetName().c_str());
-	}
-	ImGui::End();
 
 }
 
