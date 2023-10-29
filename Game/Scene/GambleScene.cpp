@@ -311,7 +311,7 @@ void GambleScene::Initialize()
 	spr_skill_ok = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Skill_Text_OK.png");
 	spr_skill_change = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\Skill_Text_Change.png");
 
-	spr_number_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/”š”wŒisel.png");
+	spr_number_sel = std::make_unique<sprite>(graphics.GetDevice(), L"./resources/Image/”šQ”wŒi.png");
 
 
 	spr_coin[0] = std::make_unique<sprite>(graphics.GetDevice(), L".\\resources\\Image\\HP_coin.png");

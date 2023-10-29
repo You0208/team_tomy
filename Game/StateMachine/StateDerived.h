@@ -36,6 +36,7 @@ namespace Nero::Component::AI
         void Update() override;
         void End() override;
 
+        void Turn();
 
     };
 

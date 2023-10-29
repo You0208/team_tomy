@@ -98,6 +98,9 @@ namespace Nero::Component::AI
         owner->SetAnimationIndex(owner->Avoid_Anim);
         owner->GetModel()->rootMotionFlag = true;
         Lemur::Audio::AudioManager::Instance().play_se(Lemur::Audio::SE::AVOID,false);
+
+        // 入力方向に向く処理
+        Turn();
     }
 
     void AvoidState::Update()
@@ -121,6 +124,37 @@ namespace Nero::Component::AI
     void AvoidState::End()
     {
         owner->invincible = false;
+    }
+
+    void AvoidState::Turn()
+    {
+        // 回転行列の作成
+        DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationRollPitchYaw(owner->GetAngle().x, owner->GetAngle().y, owner->GetAngle().z);
+        // 前方向ベクトル取得
+        DirectX::XMVECTOR Forward = rotation_matrix.r[2];
+
+        Forward = DirectX::XMVector3Normalize(Forward);
+        DirectX::XMFLOAT3 forward;
+        DirectX::XMStoreFloat3(&forward, Forward);
+
+        float input_vec_x = Input::Instance().GetGamePad().GetAxisLX();
+        float input_vec_z = Input::Instance().GetGamePad().GetAxisLY();
+
+        DirectX::XMFLOAT3 input_vec=owner->GetMoveVec(input_vec_x,input_vec_z);
+
+        float dot = (input_vec.x * forward.x) + (input_vec.z * forward.z);
+        float angle = acosf(dot);
+
+        float cross = (input_vec.x * forward.z) - (input_vec.z * forward.x);
+        if(cross<0)
+        {
+            owner->rotation.y -= angle;
+        }
+        else
+        {
+            owner->rotation.y += angle;
+        }
+
     }
 
     void DeathState::Begin()

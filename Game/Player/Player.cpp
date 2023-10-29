@@ -233,6 +233,7 @@ void Player::AttackAngleInterpolation()
 
         float angle = std::acosf(dot);
 
+        // ŠOÏ‚µ‚Ä‚Ç‚Á‚¿‚Éƒ^[ƒ“‚·‚é‚©”»’è
         float cross = (pos_to_enemy_pos.x * front_z) - (pos_to_enemy_pos.z * front_x);
         if(cross<0.0f)
         {

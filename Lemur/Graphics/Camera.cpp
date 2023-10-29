@@ -244,7 +244,7 @@ void Camera::NonLockOnUpdate(float elapsedTime)
     angle.y += mouse_pos_x * speed;
 # endif
     Lemur::Graphics::Graphics& graphics = Lemur::Graphics::Graphics::Instance();
-#if 1
+#if 0
 
     SetCursorPos(1920 / 2, 1080 / 2);
     mouse.SetPositionX(1920 / 2);
